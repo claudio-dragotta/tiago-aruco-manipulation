@@ -1,0 +1,21 @@
+[0.926s] Invoking command in '/home/claudio/tiago_public_ws/src/launch_pal': PYTHONPATH=/home/claudio/tiago_public_ws/build/launch_pal/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/launch_pal build --build-base /home/claudio/tiago_public_ws/build/launch_pal/build install --record /home/claudio/tiago_public_ws/build/launch_pal/install.log --single-version-externally-managed install_data
+[1.186s] running egg_info
+[1.187s] writing ../../build/launch_pal/launch_pal.egg-info/PKG-INFO
+[1.187s] writing dependency_links to ../../build/launch_pal/launch_pal.egg-info/dependency_links.txt
+[1.187s] writing entry points to ../../build/launch_pal/launch_pal.egg-info/entry_points.txt
+[1.188s] writing requirements to ../../build/launch_pal/launch_pal.egg-info/requires.txt
+[1.188s] writing top-level names to ../../build/launch_pal/launch_pal.egg-info/top_level.txt
+[1.191s] reading manifest file '../../build/launch_pal/launch_pal.egg-info/SOURCES.txt'
+[1.191s] adding license file 'LICENSE'
+[1.191s] writing manifest file '../../build/launch_pal/launch_pal.egg-info/SOURCES.txt'
+[1.192s] running build
+[1.192s] running build_py
+[1.193s] running install
+[1.193s] running install_lib
+[1.195s] running install_data
+[1.195s] running install_egg_info
+[1.196s] removing '/home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal-0.12.1-py3.10.egg-info' (and everything under it)
+[1.197s] Copying ../../build/launch_pal/launch_pal.egg-info to /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal-0.12.1-py3.10.egg-info
+[1.197s] running install_scripts
+[1.221s] writing list of installed files to '/home/claudio/tiago_public_ws/build/launch_pal/install.log'
+[1.260s] Invoked command in '/home/claudio/tiago_public_ws/src/launch_pal' returned '0': PYTHONPATH=/home/claudio/tiago_public_ws/build/launch_pal/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/launch_pal build --build-base /home/claudio/tiago_public_ws/build/launch_pal/build install --record /home/claudio/tiago_public_ws/build/launch_pal/install.log --single-version-externally-managed install_data

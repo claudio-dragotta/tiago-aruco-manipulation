@@ -1,0 +1,23 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/claudio/tiago_public_ws/install/play_motion2/include/**",
+        "/home/claudio/tiago_public_ws/install/play_motion2_msgs/include/**",
+        "/opt/ros/humble/include/**",
+        "/home/claudio/tiago_public_ws/src/play_motion2/play_motion2/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}

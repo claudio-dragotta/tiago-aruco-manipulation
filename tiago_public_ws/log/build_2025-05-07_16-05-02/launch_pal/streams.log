@@ -1,0 +1,25 @@
+[1.433s] Invoking command in '/home/claudio/tiago_public_ws/build/launch_pal': PYTHONPATH=/home/claudio/tiago_public_ws/build/launch_pal/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/claudio/tiago_public_ws/build/launch_pal/build --no-deps symlink_data
+[2.148s] running develop
+[2.598s] running egg_info
+[2.599s] creating launch_pal.egg-info
+[2.599s] writing launch_pal.egg-info/PKG-INFO
+[2.599s] writing dependency_links to launch_pal.egg-info/dependency_links.txt
+[2.599s] writing entry points to launch_pal.egg-info/entry_points.txt
+[2.600s] writing requirements to launch_pal.egg-info/requires.txt
+[2.600s] writing top-level names to launch_pal.egg-info/top_level.txt
+[2.601s] writing manifest file 'launch_pal.egg-info/SOURCES.txt'
+[2.605s] reading manifest file 'launch_pal.egg-info/SOURCES.txt'
+[2.607s] writing manifest file 'launch_pal.egg-info/SOURCES.txt'
+[2.611s] running build_ext
+[2.611s] Creating /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch-pal.egg-link (link to .)
+[2.613s] 
+[2.615s] Installed /home/claudio/tiago_public_ws/build/launch_pal
+[2.615s] running symlink_data
+[2.615s] creating /home/claudio/tiago_public_ws/install/launch_pal/share/ament_index
+[2.615s] creating /home/claudio/tiago_public_ws/install/launch_pal/share/ament_index/resource_index
+[2.616s] creating /home/claudio/tiago_public_ws/install/launch_pal/share/ament_index/resource_index/packages
+[2.616s] symbolically linking /home/claudio/tiago_public_ws/build/launch_pal/resource/launch_pal -> /home/claudio/tiago_public_ws/install/launch_pal/share/ament_index/resource_index/packages
+[2.616s] symbolically linking /home/claudio/tiago_public_ws/build/launch_pal/package.xml -> /home/claudio/tiago_public_ws/install/launch_pal/share/launch_pal
+[2.616s] creating /home/claudio/tiago_public_ws/install/launch_pal/share/launch_pal/config
+[2.616s] symbolically linking /home/claudio/tiago_public_ws/build/launch_pal/config/robot_configuration.yaml -> /home/claudio/tiago_public_ws/install/launch_pal/share/launch_pal/config
+[2.684s] Invoked command in '/home/claudio/tiago_public_ws/build/launch_pal' returned '0': PYTHONPATH=/home/claudio/tiago_public_ws/build/launch_pal/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/claudio/tiago_public_ws/build/launch_pal/build --no-deps symlink_data

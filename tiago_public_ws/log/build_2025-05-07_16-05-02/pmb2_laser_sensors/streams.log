@@ -1,0 +1,50 @@
+[0.018s] Invoking command in '/home/claudio/tiago_public_ws/build/pmb2_laser_sensors': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/claudio/tiago_public_ws/src/pmb2_navigation/pmb2_laser_sensors -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/claudio/tiago_public_ws/install/pmb2_laser_sensors
+[0.158s] -- The C compiler identification is GNU 11.4.0
+[0.298s] -- The CXX compiler identification is GNU 11.4.0
+[0.315s] -- Detecting C compiler ABI info
+[0.466s] -- Detecting C compiler ABI info - done
+[0.490s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.491s] -- Detecting C compile features
+[0.492s] -- Detecting C compile features - done
+[0.502s] -- Detecting CXX compiler ABI info
+[0.684s] -- Detecting CXX compiler ABI info - done
+[0.708s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.712s] -- Detecting CXX compile features
+[0.713s] -- Detecting CXX compile features - done
+[0.715s] -- Found ament_cmake_auto: 1.3.11 (/opt/ros/humble/share/ament_cmake_auto/cmake)
+[1.082s] -- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+[1.243s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[1.531s] -- Added test 'copyright' to check source files copyright and LICENSE
+[1.537s] -- Added test 'flake8' to check Python code syntax and style conventions
+[1.538s] -- Added test 'lint_cmake' to check CMake code style
+[1.539s] -- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257
+[1.543s] -- Added test 'xmllint' to check XML markup files
+[1.547s] -- Configuring done
+[1.553s] -- Generating done
+[1.556s] -- Build files have been written to: /home/claudio/tiago_public_ws/build/pmb2_laser_sensors
+[1.565s] Invoked command in '/home/claudio/tiago_public_ws/build/pmb2_laser_sensors' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/claudio/tiago_public_ws/src/pmb2_navigation/pmb2_laser_sensors -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/claudio/tiago_public_ws/install/pmb2_laser_sensors
+[1.570s] Invoking command in '/home/claudio/tiago_public_ws/build/pmb2_laser_sensors': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/claudio/tiago_public_ws/build/pmb2_laser_sensors -- -j4 -l4
+[1.648s] Invoked command in '/home/claudio/tiago_public_ws/build/pmb2_laser_sensors' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/claudio/tiago_public_ws/build/pmb2_laser_sensors -- -j4 -l4
+[1.649s] Invoking command in '/home/claudio/tiago_public_ws/build/pmb2_laser_sensors': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/claudio/tiago_public_ws/build/pmb2_laser_sensors
+[1.663s] -- Install configuration: ""
+[1.664s] -- Execute custom install script
+[1.666s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_laser_sensors/share/pmb2_laser_sensors/launch/laser_hokuyo.launch.py
+[1.684s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_laser_sensors/share/pmb2_laser_sensors/launch/laser_sick-561.launch.py
+[1.703s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_laser_sensors/share/pmb2_laser_sensors/launch/laser_sick-571.launch.py
+[1.722s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_laser_sensors/share/pmb2_laser_sensors/launch/laser_sim.launch.py
+[1.745s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_laser_sensors/share/ament_index/resource_index/package_run_dependencies/pmb2_laser_sensors
+[1.763s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_laser_sensors/share/ament_index/resource_index/parent_prefix_path/pmb2_laser_sensors
+[1.781s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_laser_sensors/share/pmb2_laser_sensors/environment/ament_prefix_path.sh
+[1.800s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_laser_sensors/share/pmb2_laser_sensors/environment/ament_prefix_path.dsv
+[1.818s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_laser_sensors/share/pmb2_laser_sensors/environment/path.sh
+[1.836s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_laser_sensors/share/pmb2_laser_sensors/environment/path.dsv
+[1.854s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_laser_sensors/share/pmb2_laser_sensors/local_setup.bash
+[1.873s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_laser_sensors/share/pmb2_laser_sensors/local_setup.sh
+[1.895s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_laser_sensors/share/pmb2_laser_sensors/local_setup.zsh
+[1.914s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_laser_sensors/share/pmb2_laser_sensors/local_setup.dsv
+[1.933s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_laser_sensors/share/pmb2_laser_sensors/package.dsv
+[1.950s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_laser_sensors/share/ament_index/resource_index/packages/pmb2_laser_sensors
+[1.967s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_laser_sensors/share/pmb2_laser_sensors/cmake/pmb2_laser_sensorsConfig.cmake
+[1.984s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_laser_sensors/share/pmb2_laser_sensors/cmake/pmb2_laser_sensorsConfig-version.cmake
+[2.002s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_laser_sensors/share/pmb2_laser_sensors/package.xml
+[2.025s] Invoked command in '/home/claudio/tiago_public_ws/build/pmb2_laser_sensors' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/claudio/tiago_public_ws/build/pmb2_laser_sensors

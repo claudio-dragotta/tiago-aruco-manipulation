@@ -1,0 +1,72 @@
+[0.380s] Invoking command in '/home/claudio/tiago_public_ws/build/urdf_test': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/claudio/tiago_public_ws/src/urdf_test -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/claudio/tiago_public_ws/install/urdf_test
+[0.607s] -- The C compiler identification is GNU 11.4.0
+[0.804s] -- The CXX compiler identification is GNU 11.4.0
+[0.823s] -- Detecting C compiler ABI info
+[0.976s] -- Detecting C compiler ABI info - done
+[0.997s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.998s] -- Detecting C compile features
+[1.000s] -- Detecting C compile features - done
+[1.008s] -- Detecting CXX compiler ABI info
+[1.185s] -- Detecting CXX compiler ABI info - done
+[1.206s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[1.207s] -- Detecting CXX compile features
+[1.209s] -- Detecting CXX compile features - done
+[1.214s] -- Found ament_cmake_auto: 1.3.11 (/opt/ros/humble/share/ament_cmake_auto/cmake)
+[1.578s] -- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+[1.747s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[1.995s] -- Found ament_lint_auto: 0.12.11 (/opt/ros/humble/share/ament_lint_auto/cmake)
+[3.166s] -- Added test 'copyright' to check source files copyright and LICENSE
+[3.180s] -- Added test 'flake8' to check Python code syntax and style conventions
+[3.182s] -- Added test 'lint_cmake' to check CMake code style
+[3.185s] -- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257
+[3.194s] -- Added test 'xmllint' to check XML markup files
+[3.200s] -- Configuring done
+[3.208s] -- Generating done
+[3.216s] -- Build files have been written to: /home/claudio/tiago_public_ws/build/urdf_test
+[3.223s] Invoked command in '/home/claudio/tiago_public_ws/build/urdf_test' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/claudio/tiago_public_ws/src/urdf_test -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/claudio/tiago_public_ws/install/urdf_test
+[3.224s] Invoking command in '/home/claudio/tiago_public_ws/build/urdf_test': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/claudio/tiago_public_ws/build/urdf_test -- -j4 -l4
+[3.339s] Built target ament_cmake_python_symlink_urdf_test
+[3.988s] running egg_info
+[3.989s] creating urdf_test.egg-info
+[3.990s] writing urdf_test.egg-info/PKG-INFO
+[3.990s] writing dependency_links to urdf_test.egg-info/dependency_links.txt
+[3.990s] writing top-level names to urdf_test.egg-info/top_level.txt
+[3.992s] writing manifest file 'urdf_test.egg-info/SOURCES.txt'
+[3.997s] reading manifest file 'urdf_test.egg-info/SOURCES.txt'
+[3.997s] writing manifest file 'urdf_test.egg-info/SOURCES.txt'
+[4.064s] Built target ament_cmake_python_build_urdf_test_egg
+[4.086s] Invoked command in '/home/claudio/tiago_public_ws/build/urdf_test' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/claudio/tiago_public_ws/build/urdf_test -- -j4 -l4
+[4.088s] Invoking command in '/home/claudio/tiago_public_ws/build/urdf_test': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/claudio/tiago_public_ws/build/urdf_test
+[4.107s] -- Install configuration: ""
+[4.107s] -- Execute custom install script
+[4.108s] -- Symlinking: /home/claudio/tiago_public_ws/install/urdf_test/lib/urdf_test/test_urdf.py
+[4.127s] -- Symlinking: /home/claudio/tiago_public_ws/install/urdf_test/share/urdf_test/environment/pythonpath.sh
+[4.145s] -- Symlinking: /home/claudio/tiago_public_ws/install/urdf_test/share/urdf_test/environment/pythonpath.dsv
+[4.167s] -- Symlinking: /home/claudio/tiago_public_ws/install/urdf_test/local/lib/python3.10/dist-packages/urdf_test-2.1.0-py3.10.egg-info/PKG-INFO
+[4.182s] -- Symlinking: /home/claudio/tiago_public_ws/install/urdf_test/local/lib/python3.10/dist-packages/urdf_test-2.1.0-py3.10.egg-info/SOURCES.txt
+[4.200s] -- Symlinking: /home/claudio/tiago_public_ws/install/urdf_test/local/lib/python3.10/dist-packages/urdf_test-2.1.0-py3.10.egg-info/dependency_links.txt
+[4.225s] -- Symlinking: /home/claudio/tiago_public_ws/install/urdf_test/local/lib/python3.10/dist-packages/urdf_test-2.1.0-py3.10.egg-info/top_level.txt
+[4.243s] -- Symlinking: /home/claudio/tiago_public_ws/install/urdf_test/local/lib/python3.10/dist-packages/urdf_test/__init__.py
+[4.258s] -- Symlinking: /home/claudio/tiago_public_ws/install/urdf_test/local/lib/python3.10/dist-packages/urdf_test/description_test.py
+[4.274s] -- Symlinking: /home/claudio/tiago_public_ws/install/urdf_test/local/lib/python3.10/dist-packages/urdf_test/xacro_test.py
+[4.292s] -- Symlinking: /home/claudio/tiago_public_ws/install/urdf_test/share/ament_index/resource_index/package_run_dependencies/urdf_test
+[4.311s] -- Symlinking: /home/claudio/tiago_public_ws/install/urdf_test/share/ament_index/resource_index/parent_prefix_path/urdf_test
+[4.333s] -- Symlinking: /home/claudio/tiago_public_ws/install/urdf_test/share/urdf_test/environment/ament_prefix_path.sh
+[4.349s] -- Symlinking: /home/claudio/tiago_public_ws/install/urdf_test/share/urdf_test/environment/ament_prefix_path.dsv
+[4.368s] -- Symlinking: /home/claudio/tiago_public_ws/install/urdf_test/share/urdf_test/environment/path.sh
+[4.385s] -- Symlinking: /home/claudio/tiago_public_ws/install/urdf_test/share/urdf_test/environment/path.dsv
+[4.404s] -- Symlinking: /home/claudio/tiago_public_ws/install/urdf_test/share/urdf_test/local_setup.bash
+[4.421s] -- Symlinking: /home/claudio/tiago_public_ws/install/urdf_test/share/urdf_test/local_setup.sh
+[4.441s] -- Symlinking: /home/claudio/tiago_public_ws/install/urdf_test/share/urdf_test/local_setup.zsh
+[4.459s] -- Symlinking: /home/claudio/tiago_public_ws/install/urdf_test/share/urdf_test/local_setup.dsv
+[4.479s] -- Symlinking: /home/claudio/tiago_public_ws/install/urdf_test/share/urdf_test/package.dsv
+[4.498s] -- Symlinking: /home/claudio/tiago_public_ws/install/urdf_test/share/ament_index/resource_index/packages/urdf_test
+[4.519s] -- Symlinking: /home/claudio/tiago_public_ws/install/urdf_test/share/urdf_test/cmake/ament_cmake_export_dependencies-extras.cmake
+[4.535s] -- Symlinking: /home/claudio/tiago_public_ws/install/urdf_test/share/urdf_test/cmake/urdf_testConfig.cmake
+[4.554s] -- Symlinking: /home/claudio/tiago_public_ws/install/urdf_test/share/urdf_test/cmake/urdf_testConfig-version.cmake
+[4.574s] -- Symlinking: /home/claudio/tiago_public_ws/install/urdf_test/share/urdf_test/package.xml
+[4.676s] Listing '/home/claudio/tiago_public_ws/install/urdf_test/local/lib/python3.10/dist-packages/urdf_test'...
+[4.676s] Compiling '/home/claudio/tiago_public_ws/install/urdf_test/local/lib/python3.10/dist-packages/urdf_test/__init__.py'...
+[4.677s] Compiling '/home/claudio/tiago_public_ws/install/urdf_test/local/lib/python3.10/dist-packages/urdf_test/description_test.py'...
+[4.677s] Compiling '/home/claudio/tiago_public_ws/install/urdf_test/local/lib/python3.10/dist-packages/urdf_test/xacro_test.py'...
+[4.697s] Invoked command in '/home/claudio/tiago_public_ws/build/urdf_test' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/claudio/tiago_public_ws/build/urdf_test

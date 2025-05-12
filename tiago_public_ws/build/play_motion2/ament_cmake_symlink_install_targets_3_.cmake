@@ -1,0 +1,1 @@
+ament_cmake_symlink_install_targets("TARGET_FILES" "/home/claudio/tiago_public_ws/build/play_motion2/play_motion2_node" "/home/claudio/tiago_public_ws/build/play_motion2/run_motion" "TARGETS" "play_motion2_node" "run_motion" "DESTINATION" "lib/play_motion2")

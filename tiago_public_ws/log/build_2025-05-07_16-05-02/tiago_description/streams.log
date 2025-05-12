@@ -1,0 +1,150 @@
+[0.030s] Invoking command in '/home/claudio/tiago_public_ws/build/tiago_description': AMENT_PREFIX_PATH=/home/claudio/tiago_public_ws/install/pmb2_description:/home/claudio/tiago_public_ws/install/pal_hey5_description:/home/claudio/tiago_public_ws/install/pal_gripper_description:/home/claudio/tiago_public_ws/install/urdf_test:/home/claudio/tiago_public_ws/install/pal_urdf_utils:/home/claudio/tiago_public_ws/install/pal_robotiq_description:/home/claudio/tiago_public_ws/install/launch_pal:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/claudio/tiago_public_ws/install/pmb2_description:/home/claudio/tiago_public_ws/install/pal_hey5_description:/home/claudio/tiago_public_ws/install/pal_gripper_description:/home/claudio/tiago_public_ws/install/urdf_test:/home/claudio/tiago_public_ws/install/pal_urdf_utils:/home/claudio/tiago_public_ws/install/pal_robotiq_description:/opt/ros/humble PYTHONPATH=/home/claudio/tiago_public_ws/install/pmb2_description/local/lib/python3.10/dist-packages:/home/claudio/tiago_public_ws/install/urdf_test/local/lib/python3.10/dist-packages:/home/claudio/tiago_public_ws/build/launch_pal:/home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/cmake /home/claudio/tiago_public_ws/src/tiago_robot/tiago_description -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/claudio/tiago_public_ws/install/tiago_description
+[0.168s] -- The C compiler identification is GNU 11.4.0
+[0.293s] -- The CXX compiler identification is GNU 11.4.0
+[0.310s] -- Detecting C compiler ABI info
+[0.460s] -- Detecting C compiler ABI info - done
+[0.480s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.482s] -- Detecting C compile features
+[0.482s] -- Detecting C compile features - done
+[0.491s] -- Detecting CXX compiler ABI info
+[0.668s] -- Detecting CXX compiler ABI info - done
+[0.688s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.690s] -- Detecting CXX compile features
+[0.691s] -- Detecting CXX compile features - done
+[0.697s] -- Found ament_cmake_auto: 1.3.11 (/opt/ros/humble/share/ament_cmake_auto/cmake)
+[1.220s] -- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+[1.495s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[1.957s] -- Found ament_lint_auto: 0.12.11 (/opt/ros/humble/share/ament_lint_auto/cmake)
+[2.019s] -- Found python_cmake_module: 0.10.0 (/opt/ros/humble/share/python_cmake_module/cmake)
+[2.071s] -- Found PythonInterp: /usr/bin/python3 (found suitable version "3.10.12", minimum required is "3.6") 
+[2.099s] -- Found PythonLibs: /usr/lib/x86_64-linux-gnu/libpython3.10.so (found suitable version "3.10.12", minimum required is "3.5") 
+[2.099s] -- Using PYTHON_EXECUTABLE: /usr/bin/python3
+[2.099s] -- Using PYTHON_INCLUDE_DIRS: /usr/include/python3.10
+[2.099s] -- Using PYTHON_LIBRARIES: /usr/lib/x86_64-linux-gnu/libpython3.10.so
+[2.186s] -- Found PythonExtra: .so  
+[3.335s] -- Added test 'copyright' to check source files copyright and LICENSE
+[3.357s] -- Added test 'flake8' to check Python code syntax and style conventions
+[3.360s] -- Added test 'lint_cmake' to check CMake code style
+[3.361s] -- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257
+[3.377s] -- Added test 'xmllint' to check XML markup files
+[3.380s] -- Configuring done
+[3.392s] -- Generating done
+[3.395s] -- Build files have been written to: /home/claudio/tiago_public_ws/build/tiago_description
+[3.409s] Invoked command in '/home/claudio/tiago_public_ws/build/tiago_description' returned '0': AMENT_PREFIX_PATH=/home/claudio/tiago_public_ws/install/pmb2_description:/home/claudio/tiago_public_ws/install/pal_hey5_description:/home/claudio/tiago_public_ws/install/pal_gripper_description:/home/claudio/tiago_public_ws/install/urdf_test:/home/claudio/tiago_public_ws/install/pal_urdf_utils:/home/claudio/tiago_public_ws/install/pal_robotiq_description:/home/claudio/tiago_public_ws/install/launch_pal:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/claudio/tiago_public_ws/install/pmb2_description:/home/claudio/tiago_public_ws/install/pal_hey5_description:/home/claudio/tiago_public_ws/install/pal_gripper_description:/home/claudio/tiago_public_ws/install/urdf_test:/home/claudio/tiago_public_ws/install/pal_urdf_utils:/home/claudio/tiago_public_ws/install/pal_robotiq_description:/opt/ros/humble PYTHONPATH=/home/claudio/tiago_public_ws/install/pmb2_description/local/lib/python3.10/dist-packages:/home/claudio/tiago_public_ws/install/urdf_test/local/lib/python3.10/dist-packages:/home/claudio/tiago_public_ws/build/launch_pal:/home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/cmake /home/claudio/tiago_public_ws/src/tiago_robot/tiago_description -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/claudio/tiago_public_ws/install/tiago_description
+[3.412s] Invoking command in '/home/claudio/tiago_public_ws/build/tiago_description': AMENT_PREFIX_PATH=/home/claudio/tiago_public_ws/install/pmb2_description:/home/claudio/tiago_public_ws/install/pal_hey5_description:/home/claudio/tiago_public_ws/install/pal_gripper_description:/home/claudio/tiago_public_ws/install/urdf_test:/home/claudio/tiago_public_ws/install/pal_urdf_utils:/home/claudio/tiago_public_ws/install/pal_robotiq_description:/home/claudio/tiago_public_ws/install/launch_pal:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/claudio/tiago_public_ws/install/pmb2_description:/home/claudio/tiago_public_ws/install/pal_hey5_description:/home/claudio/tiago_public_ws/install/pal_gripper_description:/home/claudio/tiago_public_ws/install/urdf_test:/home/claudio/tiago_public_ws/install/pal_urdf_utils:/home/claudio/tiago_public_ws/install/pal_robotiq_description:/opt/ros/humble PYTHONPATH=/home/claudio/tiago_public_ws/install/pmb2_description/local/lib/python3.10/dist-packages:/home/claudio/tiago_public_ws/install/urdf_test/local/lib/python3.10/dist-packages:/home/claudio/tiago_public_ws/build/launch_pal:/home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/cmake --build /home/claudio/tiago_public_ws/build/tiago_description -- -j4 -l4
+[3.641s] Built target ament_cmake_python_symlink_tiago_description
+[4.535s] running egg_info
+[4.540s] creating tiago_description.egg-info
+[4.540s] writing tiago_description.egg-info/PKG-INFO
+[4.540s] writing dependency_links to tiago_description.egg-info/dependency_links.txt
+[4.540s] writing top-level names to tiago_description.egg-info/top_level.txt
+[4.540s] writing manifest file 'tiago_description.egg-info/SOURCES.txt'
+[4.547s] reading manifest file 'tiago_description.egg-info/SOURCES.txt'
+[4.547s] writing manifest file 'tiago_description.egg-info/SOURCES.txt'
+[4.651s] Built target ament_cmake_python_build_tiago_description_egg
+[4.692s] Invoked command in '/home/claudio/tiago_public_ws/build/tiago_description' returned '0': AMENT_PREFIX_PATH=/home/claudio/tiago_public_ws/install/pmb2_description:/home/claudio/tiago_public_ws/install/pal_hey5_description:/home/claudio/tiago_public_ws/install/pal_gripper_description:/home/claudio/tiago_public_ws/install/urdf_test:/home/claudio/tiago_public_ws/install/pal_urdf_utils:/home/claudio/tiago_public_ws/install/pal_robotiq_description:/home/claudio/tiago_public_ws/install/launch_pal:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/claudio/tiago_public_ws/install/pmb2_description:/home/claudio/tiago_public_ws/install/pal_hey5_description:/home/claudio/tiago_public_ws/install/pal_gripper_description:/home/claudio/tiago_public_ws/install/urdf_test:/home/claudio/tiago_public_ws/install/pal_urdf_utils:/home/claudio/tiago_public_ws/install/pal_robotiq_description:/opt/ros/humble PYTHONPATH=/home/claudio/tiago_public_ws/install/pmb2_description/local/lib/python3.10/dist-packages:/home/claudio/tiago_public_ws/install/urdf_test/local/lib/python3.10/dist-packages:/home/claudio/tiago_public_ws/build/launch_pal:/home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/cmake --build /home/claudio/tiago_public_ws/build/tiago_description -- -j4 -l4
+[4.702s] Invoking command in '/home/claudio/tiago_public_ws/build/tiago_description': AMENT_PREFIX_PATH=/home/claudio/tiago_public_ws/install/pmb2_description:/home/claudio/tiago_public_ws/install/pal_hey5_description:/home/claudio/tiago_public_ws/install/pal_gripper_description:/home/claudio/tiago_public_ws/install/urdf_test:/home/claudio/tiago_public_ws/install/pal_urdf_utils:/home/claudio/tiago_public_ws/install/pal_robotiq_description:/home/claudio/tiago_public_ws/install/launch_pal:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/claudio/tiago_public_ws/install/pmb2_description:/home/claudio/tiago_public_ws/install/pal_hey5_description:/home/claudio/tiago_public_ws/install/pal_gripper_description:/home/claudio/tiago_public_ws/install/urdf_test:/home/claudio/tiago_public_ws/install/pal_urdf_utils:/home/claudio/tiago_public_ws/install/pal_robotiq_description:/opt/ros/humble PYTHONPATH=/home/claudio/tiago_public_ws/install/pmb2_description/local/lib/python3.10/dist-packages:/home/claudio/tiago_public_ws/install/urdf_test/local/lib/python3.10/dist-packages:/home/claudio/tiago_public_ws/build/launch_pal:/home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/cmake --install /home/claudio/tiago_public_ws/build/tiago_description
+[4.726s] -- Install configuration: ""
+[4.728s] -- Execute custom install script
+[4.730s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/environment/pythonpath.sh
+[4.751s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/environment/pythonpath.dsv
+[4.791s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/local/lib/python3.10/dist-packages/tiago_description-4.17.0-py3.10.egg-info/PKG-INFO
+[4.820s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/local/lib/python3.10/dist-packages/tiago_description-4.17.0-py3.10.egg-info/SOURCES.txt
+[4.866s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/local/lib/python3.10/dist-packages/tiago_description-4.17.0-py3.10.egg-info/dependency_links.txt
+[4.901s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/local/lib/python3.10/dist-packages/tiago_description-4.17.0-py3.10.egg-info/top_level.txt
+[4.920s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/local/lib/python3.10/dist-packages/tiago_description/__init__.py
+[4.957s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/local/lib/python3.10/dist-packages/tiago_description/launch_arguments.py
+[4.992s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/local/lib/python3.10/dist-packages/tiago_description/tiago_launch_utils.py
+[5.032s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/launch/robot_state_publisher.launch.py
+[5.089s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/launch/show.launch.py
+[5.132s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/arm/arm_1.stl
+[5.169s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/arm/arm_1_collision.dae
+[5.213s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/arm/arm_1_color.png
+[5.249s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/arm/arm_1_normals.png
+[5.284s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/arm/arm_1_specular.png
+[5.331s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/arm/arm_2.stl
+[5.358s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/arm/arm_2_collision.dae
+[5.405s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/arm/arm_2_color.png
+[5.427s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/arm/arm_2_normals.png
+[5.447s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/arm/arm_2_specular.png
+[5.489s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/arm/arm_3.stl
+[5.522s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/arm/arm_3_collision.dae
+[5.561s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/arm/arm_3_color.png
+[5.599s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/arm/arm_3_normals.png
+[5.634s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/arm/arm_3_specular.png
+[5.668s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/arm/arm_4.stl
+[5.704s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/arm/arm_4_collision.dae
+[5.742s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/arm/arm_4_collision.stl
+[5.777s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/arm/arm_4_color.png
+[5.816s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/arm/arm_4_normals.png
+[5.861s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/arm/arm_4_specular.png
+[5.902s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/arm/arm_5-wrist-2010.stl
+[5.940s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/arm/arm_5-wrist-2017.stl
+[5.976s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/arm/arm_5_collision-wrist-2010.dae
+[6.019s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/arm/arm_5_collision-wrist-2017.dae
+[6.045s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/arm/arm_6-wrist-2010.stl
+[6.076s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/arm/arm_6-wrist-2017.stl
+[6.110s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/arm/arm_6_collision-wrist-2010.dae
+[6.133s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/arm/arm_6_collision-wrist-2017.dae
+[6.171s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/arm/arm_6_color.png
+[6.207s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/arm/arm_6_normals.png
+[6.248s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/arm/arm_6_specular.png
+[6.285s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/head/head_1.stl
+[6.320s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/head/head_1_collision.dae
+[6.342s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/head/head_2.stl
+[6.377s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/head/head_2_collision.dae
+[6.417s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/sensors/xtion_pro_live/xtion_pro_live.dae
+[6.457s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/sensors/xtion_pro_live/xtion_pro_live.png
+[6.477s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/torso/torso_fix.stl
+[6.511s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/torso/torso_lift_collision.dae
+[6.544s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/torso/torso_lift_collision_core.dae
+[6.584s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/torso/torso_lift_collision_neck.dae
+[6.615s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/torso/torso_lift_collision_shoulder.dae
+[6.666s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/torso/torso_lift_with_arm.stl
+[6.698s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/meshes/torso/torso_lift_without_arm.stl
+[6.732s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/robots/tiago.urdf.xacro
+[6.769s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/ros2_control/gazebo_controller_manager_cfg.yaml
+[6.805s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/ros2_control/ros2_control.urdf.xacro
+[6.840s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/ros2_control/transmissions.urdf.xacro
+[6.865s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/urdf/arm/arm.ros2_control.xacro
+[6.880s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/urdf/arm/arm.urdf.xacro
+[6.898s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/urdf/arm/wrist.ros2_control.xacro
+[6.915s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/urdf/arm/wrist.urdf.xacro
+[6.933s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/urdf/calibration/camera_extrinsic_calibration.urdf.xacro
+[6.966s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/urdf/calibration/camera_extrinsic_calibration.urdf.xacro.j2
+[7.006s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/urdf/calibration/eye_hand_calibration.urdf.xacro
+[7.038s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/urdf/calibration/eye_hand_calibration.urdf.xacro.j2
+[7.070s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/urdf/end_effector/end_effector.urdf.xacro
+[7.093s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/urdf/head/head.ros2_control.xacro
+[7.128s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/urdf/head/head.urdf.xacro
+[7.163s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/urdf/sensors/ftsensor.gazebo.xacro
+[7.200s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/urdf/sensors/ftsensor.ros2_control.xacro
+[7.236s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/urdf/sensors/ftsensor.urdf.xacro
+[7.263s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/urdf/sensors/openni.gazebo.xacro
+[7.288s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/urdf/sensors/orbbec_astra.urdf.xacro
+[7.310s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/urdf/sensors/xtion_pro_live.urdf.xacro
+[7.344s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/urdf/torso/torso.ros2_control.xacro
+[7.380s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/urdf/torso/torso.urdf.xacro
+[7.418s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/config/tiago.rviz
+[7.457s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/config/tiago_configuration.yaml
+[7.477s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/config/urdf.rviz
+[7.498s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/ament_index/resource_index/package_run_dependencies/tiago_description
+[7.517s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/ament_index/resource_index/parent_prefix_path/tiago_description
+[7.547s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/environment/ament_prefix_path.sh
+[7.571s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/environment/ament_prefix_path.dsv
+[7.589s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/environment/path.sh
+[7.623s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/environment/path.dsv
+[7.665s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/local_setup.bash
+[7.721s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/local_setup.sh
+[7.753s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/local_setup.zsh
+[7.787s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/local_setup.dsv
+[7.806s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/package.dsv
+[7.836s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/ament_index/resource_index/packages/tiago_description
+[7.850s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/cmake/tiago_descriptionConfig.cmake
+[7.877s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/cmake/tiago_descriptionConfig-version.cmake
+[7.909s] -- Symlinking: /home/claudio/tiago_public_ws/install/tiago_description/share/tiago_description/package.xml
+[8.073s] Listing '/home/claudio/tiago_public_ws/install/tiago_description/local/lib/python3.10/dist-packages/tiago_description'...
+[8.073s] Compiling '/home/claudio/tiago_public_ws/install/tiago_description/local/lib/python3.10/dist-packages/tiago_description/__init__.py'...
+[8.073s] Compiling '/home/claudio/tiago_public_ws/install/tiago_description/local/lib/python3.10/dist-packages/tiago_description/launch_arguments.py'...
+[8.073s] Compiling '/home/claudio/tiago_public_ws/install/tiago_description/local/lib/python3.10/dist-packages/tiago_description/tiago_launch_utils.py'...
+[8.110s] Invoked command in '/home/claudio/tiago_public_ws/build/tiago_description' returned '0': AMENT_PREFIX_PATH=/home/claudio/tiago_public_ws/install/pmb2_description:/home/claudio/tiago_public_ws/install/pal_hey5_description:/home/claudio/tiago_public_ws/install/pal_gripper_description:/home/claudio/tiago_public_ws/install/urdf_test:/home/claudio/tiago_public_ws/install/pal_urdf_utils:/home/claudio/tiago_public_ws/install/pal_robotiq_description:/home/claudio/tiago_public_ws/install/launch_pal:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/claudio/tiago_public_ws/install/pmb2_description:/home/claudio/tiago_public_ws/install/pal_hey5_description:/home/claudio/tiago_public_ws/install/pal_gripper_description:/home/claudio/tiago_public_ws/install/urdf_test:/home/claudio/tiago_public_ws/install/pal_urdf_utils:/home/claudio/tiago_public_ws/install/pal_robotiq_description:/opt/ros/humble PYTHONPATH=/home/claudio/tiago_public_ws/install/pmb2_description/local/lib/python3.10/dist-packages:/home/claudio/tiago_public_ws/install/urdf_test/local/lib/python3.10/dist-packages:/home/claudio/tiago_public_ws/build/launch_pal:/home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/cmake --install /home/claudio/tiago_public_ws/build/tiago_description

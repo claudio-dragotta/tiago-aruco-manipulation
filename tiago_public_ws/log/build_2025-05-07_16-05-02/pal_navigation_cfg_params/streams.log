@@ -1,0 +1,49 @@
+[0.035s] Invoking command in '/home/claudio/tiago_public_ws/build/pal_navigation_cfg_params': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/claudio/tiago_public_ws/src/pal_navigation_cfg_public/pal_navigation_cfg_params -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/claudio/tiago_public_ws/install/pal_navigation_cfg_params
+[0.285s] -- The C compiler identification is GNU 11.4.0
+[0.501s] -- The CXX compiler identification is GNU 11.4.0
+[0.521s] -- Detecting C compiler ABI info
+[0.715s] -- Detecting C compiler ABI info - done
+[0.743s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.744s] -- Detecting C compile features
+[0.744s] -- Detecting C compile features - done
+[0.748s] -- Detecting CXX compiler ABI info
+[1.020s] -- Detecting CXX compiler ABI info - done
+[1.047s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[1.048s] -- Detecting CXX compile features
+[1.050s] -- Detecting CXX compile features - done
+[1.061s] -- Found ament_cmake_auto: 1.3.11 (/opt/ros/humble/share/ament_cmake_auto/cmake)
+[1.495s] -- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+[1.780s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[2.136s] -- Found ament_lint_auto: 0.12.11 (/opt/ros/humble/share/ament_lint_auto/cmake)
+[2.220s] -- Added test 'copyright' to check source files copyright and LICENSE
+[2.227s] -- Added test 'lint_cmake' to check CMake code style
+[2.228s] -- Added test 'xmllint' to check XML markup files
+[2.232s] -- Configuring done
+[2.237s] -- Generating done
+[2.241s] -- Build files have been written to: /home/claudio/tiago_public_ws/build/pal_navigation_cfg_params
+[2.266s] Invoked command in '/home/claudio/tiago_public_ws/build/pal_navigation_cfg_params' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/claudio/tiago_public_ws/src/pal_navigation_cfg_public/pal_navigation_cfg_params -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/claudio/tiago_public_ws/install/pal_navigation_cfg_params
+[2.267s] Invoking command in '/home/claudio/tiago_public_ws/build/pal_navigation_cfg_params': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/claudio/tiago_public_ws/build/pal_navigation_cfg_params -- -j4 -l4
+[2.429s] Invoked command in '/home/claudio/tiago_public_ws/build/pal_navigation_cfg_params' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/claudio/tiago_public_ws/build/pal_navigation_cfg_params -- -j4 -l4
+[2.435s] Invoking command in '/home/claudio/tiago_public_ws/build/pal_navigation_cfg_params': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/claudio/tiago_public_ws/build/pal_navigation_cfg_params
+[2.460s] -- Install configuration: ""
+[2.461s] -- Execute custom install script
+[2.464s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_navigation_cfg_params/share/pal_navigation_cfg_params/params/omni_base_nav2.yaml
+[2.497s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_navigation_cfg_params/share/pal_navigation_cfg_params/params/pmb2_nav2.yaml
+[2.531s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_navigation_cfg_params/share/pal_navigation_cfg_params/params/tiago_dual_nav2.yaml
+[2.566s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_navigation_cfg_params/share/pal_navigation_cfg_params/params/tiago_nav2.yaml
+[2.614s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_navigation_cfg_params/share/ament_index/resource_index/package_run_dependencies/pal_navigation_cfg_params
+[2.645s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_navigation_cfg_params/share/ament_index/resource_index/parent_prefix_path/pal_navigation_cfg_params
+[2.677s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_navigation_cfg_params/share/pal_navigation_cfg_params/environment/ament_prefix_path.sh
+[2.715s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_navigation_cfg_params/share/pal_navigation_cfg_params/environment/ament_prefix_path.dsv
+[2.753s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_navigation_cfg_params/share/pal_navigation_cfg_params/environment/path.sh
+[2.791s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_navigation_cfg_params/share/pal_navigation_cfg_params/environment/path.dsv
+[2.829s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_navigation_cfg_params/share/pal_navigation_cfg_params/local_setup.bash
+[2.865s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_navigation_cfg_params/share/pal_navigation_cfg_params/local_setup.sh
+[2.902s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_navigation_cfg_params/share/pal_navigation_cfg_params/local_setup.zsh
+[2.941s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_navigation_cfg_params/share/pal_navigation_cfg_params/local_setup.dsv
+[2.976s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_navigation_cfg_params/share/pal_navigation_cfg_params/package.dsv
+[3.012s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_navigation_cfg_params/share/ament_index/resource_index/packages/pal_navigation_cfg_params
+[3.050s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_navigation_cfg_params/share/pal_navigation_cfg_params/cmake/pal_navigation_cfg_paramsConfig.cmake
+[3.088s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_navigation_cfg_params/share/pal_navigation_cfg_params/cmake/pal_navigation_cfg_paramsConfig-version.cmake
+[3.133s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_navigation_cfg_params/share/pal_navigation_cfg_params/package.xml
+[3.182s] Invoked command in '/home/claudio/tiago_public_ws/build/pal_navigation_cfg_params' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/claudio/tiago_public_ws/build/pal_navigation_cfg_params

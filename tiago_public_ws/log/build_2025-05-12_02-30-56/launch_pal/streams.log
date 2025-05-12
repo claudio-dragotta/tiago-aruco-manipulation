@@ -1,0 +1,20 @@
+[0.876s] Invoking command in '/home/claudio/tiago_public_ws/src/launch_pal': PYTHONPATH=/home/claudio/tiago_public_ws/build/launch_pal/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/launch_pal build --build-base /home/claudio/tiago_public_ws/build/launch_pal/build install --record /home/claudio/tiago_public_ws/build/launch_pal/install.log --single-version-externally-managed install_data
+[1.172s] running egg_info
+[1.172s] writing ../../build/launch_pal/launch_pal.egg-info/PKG-INFO
+[1.172s] writing dependency_links to ../../build/launch_pal/launch_pal.egg-info/dependency_links.txt
+[1.173s] writing entry points to ../../build/launch_pal/launch_pal.egg-info/entry_points.txt
+[1.173s] writing requirements to ../../build/launch_pal/launch_pal.egg-info/requires.txt
+[1.173s] writing top-level names to ../../build/launch_pal/launch_pal.egg-info/top_level.txt
+[1.176s] reading manifest file '../../build/launch_pal/launch_pal.egg-info/SOURCES.txt'
+[1.176s] adding license file 'LICENSE'
+[1.177s] writing manifest file '../../build/launch_pal/launch_pal.egg-info/SOURCES.txt'
+[1.177s] running build
+[1.177s] running build_py
+[1.178s] running install
+[1.178s] running install_lib
+[1.180s] running install_data
+[1.180s] running install_egg_info
+[1.182s] removing '/home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal-0.12.1-py3.10.egg-info' (and everything under it)
+[1.182s] Copying ../../build/launch_pal/launch_pal.egg-info to /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal-0.12.1-py3.10.egg-info
+[1.183s] running install_scripts
+[1.201s] writing list of installed files to '/home/claudio/tiago_public_ws/build/launch_pal/install.log'

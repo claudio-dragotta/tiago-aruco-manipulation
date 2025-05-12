@@ -1,0 +1,49 @@
+[0.016s] Invoking command in '/home/claudio/tiago_public_ws/build/pal_robotiq_controller_configuration': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/claudio/tiago_public_ws/src/pal_robotiq_gripper/pal_robotiq_controller_configuration -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/claudio/tiago_public_ws/install/pal_robotiq_controller_configuration
+[0.147s] -- The C compiler identification is GNU 11.4.0
+[0.286s] -- The CXX compiler identification is GNU 11.4.0
+[0.302s] -- Detecting C compiler ABI info
+[0.459s] -- Detecting C compiler ABI info - done
+[0.484s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.485s] -- Detecting C compile features
+[0.487s] -- Detecting C compile features - done
+[0.494s] -- Detecting CXX compiler ABI info
+[0.672s] -- Detecting CXX compiler ABI info - done
+[0.695s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.696s] -- Detecting CXX compile features
+[0.697s] -- Detecting CXX compile features - done
+[0.702s] -- Found ament_cmake_auto: 1.3.11 (/opt/ros/humble/share/ament_cmake_auto/cmake)
+[1.066s] -- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+[1.230s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[1.447s] -- Found ament_lint_auto: 0.12.11 (/opt/ros/humble/share/ament_lint_auto/cmake)
+[1.507s] -- Added test 'copyright' to check source files copyright and LICENSE
+[1.510s] -- Added test 'flake8' to check Python code syntax and style conventions
+[1.511s] -- Added test 'lint_cmake' to check CMake code style
+[1.511s] -- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257
+[1.514s] -- Added test 'xmllint' to check XML markup files
+[1.519s] -- Configuring done
+[1.524s] -- Generating done
+[1.528s] -- Build files have been written to: /home/claudio/tiago_public_ws/build/pal_robotiq_controller_configuration
+[1.538s] Invoked command in '/home/claudio/tiago_public_ws/build/pal_robotiq_controller_configuration' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/claudio/tiago_public_ws/src/pal_robotiq_gripper/pal_robotiq_controller_configuration -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/claudio/tiago_public_ws/install/pal_robotiq_controller_configuration
+[1.542s] Invoking command in '/home/claudio/tiago_public_ws/build/pal_robotiq_controller_configuration': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/claudio/tiago_public_ws/build/pal_robotiq_controller_configuration -- -j4 -l4
+[1.660s] Invoked command in '/home/claudio/tiago_public_ws/build/pal_robotiq_controller_configuration' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/claudio/tiago_public_ws/build/pal_robotiq_controller_configuration -- -j4 -l4
+[1.665s] Invoking command in '/home/claudio/tiago_public_ws/build/pal_robotiq_controller_configuration': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/claudio/tiago_public_ws/build/pal_robotiq_controller_configuration
+[1.678s] -- Install configuration: ""
+[1.683s] -- Execute custom install script
+[1.684s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_robotiq_controller_configuration/share/pal_robotiq_controller_configuration/config/robotiq_gripper_controller.yaml
+[1.700s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_robotiq_controller_configuration/share/pal_robotiq_controller_configuration/launch/robotiq_gripper_controller.launch.py
+[1.718s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_robotiq_controller_configuration/share/ament_index/resource_index/package_run_dependencies/pal_robotiq_controller_configuration
+[1.738s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_robotiq_controller_configuration/share/ament_index/resource_index/parent_prefix_path/pal_robotiq_controller_configuration
+[1.755s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_robotiq_controller_configuration/share/pal_robotiq_controller_configuration/environment/ament_prefix_path.sh
+[1.774s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_robotiq_controller_configuration/share/pal_robotiq_controller_configuration/environment/ament_prefix_path.dsv
+[1.796s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_robotiq_controller_configuration/share/pal_robotiq_controller_configuration/environment/path.sh
+[1.810s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_robotiq_controller_configuration/share/pal_robotiq_controller_configuration/environment/path.dsv
+[1.830s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_robotiq_controller_configuration/share/pal_robotiq_controller_configuration/local_setup.bash
+[1.849s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_robotiq_controller_configuration/share/pal_robotiq_controller_configuration/local_setup.sh
+[1.871s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_robotiq_controller_configuration/share/pal_robotiq_controller_configuration/local_setup.zsh
+[1.889s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_robotiq_controller_configuration/share/pal_robotiq_controller_configuration/local_setup.dsv
+[1.908s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_robotiq_controller_configuration/share/pal_robotiq_controller_configuration/package.dsv
+[1.935s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_robotiq_controller_configuration/share/ament_index/resource_index/packages/pal_robotiq_controller_configuration
+[1.972s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_robotiq_controller_configuration/share/pal_robotiq_controller_configuration/cmake/pal_robotiq_controller_configurationConfig.cmake
+[1.984s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_robotiq_controller_configuration/share/pal_robotiq_controller_configuration/cmake/pal_robotiq_controller_configurationConfig-version.cmake
+[2.003s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_robotiq_controller_configuration/share/pal_robotiq_controller_configuration/package.xml
+[2.023s] Invoked command in '/home/claudio/tiago_public_ws/build/pal_robotiq_controller_configuration' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/claudio/tiago_public_ws/build/pal_robotiq_controller_configuration

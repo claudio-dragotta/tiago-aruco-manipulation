@@ -1,0 +1,90 @@
+running develop
+Removing /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch-pal.egg-link (link to .)
+running egg_info
+writing ../../build/launch_pal/launch_pal.egg-info/PKG-INFO
+writing dependency_links to ../../build/launch_pal/launch_pal.egg-info/dependency_links.txt
+writing entry points to ../../build/launch_pal/launch_pal.egg-info/entry_points.txt
+writing requirements to ../../build/launch_pal/launch_pal.egg-info/requires.txt
+writing top-level names to ../../build/launch_pal/launch_pal.egg-info/top_level.txt
+reading manifest file '../../build/launch_pal/launch_pal.egg-info/SOURCES.txt'
+adding license file 'LICENSE'
+writing manifest file '../../build/launch_pal/launch_pal.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /home/claudio/tiago_public_ws/build/launch_pal/build
+creating /home/claudio/tiago_public_ws/build/launch_pal/build/lib
+creating /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal
+copying launch_pal/param_utils.py -> /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal
+copying launch_pal/calibration_utils.py -> /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal
+copying launch_pal/pal_parameters.py -> /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal
+copying launch_pal/__init__.py -> /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal
+copying launch_pal/arg_utils.py -> /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal
+copying launch_pal/robot_utils.py -> /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal
+copying launch_pal/logging_utils.py -> /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal
+copying launch_pal/composition_utils.py -> /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal
+copying launch_pal/include_utils.py -> /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal
+creating /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal/substitutions
+copying launch_pal/substitutions/__init__.py -> /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal/substitutions
+copying launch_pal/substitutions/load_file.py -> /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal/substitutions
+copying launch_pal/substitutions/concat_substitution.py -> /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal/substitutions
+creating /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal/robot_arguments
+copying launch_pal/robot_arguments/__init__.py -> /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal/robot_arguments
+copying launch_pal/robot_arguments/robot.py -> /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal/robot_arguments
+copying launch_pal/robot_arguments/common.py -> /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal/robot_arguments
+creating /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal/actions
+copying launch_pal/actions/validate_launch_args.py -> /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal/actions
+copying launch_pal/actions/validate_xacro_args.py -> /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal/actions
+copying launch_pal/actions/check_public_sim.py -> /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal/actions
+copying launch_pal/actions/__init__.py -> /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal/actions
+running install
+running install_lib
+creating /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal
+copying /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal/param_utils.py -> /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal
+copying /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal/calibration_utils.py -> /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal
+copying /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal/pal_parameters.py -> /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal
+copying /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal/__init__.py -> /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal
+copying /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal/arg_utils.py -> /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal
+creating /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal/substitutions
+copying /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal/substitutions/__init__.py -> /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal/substitutions
+copying /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal/substitutions/load_file.py -> /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal/substitutions
+copying /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal/substitutions/concat_substitution.py -> /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal/substitutions
+creating /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal/robot_arguments
+copying /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal/robot_arguments/__init__.py -> /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal/robot_arguments
+copying /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal/robot_arguments/robot.py -> /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal/robot_arguments
+copying /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal/robot_arguments/common.py -> /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal/robot_arguments
+creating /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal/actions
+copying /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal/actions/validate_launch_args.py -> /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal/actions
+copying /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal/actions/validate_xacro_args.py -> /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal/actions
+copying /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal/actions/check_public_sim.py -> /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal/actions
+copying /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal/actions/__init__.py -> /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal/actions
+copying /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal/robot_utils.py -> /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal
+copying /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal/logging_utils.py -> /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal
+copying /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal/composition_utils.py -> /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal
+copying /home/claudio/tiago_public_ws/build/launch_pal/build/lib/launch_pal/include_utils.py -> /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal
+byte-compiling /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal/param_utils.py to param_utils.cpython-310.pyc
+byte-compiling /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal/calibration_utils.py to calibration_utils.cpython-310.pyc
+byte-compiling /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal/pal_parameters.py to pal_parameters.cpython-310.pyc
+byte-compiling /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal/__init__.py to __init__.cpython-310.pyc
+byte-compiling /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal/arg_utils.py to arg_utils.cpython-310.pyc
+byte-compiling /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal/substitutions/__init__.py to __init__.cpython-310.pyc
+byte-compiling /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal/substitutions/load_file.py to load_file.cpython-310.pyc
+byte-compiling /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal/substitutions/concat_substitution.py to concat_substitution.cpython-310.pyc
+byte-compiling /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal/robot_arguments/__init__.py to __init__.cpython-310.pyc
+byte-compiling /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal/robot_arguments/robot.py to robot.cpython-310.pyc
+byte-compiling /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal/robot_arguments/common.py to common.cpython-310.pyc
+byte-compiling /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal/actions/validate_launch_args.py to validate_launch_args.cpython-310.pyc
+byte-compiling /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal/actions/validate_xacro_args.py to validate_xacro_args.cpython-310.pyc
+byte-compiling /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal/actions/check_public_sim.py to check_public_sim.cpython-310.pyc
+byte-compiling /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal/actions/__init__.py to __init__.cpython-310.pyc
+byte-compiling /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal/robot_utils.py to robot_utils.cpython-310.pyc
+byte-compiling /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal/logging_utils.py to logging_utils.cpython-310.pyc
+byte-compiling /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal/composition_utils.py to composition_utils.cpython-310.pyc
+byte-compiling /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal/include_utils.py to include_utils.cpython-310.pyc
+running install_data
+copying resource/launch_pal -> /home/claudio/tiago_public_ws/install/launch_pal/share/ament_index/resource_index/packages
+copying package.xml -> /home/claudio/tiago_public_ws/install/launch_pal/share/launch_pal
+copying config/robot_configuration.yaml -> /home/claudio/tiago_public_ws/install/launch_pal/share/launch_pal/config
+running install_egg_info
+Copying ../../build/launch_pal/launch_pal.egg-info to /home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages/launch_pal-0.12.1-py3.10.egg-info
+running install_scripts
+writing list of installed files to '/home/claudio/tiago_public_ws/build/launch_pal/install.log'

@@ -1,0 +1,6 @@
+Invoking command in '/home/claudio/tiago_public_ws/build/urdf_test': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/claudio/tiago_public_ws/src/urdf_test -DCMAKE_INSTALL_PREFIX=/home/claudio/tiago_public_ws/install/urdf_test
+Invoked command in '/home/claudio/tiago_public_ws/build/urdf_test' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/claudio/tiago_public_ws/src/urdf_test -DCMAKE_INSTALL_PREFIX=/home/claudio/tiago_public_ws/install/urdf_test
+Invoking command in '/home/claudio/tiago_public_ws/build/urdf_test': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/claudio/tiago_public_ws/build/urdf_test -- -j4 -l4
+Invoked command in '/home/claudio/tiago_public_ws/build/urdf_test' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/claudio/tiago_public_ws/build/urdf_test -- -j4 -l4
+Invoking command in '/home/claudio/tiago_public_ws/build/urdf_test': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/claudio/tiago_public_ws/build/urdf_test
+Invoked command in '/home/claudio/tiago_public_ws/build/urdf_test' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/claudio/tiago_public_ws/build/urdf_test

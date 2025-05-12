@@ -1,0 +1,48 @@
+[0.075s] Invoking command in '/home/claudio/tiago_public_ws/build/progetto_tiago': /usr/bin/cmake /home/claudio/tiago_public_ws/src/progetto_tiago -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCMAKE_INSTALL_PREFIX=/home/claudio/tiago_public_ws/install/progetto_tiago
+[0.211s] -- The C compiler identification is GNU 11.4.0
+[0.343s] -- The CXX compiler identification is GNU 11.4.0
+[0.364s] -- Detecting C compiler ABI info
+[0.445s] -- Detecting C compiler ABI info - done
+[0.451s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.452s] -- Detecting C compile features
+[0.452s] -- Detecting C compile features - done
+[0.456s] -- Detecting CXX compiler ABI info
+[0.540s] -- Detecting CXX compiler ABI info - done
+[0.548s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.548s] -- Detecting CXX compile features
+[0.548s] -- Detecting CXX compile features - done
+[0.553s] -- Found ament_cmake: 1.3.11 (/opt/ros/humble/share/ament_cmake/cmake)
+[0.740s] -- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+[0.903s] -- Found rclpy: 3.3.15 (/opt/ros/humble/share/rclpy/cmake)
+[0.971s] -- Configuring done
+[0.973s] -- Generating done
+[0.973s] [33mCMake Warning:
+[0.973s]   Manually-specified variables were not used by the project:
+[0.973s] 
+[0.973s]     CATKIN_INSTALL_INTO_PREFIX_ROOT
+[0.973s] 
+[0.973s] [0m
+[0.974s] -- Build files have been written to: /home/claudio/tiago_public_ws/build/progetto_tiago
+[0.978s] Invoked command in '/home/claudio/tiago_public_ws/build/progetto_tiago' returned '0': /usr/bin/cmake /home/claudio/tiago_public_ws/src/progetto_tiago -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCMAKE_INSTALL_PREFIX=/home/claudio/tiago_public_ws/install/progetto_tiago
+[0.979s] Invoking command in '/home/claudio/tiago_public_ws/build/progetto_tiago': /usr/bin/cmake --build /home/claudio/tiago_public_ws/build/progetto_tiago -- -j8 -l8
+[1.021s] Invoked command in '/home/claudio/tiago_public_ws/build/progetto_tiago' returned '0': /usr/bin/cmake --build /home/claudio/tiago_public_ws/build/progetto_tiago -- -j8 -l8
+[1.023s] Invoking command in '/home/claudio/tiago_public_ws/build/progetto_tiago': /usr/bin/cmake --install /home/claudio/tiago_public_ws/build/progetto_tiago
+[1.031s] -- Install configuration: ""
+[1.031s] -- Installing: /home/claudio/tiago_public_ws/install/progetto_tiago/lib/progetto_tiago/scripts
+[1.031s] -- Installing: /home/claudio/tiago_public_ws/install/progetto_tiago/lib/progetto_tiago/scripts/muovi_testa_server.py
+[1.031s] -- Installing: /home/claudio/tiago_public_ws/install/progetto_tiago/share/ament_index/resource_index/package_run_dependencies/progetto_tiago
+[1.031s] -- Installing: /home/claudio/tiago_public_ws/install/progetto_tiago/share/ament_index/resource_index/parent_prefix_path/progetto_tiago
+[1.031s] -- Installing: /home/claudio/tiago_public_ws/install/progetto_tiago/share/progetto_tiago/environment/ament_prefix_path.sh
+[1.031s] -- Installing: /home/claudio/tiago_public_ws/install/progetto_tiago/share/progetto_tiago/environment/ament_prefix_path.dsv
+[1.031s] -- Installing: /home/claudio/tiago_public_ws/install/progetto_tiago/share/progetto_tiago/environment/path.sh
+[1.031s] -- Installing: /home/claudio/tiago_public_ws/install/progetto_tiago/share/progetto_tiago/environment/path.dsv
+[1.032s] -- Installing: /home/claudio/tiago_public_ws/install/progetto_tiago/share/progetto_tiago/local_setup.bash
+[1.032s] -- Installing: /home/claudio/tiago_public_ws/install/progetto_tiago/share/progetto_tiago/local_setup.sh
+[1.032s] -- Installing: /home/claudio/tiago_public_ws/install/progetto_tiago/share/progetto_tiago/local_setup.zsh
+[1.032s] -- Installing: /home/claudio/tiago_public_ws/install/progetto_tiago/share/progetto_tiago/local_setup.dsv
+[1.032s] -- Installing: /home/claudio/tiago_public_ws/install/progetto_tiago/share/progetto_tiago/package.dsv
+[1.032s] -- Installing: /home/claudio/tiago_public_ws/install/progetto_tiago/share/ament_index/resource_index/packages/progetto_tiago
+[1.032s] -- Installing: /home/claudio/tiago_public_ws/install/progetto_tiago/share/progetto_tiago/cmake/progetto_tiagoConfig.cmake
+[1.032s] -- Installing: /home/claudio/tiago_public_ws/install/progetto_tiago/share/progetto_tiago/cmake/progetto_tiagoConfig-version.cmake
+[1.032s] -- Installing: /home/claudio/tiago_public_ws/install/progetto_tiago/share/progetto_tiago/package.xml
+[1.034s] Invoked command in '/home/claudio/tiago_public_ws/build/progetto_tiago' returned '0': /usr/bin/cmake --install /home/claudio/tiago_public_ws/build/progetto_tiago

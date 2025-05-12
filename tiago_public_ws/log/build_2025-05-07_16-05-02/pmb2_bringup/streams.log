@@ -1,0 +1,55 @@
+[0.115s] Invoking command in '/home/claudio/tiago_public_ws/build/pmb2_bringup': AMENT_PREFIX_PATH=/home/claudio/tiago_public_ws/install/pmb2_description:/home/claudio/tiago_public_ws/install/pmb2_controller_configuration:/home/claudio/tiago_public_ws/install/urdf_test:/home/claudio/tiago_public_ws/install/pal_urdf_utils:/home/claudio/tiago_public_ws/install/launch_pal:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/claudio/tiago_public_ws/install/pmb2_description:/home/claudio/tiago_public_ws/install/pmb2_controller_configuration:/home/claudio/tiago_public_ws/install/urdf_test:/home/claudio/tiago_public_ws/install/pal_urdf_utils:/opt/ros/humble PYTHONPATH=/home/claudio/tiago_public_ws/install/pmb2_description/local/lib/python3.10/dist-packages:/home/claudio/tiago_public_ws/install/urdf_test/local/lib/python3.10/dist-packages:/home/claudio/tiago_public_ws/build/launch_pal:/home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/cmake /home/claudio/tiago_public_ws/src/pmb2_robot/pmb2_bringup -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/claudio/tiago_public_ws/install/pmb2_bringup
+[0.383s] -- The C compiler identification is GNU 11.4.0
+[0.653s] -- The CXX compiler identification is GNU 11.4.0
+[0.685s] -- Detecting C compiler ABI info
+[0.901s] -- Detecting C compiler ABI info - done
+[0.938s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.943s] -- Detecting C compile features
+[0.943s] -- Detecting C compile features - done
+[0.957s] -- Detecting CXX compiler ABI info
+[1.353s] -- Detecting CXX compiler ABI info - done
+[1.400s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[1.408s] -- Detecting CXX compile features
+[1.408s] -- Detecting CXX compile features - done
+[1.417s] -- Found ament_cmake_auto: 1.3.11 (/opt/ros/humble/share/ament_cmake_auto/cmake)
+[2.315s] -- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+[2.758s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[3.233s] -- Found ament_lint_auto: 0.12.11 (/opt/ros/humble/share/ament_lint_auto/cmake)
+[3.422s] -- Added test 'copyright' to check source files copyright and LICENSE
+[3.440s] -- Added test 'flake8' to check Python code syntax and style conventions
+[3.447s] -- Added test 'lint_cmake' to check CMake code style
+[3.451s] -- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257
+[3.458s] -- Added test 'xmllint' to check XML markup files
+[3.474s] -- Configuring done
+[3.493s] -- Generating done
+[3.503s] -- Build files have been written to: /home/claudio/tiago_public_ws/build/pmb2_bringup
+[3.542s] Invoked command in '/home/claudio/tiago_public_ws/build/pmb2_bringup' returned '0': AMENT_PREFIX_PATH=/home/claudio/tiago_public_ws/install/pmb2_description:/home/claudio/tiago_public_ws/install/pmb2_controller_configuration:/home/claudio/tiago_public_ws/install/urdf_test:/home/claudio/tiago_public_ws/install/pal_urdf_utils:/home/claudio/tiago_public_ws/install/launch_pal:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/claudio/tiago_public_ws/install/pmb2_description:/home/claudio/tiago_public_ws/install/pmb2_controller_configuration:/home/claudio/tiago_public_ws/install/urdf_test:/home/claudio/tiago_public_ws/install/pal_urdf_utils:/opt/ros/humble PYTHONPATH=/home/claudio/tiago_public_ws/install/pmb2_description/local/lib/python3.10/dist-packages:/home/claudio/tiago_public_ws/install/urdf_test/local/lib/python3.10/dist-packages:/home/claudio/tiago_public_ws/build/launch_pal:/home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/cmake /home/claudio/tiago_public_ws/src/pmb2_robot/pmb2_bringup -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/claudio/tiago_public_ws/install/pmb2_bringup
+[3.549s] Invoking command in '/home/claudio/tiago_public_ws/build/pmb2_bringup': AMENT_PREFIX_PATH=/home/claudio/tiago_public_ws/install/pmb2_description:/home/claudio/tiago_public_ws/install/pmb2_controller_configuration:/home/claudio/tiago_public_ws/install/urdf_test:/home/claudio/tiago_public_ws/install/pal_urdf_utils:/home/claudio/tiago_public_ws/install/launch_pal:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/claudio/tiago_public_ws/install/pmb2_description:/home/claudio/tiago_public_ws/install/pmb2_controller_configuration:/home/claudio/tiago_public_ws/install/urdf_test:/home/claudio/tiago_public_ws/install/pal_urdf_utils:/opt/ros/humble PYTHONPATH=/home/claudio/tiago_public_ws/install/pmb2_description/local/lib/python3.10/dist-packages:/home/claudio/tiago_public_ws/install/urdf_test/local/lib/python3.10/dist-packages:/home/claudio/tiago_public_ws/build/launch_pal:/home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/cmake --build /home/claudio/tiago_public_ws/build/pmb2_bringup -- -j4 -l4
+[3.724s] Invoked command in '/home/claudio/tiago_public_ws/build/pmb2_bringup' returned '0': AMENT_PREFIX_PATH=/home/claudio/tiago_public_ws/install/pmb2_description:/home/claudio/tiago_public_ws/install/pmb2_controller_configuration:/home/claudio/tiago_public_ws/install/urdf_test:/home/claudio/tiago_public_ws/install/pal_urdf_utils:/home/claudio/tiago_public_ws/install/launch_pal:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/claudio/tiago_public_ws/install/pmb2_description:/home/claudio/tiago_public_ws/install/pmb2_controller_configuration:/home/claudio/tiago_public_ws/install/urdf_test:/home/claudio/tiago_public_ws/install/pal_urdf_utils:/opt/ros/humble PYTHONPATH=/home/claudio/tiago_public_ws/install/pmb2_description/local/lib/python3.10/dist-packages:/home/claudio/tiago_public_ws/install/urdf_test/local/lib/python3.10/dist-packages:/home/claudio/tiago_public_ws/build/launch_pal:/home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/cmake --build /home/claudio/tiago_public_ws/build/pmb2_bringup -- -j4 -l4
+[3.725s] Invoking command in '/home/claudio/tiago_public_ws/build/pmb2_bringup': AMENT_PREFIX_PATH=/home/claudio/tiago_public_ws/install/pmb2_description:/home/claudio/tiago_public_ws/install/pmb2_controller_configuration:/home/claudio/tiago_public_ws/install/urdf_test:/home/claudio/tiago_public_ws/install/pal_urdf_utils:/home/claudio/tiago_public_ws/install/launch_pal:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/claudio/tiago_public_ws/install/pmb2_description:/home/claudio/tiago_public_ws/install/pmb2_controller_configuration:/home/claudio/tiago_public_ws/install/urdf_test:/home/claudio/tiago_public_ws/install/pal_urdf_utils:/opt/ros/humble PYTHONPATH=/home/claudio/tiago_public_ws/install/pmb2_description/local/lib/python3.10/dist-packages:/home/claudio/tiago_public_ws/install/urdf_test/local/lib/python3.10/dist-packages:/home/claudio/tiago_public_ws/build/launch_pal:/home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/cmake --install /home/claudio/tiago_public_ws/build/pmb2_bringup
+[3.756s] -- Install configuration: ""
+[3.761s] -- Execute custom install script
+[3.763s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_bringup/share/pmb2_bringup/config/joy_teleop/joy_config.yaml
+[3.785s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_bringup/share/pmb2_bringup/config/joy_teleop/joy_teleop.yaml
+[3.824s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_bringup/share/pmb2_bringup/config/twist_mux/joystick.yaml
+[3.860s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_bringup/share/pmb2_bringup/config/twist_mux/twist_mux_locks.yaml
+[3.896s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_bringup/share/pmb2_bringup/config/twist_mux/twist_mux_topics.yaml
+[3.922s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_bringup/share/pmb2_bringup/launch/joystick_teleop.launch.py
+[3.940s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_bringup/share/pmb2_bringup/launch/pmb2_bringup.launch.py
+[3.960s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_bringup/share/pmb2_bringup/launch/twist_mux.launch.py
+[3.982s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_bringup/share/ament_index/resource_index/package_run_dependencies/pmb2_bringup
+[4.001s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_bringup/share/ament_index/resource_index/parent_prefix_path/pmb2_bringup
+[4.023s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_bringup/share/pmb2_bringup/environment/ament_prefix_path.sh
+[4.048s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_bringup/share/pmb2_bringup/environment/ament_prefix_path.dsv
+[4.090s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_bringup/share/pmb2_bringup/environment/path.sh
+[4.128s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_bringup/share/pmb2_bringup/environment/path.dsv
+[4.165s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_bringup/share/pmb2_bringup/local_setup.bash
+[4.202s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_bringup/share/pmb2_bringup/local_setup.sh
+[4.232s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_bringup/share/pmb2_bringup/local_setup.zsh
+[4.250s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_bringup/share/pmb2_bringup/local_setup.dsv
+[4.270s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_bringup/share/pmb2_bringup/package.dsv
+[4.289s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_bringup/share/ament_index/resource_index/packages/pmb2_bringup
+[4.309s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_bringup/share/pmb2_bringup/cmake/pmb2_bringupConfig.cmake
+[4.328s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_bringup/share/pmb2_bringup/cmake/pmb2_bringupConfig-version.cmake
+[4.347s] -- Symlinking: /home/claudio/tiago_public_ws/install/pmb2_bringup/share/pmb2_bringup/package.xml
+[4.370s] Invoked command in '/home/claudio/tiago_public_ws/build/pmb2_bringup' returned '0': AMENT_PREFIX_PATH=/home/claudio/tiago_public_ws/install/pmb2_description:/home/claudio/tiago_public_ws/install/pmb2_controller_configuration:/home/claudio/tiago_public_ws/install/urdf_test:/home/claudio/tiago_public_ws/install/pal_urdf_utils:/home/claudio/tiago_public_ws/install/launch_pal:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/claudio/tiago_public_ws/install/pmb2_description:/home/claudio/tiago_public_ws/install/pmb2_controller_configuration:/home/claudio/tiago_public_ws/install/urdf_test:/home/claudio/tiago_public_ws/install/pal_urdf_utils:/opt/ros/humble PYTHONPATH=/home/claudio/tiago_public_ws/install/pmb2_description/local/lib/python3.10/dist-packages:/home/claudio/tiago_public_ws/install/urdf_test/local/lib/python3.10/dist-packages:/home/claudio/tiago_public_ws/build/launch_pal:/home/claudio/tiago_public_ws/install/launch_pal/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/cmake --install /home/claudio/tiago_public_ws/build/pmb2_bringup

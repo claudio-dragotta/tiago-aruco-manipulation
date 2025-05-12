@@ -1,0 +1,6 @@
+Invoking command in '/home/claudio/tiago_public_ws/build/pal_gazebo_worlds': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/claudio/tiago_public_ws/src/pal_gazebo_worlds -DCMAKE_INSTALL_PREFIX=/home/claudio/tiago_public_ws/install/pal_gazebo_worlds
+Invoked command in '/home/claudio/tiago_public_ws/build/pal_gazebo_worlds' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/claudio/tiago_public_ws/src/pal_gazebo_worlds -DCMAKE_INSTALL_PREFIX=/home/claudio/tiago_public_ws/install/pal_gazebo_worlds
+Invoking command in '/home/claudio/tiago_public_ws/build/pal_gazebo_worlds': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/claudio/tiago_public_ws/build/pal_gazebo_worlds -- -j4 -l4
+Invoked command in '/home/claudio/tiago_public_ws/build/pal_gazebo_worlds' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/claudio/tiago_public_ws/build/pal_gazebo_worlds -- -j4 -l4
+Invoking command in '/home/claudio/tiago_public_ws/build/pal_gazebo_worlds': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/claudio/tiago_public_ws/build/pal_gazebo_worlds
+Invoked command in '/home/claudio/tiago_public_ws/build/pal_gazebo_worlds' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/claudio/tiago_public_ws/build/pal_gazebo_worlds

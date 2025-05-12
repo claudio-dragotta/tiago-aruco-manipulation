@@ -1,0 +1,49 @@
+[0.023s] Invoking command in '/home/claudio/tiago_public_ws/build/pal_hey5_controller_configuration': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/claudio/tiago_public_ws/src/pal_hey5/pal_hey5_controller_configuration -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/claudio/tiago_public_ws/install/pal_hey5_controller_configuration
+[0.136s] -- The C compiler identification is GNU 11.4.0
+[0.268s] -- The CXX compiler identification is GNU 11.4.0
+[0.286s] -- Detecting C compiler ABI info
+[0.440s] -- Detecting C compiler ABI info - done
+[0.464s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.464s] -- Detecting C compile features
+[0.464s] -- Detecting C compile features - done
+[0.472s] -- Detecting CXX compiler ABI info
+[0.651s] -- Detecting CXX compiler ABI info - done
+[0.674s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.677s] -- Detecting CXX compile features
+[0.677s] -- Detecting CXX compile features - done
+[0.680s] -- Found ament_cmake_auto: 1.3.11 (/opt/ros/humble/share/ament_cmake_auto/cmake)
+[1.043s] -- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+[1.196s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[1.262s] -- Found ament_lint_auto: 0.12.11 (/opt/ros/humble/share/ament_lint_auto/cmake)
+[1.469s] -- Added test 'copyright' to check source files copyright and LICENSE
+[1.471s] -- Added test 'flake8' to check Python code syntax and style conventions
+[1.472s] -- Added test 'lint_cmake' to check CMake code style
+[1.473s] -- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257
+[1.476s] -- Added test 'xmllint' to check XML markup files
+[1.479s] -- Configuring done
+[1.485s] -- Generating done
+[1.489s] -- Build files have been written to: /home/claudio/tiago_public_ws/build/pal_hey5_controller_configuration
+[1.505s] Invoked command in '/home/claudio/tiago_public_ws/build/pal_hey5_controller_configuration' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/claudio/tiago_public_ws/src/pal_hey5/pal_hey5_controller_configuration -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/claudio/tiago_public_ws/install/pal_hey5_controller_configuration
+[1.508s] Invoking command in '/home/claudio/tiago_public_ws/build/pal_hey5_controller_configuration': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/claudio/tiago_public_ws/build/pal_hey5_controller_configuration -- -j4 -l4
+[1.596s] Invoked command in '/home/claudio/tiago_public_ws/build/pal_hey5_controller_configuration' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/claudio/tiago_public_ws/build/pal_hey5_controller_configuration -- -j4 -l4
+[1.597s] Invoking command in '/home/claudio/tiago_public_ws/build/pal_hey5_controller_configuration': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/claudio/tiago_public_ws/build/pal_hey5_controller_configuration
+[1.615s] -- Install configuration: ""
+[1.615s] -- Execute custom install script
+[1.617s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_hey5_controller_configuration/share/pal_hey5_controller_configuration/config/pal_hey5_controller.yaml
+[1.636s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_hey5_controller_configuration/share/pal_hey5_controller_configuration/launch/pal_hey5_controller.launch.py
+[1.655s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_hey5_controller_configuration/share/ament_index/resource_index/package_run_dependencies/pal_hey5_controller_configuration
+[1.675s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_hey5_controller_configuration/share/ament_index/resource_index/parent_prefix_path/pal_hey5_controller_configuration
+[1.695s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_hey5_controller_configuration/share/pal_hey5_controller_configuration/environment/ament_prefix_path.sh
+[1.716s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_hey5_controller_configuration/share/pal_hey5_controller_configuration/environment/ament_prefix_path.dsv
+[1.735s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_hey5_controller_configuration/share/pal_hey5_controller_configuration/environment/path.sh
+[1.753s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_hey5_controller_configuration/share/pal_hey5_controller_configuration/environment/path.dsv
+[1.770s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_hey5_controller_configuration/share/pal_hey5_controller_configuration/local_setup.bash
+[1.788s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_hey5_controller_configuration/share/pal_hey5_controller_configuration/local_setup.sh
+[1.807s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_hey5_controller_configuration/share/pal_hey5_controller_configuration/local_setup.zsh
+[1.826s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_hey5_controller_configuration/share/pal_hey5_controller_configuration/local_setup.dsv
+[1.846s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_hey5_controller_configuration/share/pal_hey5_controller_configuration/package.dsv
+[1.868s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_hey5_controller_configuration/share/ament_index/resource_index/packages/pal_hey5_controller_configuration
+[1.883s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_hey5_controller_configuration/share/pal_hey5_controller_configuration/cmake/pal_hey5_controller_configurationConfig.cmake
+[1.903s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_hey5_controller_configuration/share/pal_hey5_controller_configuration/cmake/pal_hey5_controller_configurationConfig-version.cmake
+[1.922s] -- Symlinking: /home/claudio/tiago_public_ws/install/pal_hey5_controller_configuration/share/pal_hey5_controller_configuration/package.xml
+[1.944s] Invoked command in '/home/claudio/tiago_public_ws/build/pal_hey5_controller_configuration' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/claudio/tiago_public_ws/build/pal_hey5_controller_configuration

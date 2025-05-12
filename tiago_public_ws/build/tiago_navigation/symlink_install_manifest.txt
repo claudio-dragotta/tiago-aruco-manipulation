@@ -1,0 +1,15 @@
+/home/claudio/tiago_public_ws/install/tiago_navigation/share/ament_index/resource_index/package_run_dependencies/tiago_navigation
+/home/claudio/tiago_public_ws/install/tiago_navigation/share/ament_index/resource_index/parent_prefix_path/tiago_navigation
+/home/claudio/tiago_public_ws/install/tiago_navigation/share/tiago_navigation/environment/ament_prefix_path.sh
+/home/claudio/tiago_public_ws/install/tiago_navigation/share/tiago_navigation/environment/ament_prefix_path.dsv
+/home/claudio/tiago_public_ws/install/tiago_navigation/share/tiago_navigation/environment/path.sh
+/home/claudio/tiago_public_ws/install/tiago_navigation/share/tiago_navigation/environment/path.dsv
+/home/claudio/tiago_public_ws/install/tiago_navigation/share/tiago_navigation/local_setup.bash
+/home/claudio/tiago_public_ws/install/tiago_navigation/share/tiago_navigation/local_setup.sh
+/home/claudio/tiago_public_ws/install/tiago_navigation/share/tiago_navigation/local_setup.zsh
+/home/claudio/tiago_public_ws/install/tiago_navigation/share/tiago_navigation/local_setup.dsv
+/home/claudio/tiago_public_ws/install/tiago_navigation/share/tiago_navigation/package.dsv
+/home/claudio/tiago_public_ws/install/tiago_navigation/share/ament_index/resource_index/packages/tiago_navigation
+/home/claudio/tiago_public_ws/install/tiago_navigation/share/tiago_navigation/cmake/tiago_navigationConfig.cmake
+/home/claudio/tiago_public_ws/install/tiago_navigation/share/tiago_navigation/cmake/tiago_navigationConfig-version.cmake
+/home/claudio/tiago_public_ws/install/tiago_navigation/share/tiago_navigation/package.xml
