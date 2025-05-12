@@ -1,1 +1,0 @@
-/home/claudio/tiago_public_ws/src/tiago_simulation/tiago_gazebo/launch/tiago_gazebo.launch.py

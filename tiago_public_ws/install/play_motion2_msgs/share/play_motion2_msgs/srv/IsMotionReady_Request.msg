@@ -1,1 +1,0 @@
-/home/claudio/tiago_public_ws/build/play_motion2_msgs/rosidl_cmake/srv/IsMotionReady_Request.msg

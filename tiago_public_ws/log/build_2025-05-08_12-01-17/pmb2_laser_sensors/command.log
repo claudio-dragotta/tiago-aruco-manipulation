@@ -1,6 +1,0 @@
-Invoking command in '/home/claudio/tiago_public_ws/build/pmb2_laser_sensors': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/claudio/tiago_public_ws/src/pmb2_navigation/pmb2_laser_sensors -DCMAKE_INSTALL_PREFIX=/home/claudio/tiago_public_ws/install/pmb2_laser_sensors
-Invoked command in '/home/claudio/tiago_public_ws/build/pmb2_laser_sensors' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/claudio/tiago_public_ws/src/pmb2_navigation/pmb2_laser_sensors -DCMAKE_INSTALL_PREFIX=/home/claudio/tiago_public_ws/install/pmb2_laser_sensors
-Invoking command in '/home/claudio/tiago_public_ws/build/pmb2_laser_sensors': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/claudio/tiago_public_ws/build/pmb2_laser_sensors -- -j4 -l4
-Invoked command in '/home/claudio/tiago_public_ws/build/pmb2_laser_sensors' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/claudio/tiago_public_ws/build/pmb2_laser_sensors -- -j4 -l4
-Invoking command in '/home/claudio/tiago_public_ws/build/pmb2_laser_sensors': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/claudio/tiago_public_ws/build/pmb2_laser_sensors
-Invoked command in '/home/claudio/tiago_public_ws/build/pmb2_laser_sensors' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/claudio/tiago_public_ws/build/pmb2_laser_sensors

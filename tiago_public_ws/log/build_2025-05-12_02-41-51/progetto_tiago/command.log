@@ -1,4 +1,0 @@
-Invoking command in '/home/claudio/tiago_public_ws/build/progetto_tiago': /usr/bin/cmake --build /home/claudio/tiago_public_ws/build/progetto_tiago -- -j8 -l8
-Invoked command in '/home/claudio/tiago_public_ws/build/progetto_tiago' returned '0': /usr/bin/cmake --build /home/claudio/tiago_public_ws/build/progetto_tiago -- -j8 -l8
-Invoking command in '/home/claudio/tiago_public_ws/build/progetto_tiago': /usr/bin/cmake --install /home/claudio/tiago_public_ws/build/progetto_tiago
-Invoked command in '/home/claudio/tiago_public_ws/build/progetto_tiago' returned '0': /usr/bin/cmake --install /home/claudio/tiago_public_ws/build/progetto_tiago

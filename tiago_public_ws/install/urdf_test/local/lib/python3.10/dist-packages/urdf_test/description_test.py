@@ -1,1 +1,0 @@
-/home/claudio/tiago_public_ws/src/urdf_test/urdf_test/description_test.py

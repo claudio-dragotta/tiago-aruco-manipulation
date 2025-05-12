@@ -1,6 +1,0 @@
-Invoking command in '/home/claudio/tiago_public_ws/build/progetto_tiago': /usr/bin/cmake /home/claudio/tiago_public_ws/src/progetto_tiago -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCMAKE_INSTALL_PREFIX=/home/claudio/tiago_public_ws/install/progetto_tiago
-Invoked command in '/home/claudio/tiago_public_ws/build/progetto_tiago' returned '0': /usr/bin/cmake /home/claudio/tiago_public_ws/src/progetto_tiago -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCMAKE_INSTALL_PREFIX=/home/claudio/tiago_public_ws/install/progetto_tiago
-Invoking command in '/home/claudio/tiago_public_ws/build/progetto_tiago': /usr/bin/cmake --build /home/claudio/tiago_public_ws/build/progetto_tiago -- -j8 -l8
-Invoked command in '/home/claudio/tiago_public_ws/build/progetto_tiago' returned '0': /usr/bin/cmake --build /home/claudio/tiago_public_ws/build/progetto_tiago -- -j8 -l8
-Invoking command in '/home/claudio/tiago_public_ws/build/progetto_tiago': /usr/bin/cmake --install /home/claudio/tiago_public_ws/build/progetto_tiago
-Invoked command in '/home/claudio/tiago_public_ws/build/progetto_tiago' returned '0': /usr/bin/cmake --install /home/claudio/tiago_public_ws/build/progetto_tiago

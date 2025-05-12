@@ -10,16 +10,13 @@ class CameraViewer(Node):
     def __init__(self):
         super().__init__('camera_viewer')
         self.bridge = CvBridge()
-        self.create_subscription(Image, '/head_front_camera/rgb/image_raw', self.callback, 10)
-        self.get_logger().info('📷 Visualizzazione camera avviata.')
+        self.create_subscription(Image, '/head_front_camera/rgb/image_raw', self.camera_callback, 10)
+        self.get_logger().info('📷 Telecamera in tempo reale avviata.')
 
-    def callback(self, msg):
-        try:
-            img = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
-            cv2.imshow("Telecamera Robot", img)
-            cv2.waitKey(1)
-        except Exception as e:
-            self.get_logger().error(f'Errore nella conversione immagine: {e}')
+    def camera_callback(self, msg):
+        img = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
+        cv2.imshow("Telecamera Robot", img)
+        cv2.waitKey(1)
 
 def main(args=None):
     rclpy.init(args=args)
