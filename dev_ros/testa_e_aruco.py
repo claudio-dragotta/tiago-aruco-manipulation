@@ -10,8 +10,8 @@ from geometry_msgs.msg import PoseStamped
 from cv_bridge import CvBridge
 import cv2
 import numpy as np
-from tf2_ros import Buffer, TransformListener
-from tf2_geometry_msgs.tf2_geometry_msgs import do_transform_pose
+import tf2_ros
+from scipy.spatial.transform import Rotation as R
 import threading
 
 class TestaEAruco(Node):
@@ -21,12 +21,13 @@ class TestaEAruco(Node):
         self.camera_matrix = None
         self.dist_coeffs = None
 
-        self.tf_buffer = Buffer()
-        self.tf_listener = TransformListener(self.tf_buffer, self)
+        self.tf_buffer = tf2_ros.Buffer()
+        self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, self)
 
         self.create_subscription(CameraInfo, '/head_front_camera/rgb/camera_info', self.camera_info_callback, 10)
         self.create_subscription(Image, '/head_front_camera/rgb/image_raw', self.image_callback, 10)
-        self.pose_pub = self.create_publisher(PoseStamped, '/aruco_pose_base', 10)
+
+        self.pose_publishers = {}  # Publisher per ogni marker ID
 
         self.client = ActionClient(self, FollowJointTrajectory, '/head_controller/follow_joint_trajectory')
         self.client.wait_for_server()
@@ -41,6 +42,7 @@ class TestaEAruco(Node):
     def image_callback(self, msg):
         if self.camera_matrix is None:
             return
+
         frame = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
@@ -52,7 +54,6 @@ class TestaEAruco(Node):
         cv2.imshow("ArUco Rilevati", frame)
         cv2.waitKey(1)
 
-
         if ids is not None:
             self.get_logger().info(f'✅ Rilevati {len(ids)} marker: {ids.flatten().tolist()}')
             for i, corner in enumerate(corners):
@@ -60,8 +61,9 @@ class TestaEAruco(Node):
                 rvec, tvec, _ = cv2.aruco.estimatePoseSingleMarkers(corner, 0.06, self.camera_matrix, self.dist_coeffs)
 
                 pose = PoseStamped()
-                pose.header = msg.header
-                pose.header.frame_id = msg.header.frame_id  # usa il frame corretto ricevuto
+                pose.header.stamp = self.get_clock().now().to_msg()
+                pose.header.frame_id = 'head_front_camera_color_optical_frame'
+
                 pose.pose.position.x = float(tvec[0][0][0])
                 pose.pose.position.y = float(tvec[0][0][1])
                 pose.pose.position.z = float(tvec[0][0][2])
@@ -76,19 +78,50 @@ class TestaEAruco(Node):
                 try:
                     transform = self.tf_buffer.lookup_transform(
                         'base_footprint',
-                        pose.header.frame_id,
+                        'head_front_camera_color_optical_frame',
                         rclpy.time.Time()
                     )
-                    pose_base = do_transform_pose(pose, transform)
+
+                    # Trasformazione manuale
+                    T = np.array([transform.transform.translation.x,
+                                  transform.transform.translation.y,
+                                  transform.transform.translation.z])
+
+                    Q = [transform.transform.rotation.x,
+                         transform.transform.rotation.y,
+                         transform.transform.rotation.z,
+                         transform.transform.rotation.w]
+
+                    R_mat = R.from_quat(Q).as_matrix()
+                    tvec_cam = np.array([pose.pose.position.x,
+                                         pose.pose.position.y,
+                                         pose.pose.position.z])
+                    tvec_base = R_mat @ tvec_cam + T
+
+                    pose_base = PoseStamped()
                     pose_base.header.stamp = self.get_clock().now().to_msg()
                     pose_base.header.frame_id = 'base_footprint'
-                    self.pose_pub.publish(pose_base)
-                    self.get_logger().info(f'📤 Pubblico posa ArUco {marker_id} in base_footprint: '
+                    pose_base.pose.position.x = float(tvec_base[0])
+                    pose_base.pose.position.y = float(tvec_base[1])
+                    pose_base.pose.position.z = float(tvec_base[2])
+                    pose_base.pose.orientation.x = q[0]
+                    pose_base.pose.orientation.y = q[1]
+                    pose_base.pose.orientation.z = q[2]
+                    pose_base.pose.orientation.w = q[3]
+
+                    # Crea publisher per ogni marker ID
+                    if marker_id not in self.pose_publishers:
+                        self.pose_publishers[marker_id] = self.create_publisher(
+                            PoseStamped, f'/aruco_pose_base_{marker_id}', 10)
+
+                    self.pose_publishers[marker_id].publish(pose_base)
+                    self.get_logger().info(f'📤 ArUco {marker_id} in base_footprint: '
                                            f'x={pose_base.pose.position.x:.2f}, '
                                            f'y={pose_base.pose.position.y:.2f}, '
                                            f'z={pose_base.pose.position.z:.2f}')
+
                 except Exception as e:
-                    self.get_logger().warn(f'Trasformazione fallita: {e}')
+                    self.get_logger().warn(f'⚠️ Trasformazione fallita per ArUco {marker_id}: {e}')
         else:
             self.get_logger().info('🔍 Nessun marker rilevato')
 
