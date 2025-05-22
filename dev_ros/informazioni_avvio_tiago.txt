@@ -15,17 +15,17 @@
 ------------------------------------------------
 ros2 launch tiago_gazebo tiago_gazebo.launch.py is_public_sim:=True
 
-🟩 TERMINALE 2 — Visualizza la camera in diretta
-------------------------------------------------
-cd ~/progetto_ros2/dev_ros
-source /opt/ros/humble/setup.bash
-python3 mostra_camera.py
-
-🟥 TERMINALE 3 — Muove la testa e rileva ArUco
+🟩 TERMINALE 2 — Muove la testa e rileva ArUco
 ------------------------------------------------
 cd ~/progetto_ros2/dev_ros
 source /opt/ros/humble/setup.bash
 python3 testa_e_aruco.py
+
+🟥 TERMINALE 3 — cinematica innversa e prende oggetto
+------------------------------------------------
+cd ~/progetto_ros2/dev_ros
+source /opt/ros/humble/setup.bash
+python3 macchina_a_stati.py
 
 ===============================
 📁 FILE NELLA CARTELLA ~/dev_ros/
