@@ -32,7 +32,7 @@ class TestaEAruco(Node):
         self.client = ActionClient(self, FollowJointTrajectory, '/head_controller/follow_joint_trajectory')
         self.client.wait_for_server()
 
-        self.get_logger().info('🎯 Movimento testa + Rilevamento ArUco avviati...')
+        self.get_logger().info(' Movimento testa + Rilevamento ArUco avviati...')
         threading.Thread(target=self.muovi_testa).start()
 
     def camera_info_callback(self, msg):
@@ -55,7 +55,7 @@ class TestaEAruco(Node):
         cv2.waitKey(1)
 
         if ids is not None:
-            self.get_logger().info(f'✅ Rilevati {len(ids)} marker: {ids.flatten().tolist()}')
+            self.get_logger().info(f'Rilevati {len(ids)} marker: {ids.flatten().tolist()}')
             for i, corner in enumerate(corners):
                 marker_id = int(ids[i][0])
                 rvec, tvec, _ = cv2.aruco.estimatePoseSingleMarkers(corner, 0.06, self.camera_matrix, self.dist_coeffs)
@@ -115,15 +115,15 @@ class TestaEAruco(Node):
                             PoseStamped, f'/aruco_pose_base_{marker_id}', 10)
 
                     self.pose_publishers[marker_id].publish(pose_base)
-                    self.get_logger().info(f'📤 ArUco {marker_id} in base_footprint: '
+                    self.get_logger().info(f' ArUco {marker_id} in base_footprint: '
                                            f'x={pose_base.pose.position.x:.2f}, '
                                            f'y={pose_base.pose.position.y:.2f}, '
                                            f'z={pose_base.pose.position.z:.2f}')
 
                 except Exception as e:
-                    self.get_logger().warn(f'⚠️ Trasformazione fallita per ArUco {marker_id}: {e}')
+                    self.get_logger().warn(f'Trasformazione fallita per ArUco {marker_id}: {e}')
         else:
-            self.get_logger().info('🔍 Nessun marker rilevato')
+            self.get_logger().info('Nessun marker rilevato')
 
     def muovi_testa(self):
         goal = FollowJointTrajectory.Goal()
@@ -133,6 +133,7 @@ class TestaEAruco(Node):
             (0.0,   -0.57),
             (-0.217, -0.57),
             (0.0,   -0.57),
+            (0.100, -0.57)
         ]
         for i, pos in enumerate(posizioni):
             punto = JointTrajectoryPoint()
