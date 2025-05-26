@@ -1,211 +1,151 @@
 #!/usr/bin/env python3
 
-import numpy as np
 import time
+import numpy as np
+import rclpy
 from rclpy.node import Node
 from rclpy.action import ActionClient
 from control_msgs.action import FollowJointTrajectory
 from trajectory_msgs.msg import JointTrajectoryPoint
 from geometry_msgs.msg import PoseStamped
-
+import roboticstoolbox as rtb
+from roboticstoolbox import ERobot
+from spatialmath import SE3
 
 class MacchinaStati(Node):
     def __init__(self):
         super().__init__('macchina_a_stati')
         self.state = 0
-
         self.pose_rilevate = {}
+        # Configurazioni
+        self.current_torso = 0.0
+        self.current_arm_q = [0.0]*7
 
-        for marker_id in [1, 2, 3, 4]:
-            topic = f'/aruco_pose_base_{marker_id}'
+        # Carica robot URDF (torso + arm)
+        urdf_loc = '/home/claudio/progetto_ros2/dev_ros/tiago_robot.urdf'
+        self.robot = ERobot.URDF(urdf_loc)
+        self.get_logger().info(f"Robot caricato: {self.robot.name} con {self.robot.n} giunti")
+
+        # ActionClient per torso+arm
+        self.arm_client = ActionClient(self, FollowJointTrajectory,
+                                       '/arm_controller/follow_joint_trajectory')
+        self.arm_client.wait_for_server()
+
+        # Subscribe ai marker
+        for m in [1, 2, 3, 4]:
             self.create_subscription(
                 PoseStamped,
-                topic,
-                lambda msg, marker_id=marker_id: self.pose_callback(msg, marker_id),
+                f'/aruco_pose_base_{m}',
+                lambda msg, id=m: self.pose_callback(msg, id),
                 10
             )
 
-        self.arm_client = ActionClient(self, FollowJointTrajectory, '/arm_controller/follow_joint_trajectory')
-        self.gripper_client = ActionClient(self, FollowJointTrajectory, '/gripper_controller/follow_joint_trajectory')
-
-        self.arm_client.wait_for_server()
-        self.gripper_client.wait_for_server()
-
-        self.dh_params = [
-            (0.08, 0, 0, np.pi/2),
-            (0, 0, 0, -np.pi/2),
-            (0.17, 0, 0, -np.pi/2),
-            (0, 0, 0, np.pi/2),
-            (0.25, 0, 0, np.pi/2),
-            (0, 0, 0, -np.pi/2),
-            (0.04, 0, 0, 0)
-        ]
-
-        self.joint_limits = np.array([
-            [-150 * np.pi / 180, 114 * np.pi / 180],
-            [-67 * np.pi / 180, 109 * np.pi / 180],
-            [-150 * np.pi / 180, 41 * np.pi / 180],
-            [-92 * np.pi / 180, 110 * np.pi / 180],
-            [-150 * np.pi / 180, 150 * np.pi / 180],
-            [92 * np.pi / 180, 113 * np.pi / 180],
-            [-150 * np.pi / 180, 150 * np.pi / 180]
-        ])
-
-        self.get_logger().info('Nodo macchina_a_stati avviato.')
         self.timer = self.create_timer(1.0, self.esegui_macchina_stati)
+        self.get_logger().info('Nodo macchina_a_stati avviato.')
 
-    def pose_callback(self, msg, marker_id):
-        if marker_id not in self.pose_rilevate:
-            self.get_logger().info(f'Salvo prima rilevazione di marker {marker_id}')
-        self.pose_rilevate[marker_id] = msg
+    def pose_callback(self, msg: PoseStamped, marker_id: int):
+        self.pose_rilevate[marker_id] = msg.pose
+        self.get_logger().info(f"Marker rilevato: {marker_id}")
 
     def esegui_macchina_stati(self):
         if self.state == 0:
-            self.get_logger().info('Stato 0: invio configurazione intermedia')
-            configurazione_intermedia = [
-                0.0004, -0.0002, 0.0, -0.00006, 0.00004, 0.0019, 0.0004
+            # Attendi 4 marker
+            count = len(self.pose_rilevate)
+            if count < 4:
+                self.get_logger().info(
+                    f"Attendo 4 marker (ricevuti: {count} -> {sorted(self.pose_rilevate.keys())})"
+                )
+                return
+            self.get_logger().info(f"Ricevuti marker {sorted(self.pose_rilevate.keys())}, invio configurazione intermedia")
+            # Intermedia
+            self.current_torso = 0.0
+            self.current_arm_q = [
+                0.0003836728901962516, -0.0001633239063343339,
+                -9.037018213753356e-06, -6.145563957549172e-05,
+                4.409014973383307e-05, 0.0019643255648595925,
+                0.0004167305736686444
             ]
-            self.invia_trajectory(configurazione_intermedia)
+            self.invia_punto(self.current_torso, self.current_arm_q)
+            self.inter_sent_time = time.time()
             self.state = 1
 
-        elif self.state == 1 and len(self.pose_rilevate) >= 4:
-            self.get_logger().info('Stato 1: calcolo traiettorie IK per gli oggetti')
-
-            sequenza = [
-                (1, 4),  # Pringles → posizione 4
-                (2, 3)   # Coca Cola → posizione 3
-            ]
-
-            offset_per_marker = {
-                1: 0.06,  # Pringles
-                2: 0.045  # Coca Cola
-            }
-
-            self.azioni = []
-            for origine, destinazione in sequenza:
-                posa_origine = self.pose_rilevate[origine].pose.position
-                posa_destinazione = self.pose_rilevate[destinazione].pose.position
-
-                pos_sopra = np.array([posa_origine.x, posa_origine.y, posa_origine.z])
-                pos_grab = pos_sopra.copy()
-                pos_grab[2] -= offset_per_marker.get(origine, 0.05)
-
-                pos_sopra_dest = np.array([posa_destinazione.x, posa_destinazione.y, posa_destinazione.z])
-                pos_release = pos_sopra_dest.copy()
-                pos_release[2] -= offset_per_marker.get(origine, 0.05)
-
-                for pos, azione in [
-                    (pos_sopra, None),
-                    (pos_grab, 'chiudi'),
-                    (pos_sopra, None),
-                    (pos_sopra_dest, None),
-                    (pos_release, 'apri'),
-                    (pos_sopra_dest, None)
-                ]:
-                    angoli, ok = self.inverse_kinematics_jacobian(
-                        self.dh_params, [0.0]*7, pos, np.zeros(3), self.joint_limits
-                    )
-                    if ok:
-                        self.azioni.append((angoli, azione))
-                    else:
-                        self.get_logger().warn(f'IK fallita per posizione: {pos}')
-
-            self.az_index = 0
+        elif self.state == 1:
+            # Attendi completamento intermedia
+            if time.time() - self.inter_sent_time < 5.0:
+                self.get_logger().info('Configurazione intermedia in transito...')
+                return
+            self.get_logger().info('Invio configurazione finale (torso + arm)')
+            # Finale
+            self.current_torso = 0.35
+            self.current_arm_q = [0.07, 0.1, -3.1, 1.36, 2.05, 0.01, -0.05]
+            self.invia_punto(self.current_torso, self.current_arm_q)
             self.state = 2
 
-        elif self.state == 2 and self.az_index < len(self.azioni):
-            angoli, azione = self.azioni[self.az_index]
-            self.get_logger().info(f'Eseguo step {self.az_index+1}/{len(self.azioni)}')
-            self.invia_trajectory(angoli)
-            if azione:
-                self.get_logger().info(f'Azione gripper: {azione}')
-                self.controlla_gripper(chiudi=(azione == "chiudi"))
-            self.az_index += 1
-            time.sleep(2)
-
-        elif self.state == 2 and self.az_index >= len(self.azioni):
-            self.get_logger().info('Sequenza completata.')
+        elif self.state == 2:
+            # Cinematica inversa
+            if not {2, 3}.issubset(self.pose_rilevate):
+                self.get_logger().info('In attesa dei marker 2 e 3 per IK')
+                return
+            self.get_logger().info('Inizio cin. inv. marker 2->3')
+            # Poses
+            p2 = self.pose_rilevate[2].position
+            p3 = self.pose_rilevate[3].position
+            R_align = SE3.Rx(-np.pi/2)
+            # Build initial full q0 (torso + arm)
+            q0 = np.array([self.current_torso] + self.current_arm_q)
+            T0 = self.robot.fkine(q0)
+            T2 = R_align * SE3(p2.x, p2.y, p2.z)
+            T3 = R_align * SE3(p3.x, p3.y, p3.z)
+            # Cartesian trajectory
+            Ts1 = rtb.ctraj(T0, T2, 50)
+            Ts2 = rtb.ctraj(T2, T3, 50)
+            Ts = np.vstack((Ts1, Ts2))
+            # IK per ogni passo
+            q_traj = []
+            q_curr = q0.copy()
+            for T in Ts:
+                sol = self.robot.ikine_LM(T, q0=q_curr)
+                if sol.success:
+                    q_curr = sol.q
+                q_traj.append(q_curr.tolist())
+            # Send full trajectory
+            goal = FollowJointTrajectory.Goal()
+            goal.trajectory.joint_names = [
+                'torso_lift_joint',
+                'arm_1_joint','arm_2_joint','arm_3_joint',
+                'arm_4_joint','arm_5_joint','arm_6_joint','arm_7_joint'
+            ]
+            for i, q in enumerate(q_traj, start=1):
+                pt = JointTrajectoryPoint()
+                pt.positions = q
+                pt.time_from_start.sec = i
+                goal.trajectory.points.append(pt)
+            self.arm_client.send_goal_async(goal)
+            self.get_logger().info('Traiettoria IK inviata.')
             self.timer.cancel()
 
-    def invia_trajectory(self, configurazione):
+    def invia_punto(self, torso_val, arm_vals):
+        # Singolo punto torso+arm
+        config = [torso_val] + arm_vals
         goal = FollowJointTrajectory.Goal()
         goal.trajectory.joint_names = [
-            'arm_1_joint', 'arm_2_joint', 'arm_3_joint',
-            'arm_4_joint', 'arm_5_joint', 'arm_6_joint', 'arm_7_joint'
+            'torso_lift_joint',
+            'arm_1_joint','arm_2_joint','arm_3_joint',
+            'arm_4_joint','arm_5_joint','arm_6_joint','arm_7_joint'
         ]
-        punto = JointTrajectoryPoint()
-        punto.positions = configurazione
-        punto.time_from_start.sec = 5
-        goal.trajectory.points.append(punto)
+        pt = JointTrajectoryPoint()
+        pt.positions = config
+        pt.time_from_start.sec = 5
+        goal.trajectory.points.append(pt)
         self.arm_client.send_goal_async(goal)
-
-    def controlla_gripper(self, chiudi=True):
-        goal = FollowJointTrajectory.Goal()
-        goal.trajectory.joint_names = ['gripper_left_finger_joint', 'gripper_right_finger_joint']
-        punto = JointTrajectoryPoint()
-        posizione = 0.0 if chiudi else 0.04
-        punto.positions = [posizione, posizione]
-        punto.time_from_start.sec = 2
-        goal.trajectory.points.append(punto)
-        self.gripper_client.send_goal_async(goal)
-
-    def inverse_kinematics_jacobian(self, dh_params, joint_angles, target_position, target_velocity, joint_limits, K=1.0, max_iterations=500, tol=1e-2):
-        q = np.array(joint_angles)
-        for _ in range(max_iterations):
-            _, T_current, _ = self.forward_kinematics(dh_params, q)
-            current_position = T_current[:3, 3]
-            error = target_position - current_position
-            if np.linalg.norm(error) < tol:
-                return q.tolist(), True
-            J = self.calculate_geometric_jacobian(dh_params, q)
-            J_pinv = np.linalg.pinv(J)
-            dq = np.dot(J_pinv, target_velocity + K * error)
-            q = q + dq * 0.5
-            q = np.clip(q, joint_limits[:, 0], joint_limits[:, 1])
-        return q.tolist(), False
-
-    def dh_transformation_matrix(self, d, theta, a, alpha):
-        ct, st = np.cos(theta), np.sin(theta)
-        ca, sa = np.cos(alpha), np.sin(alpha)
-        return np.array([
-            [ct, -st * ca, st * sa, a * ct],
-            [st, ct * ca, -ct * sa, a * st],
-            [0, sa, ca, d],
-            [0, 0, 0, 1]
-        ])
-
-    def forward_kinematics(self, dh_params, joint_angles):
-        T = np.eye(4)
-        for i, (d, _, a, alpha) in enumerate(dh_params):
-            T = np.dot(T, self.dh_transformation_matrix(d, joint_angles[i], a, alpha))
-        return None, T, None
-
-    def calculate_geometric_jacobian(self, dh_params, joint_angles):
-        T = np.eye(4)
-        z_axes = [np.array([0, 0, 1])]
-        positions = [np.array([0, 0, 0])]
-        for i, (d, _, a, alpha) in enumerate(dh_params):
-            Ti = self.dh_transformation_matrix(d, joint_angles[i], a, alpha)
-            T = np.dot(T, Ti)
-            z_axes.append(T[:3, 2])
-            positions.append(T[:3, 3])
-        p_e = positions[-1]
-        J = np.zeros((3, len(joint_angles)))
-        for i in range(len(joint_angles)):
-            J[:, i] = np.cross(z_axes[i], p_e - positions[i])
-        return J
 
 
 def main(args=None):
     rclpy.init(args=args)
     nodo = MacchinaStati()
-    try:
-        rclpy.spin(nodo)
-    except KeyboardInterrupt:
-        pass
+    rclpy.spin(nodo)
     nodo.destroy_node()
     rclpy.shutdown()
-
 
 if __name__ == '__main__':
     main()

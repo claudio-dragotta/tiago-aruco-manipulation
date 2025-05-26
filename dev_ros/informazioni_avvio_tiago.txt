@@ -25,7 +25,7 @@ python3 testa_e_aruco.py
 ------------------------------------------------
 cd ~/progetto_ros2/dev_ros
 source /opt/ros/humble/setup.bash
-python3 macchina.py
+python3 macchina_a_stati.py
 ===============================
 📁 FILE NELLA CARTELLA ~/dev_ros/
 ===============================

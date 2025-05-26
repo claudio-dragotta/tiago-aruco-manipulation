@@ -72,16 +72,10 @@ class MacchinaStati(Node):
         self.get_logger().info(f'Ricevuta posa per marker {marker_id}')
 
     def is_position_reachable(self, pos, marker_id=None):
-        # Aggiungi controllo dell'angolo di approccio
-        approach_angle = np.arctan2(pos[1], pos[0])
-        if not (-2.2689 <= approach_angle <= 2.2689):  # Limite del primo giunto
-            return False, f"Angolo di approccio non raggiungibile: {np.degrees(approach_angle):.1f}°"
-        
-        # Controllo della distanza 3D
+        # Calcola la distanza 3D dalla base
         distance_3d = np.linalg.norm(pos)
         max_reach = 0.835  # Somma delle lunghezze dei link principali
-        if distance_3d > max_reach:
-            return False, f"Posizione troppo distante (dist: {distance_3d:.3f}m, max: {max_reach}m)"
+        
         # Limiti approssimativi del braccio del Tiago
         MAX_REACH_XY = 0.85  # Raggio massimo sul piano XY
         MIN_Z = 0.5  # Altezza minima
@@ -90,16 +84,22 @@ class MacchinaStati(Node):
         horizontal_distance = np.sqrt(pos[0]**2 + pos[1]**2)
         
         self.get_logger().info(f'📏 Analisi raggiungibilità per posizione:\n'
-                               f'   - Distanza orizzontale: {horizontal_distance:.3f}m\n'
-                               f'   - Altezza (Z): {pos[2]:.3f}m')
+                                f'   - Distanza orizzontale: {horizontal_distance:.3f}m\n'
+                                f'   - Altezza (Z): {pos[2]:.3f}m')
         
-        if horizontal_distance > MAX_REACH_XY:
-            return False, f"Posizione {marker_id} troppo distante (dist: {horizontal_distance:.3f}m, max: {MAX_REACH_XY}m)"
-        if pos[2] < MIN_Z:
-            return False, f"Posizione {marker_id} troppo bassa (z: {pos[2]:.3f}m, min: {MIN_Z}m)"
-        if pos[2] > MAX_Z:
-            return False, f"Posizione {marker_id} troppo alta (z: {pos[2]:.3f}m, max: {MAX_Z}m)"
-            
+        # Verifica se la posizione è raggiungibile con il torso alzato
+        needed_torso_height = self.calculate_torso_height(pos)
+        adjusted_z = pos[2] - needed_torso_height  # Aggiusta l'altezza Z considerando il torso
+        
+        if adjusted_z < MIN_Z:
+            return False, f"Posizione {marker_id} troppo bassa (z: {adjusted_z:.3f}m, min: {MIN_Z}m)"
+        if adjusted_z > MAX_Z:
+            return False, f"Posizione {marker_id} troppo alta (z: {adjusted_z:.3f}m, max: {MAX_Z}m)"
+        
+        # Se il torso può compensare la distanza, la posizione è raggiungibile
+        if needed_torso_height > 0:
+            return True, f"Posizione raggiungibile con torso a {needed_torso_height:.3f}m"
+        
         return True, "Posizione raggiungibile"
 
     def calculate_torso_height(self, pos):
@@ -107,18 +107,24 @@ class MacchinaStati(Node):
         MAX_TORSO_HEIGHT = 0.35
         OPTIMAL_Z_REACH = 1.5
         
+        # Inizializza needed_height a 0.0
+        needed_height = 0.0
+        
         # Calcola la distanza orizzontale
         horizontal_distance = np.sqrt(pos[0]**2 + pos[1]**2)
         
-        # Se la posizione è oltre il raggio massimo, alza il torso
+        # Se la posizione è oltre il raggio massimo
         if horizontal_distance > 0.835:
-            # Calcola quanto alzare il torso in base alla distanza eccedente
             excess_distance = horizontal_distance - 0.835
-            # Usa una proporzione dell'eccesso come altezza del torso
-            torso_height = min(MAX_TORSO_HEIGHT, excess_distance * 0.5)
-            return max(BASE_TORSO_HEIGHT, torso_height)
+            needed_height = max(needed_height, excess_distance * 0.7)
         
-        return BASE_TORSO_HEIGHT
+        # Se l'altezza Z è elevata
+        if pos[2] > OPTIMAL_Z_REACH:
+            excess_height = pos[2] - OPTIMAL_Z_REACH
+            needed_height = max(needed_height, excess_height * 0.8)
+        
+        # Limita l'altezza al range consentito
+        return min(MAX_TORSO_HEIGHT, max(BASE_TORSO_HEIGHT, needed_height))
 
     def move_torso(self, height):
         goal = FollowJointTrajectory.Goal()

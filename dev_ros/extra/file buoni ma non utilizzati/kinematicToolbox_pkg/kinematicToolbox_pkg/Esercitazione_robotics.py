@@ -13,28 +13,6 @@ urdf_loc = '/home/claudio/progetto_ros2/dev_ros/file buoni ma non utilizzati/kin
 robot = ERobot.URDF(urdf_loc)
 print(robot)
 
-# modo 2 --> parametri DH
-links = [
-    RevoluteDH(d=0.08, a=0, alpha=np.pi/2),
-    RevoluteDH(d=0, a=0, alpha=-np.pi/2),
-    RevoluteDH(d=0.17, a=0, alpha=-np.pi/2),
-    RevoluteDH(d=0, a=0, alpha=np.pi/2),
-    RevoluteDH(d=0.25, a=0, alpha=np.pi/2),
-    RevoluteDH(d=0, a=0, alpha=-np.pi/2),
-    RevoluteDH(d=0.04, a=0, alpha=0)
-]
-robot = DHRobot(links)
-print(robot)
-joint_angle_ranges = np.array([
-        [-150 * (np.pi / 180), 114 * (np.pi / 180)],
-        [-67 * (np.pi / 180), 109 * (np.pi / 180)],
-        [-150 * (np.pi / 180), 41 * (np.pi / 180)],
-        [-92 * (np.pi / 180), 110 * (np.pi / 180)],
-        [-150 * (np.pi / 180), 150 * (np.pi / 180)],
-        [92 * (np.pi / 180), 113 * (np.pi / 180)],
-        [-150 * (np.pi / 180), 150 * (np.pi / 180)]
-    ])
-
 # Configurazione iniziale e finale dell'end-effector
 q0 = np.mean(joint_angle_ranges, axis=1)
 qf = joint_angle_ranges[:, 1]    # Limiti superiori
@@ -50,7 +28,7 @@ Ts = rtb.ctraj(T0, Tf, N)  # genera N pose interpolate
 q_traj = []
 q_curr = q0
 for T in Ts:
-    sol = robot.ik_NR(T, q0=q_curr, pinv=True)
+    sol = robot.ik_LM(T, q0=q_curr)
     if sol is not None and len(sol) > 0:
         q_curr = sol[0]
     q_traj.append(q_curr)
