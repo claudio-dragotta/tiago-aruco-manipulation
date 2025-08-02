@@ -1,0 +1,68 @@
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/colcon_parallel_executor/executor/parallel.py", line 75, in execute
+    loop.run_until_complete(future)
+  File "/usr/lib/python3.10/asyncio/base_events.py", line 636, in run_until_complete
+    self.run_forever()
+  File "/usr/lib/python3.10/asyncio/base_events.py", line 603, in run_forever
+    self._run_once()
+  File "/usr/lib/python3.10/asyncio/base_events.py", line 1871, in _run_once
+    event_list = self._selector.select(timeout)
+  File "/usr/lib/python3.10/selectors.py", line 469, in select
+    fd_event_list = self._selector.poll(timeout, max_ev)
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/colcon_core/executor/__init__.py", line 91, in __call__
+    rc = await self.task(*args, **kwargs)
+  File "/usr/lib/python3/dist-packages/colcon_core/task/__init__.py", line 93, in __call__
+    return await task_method(*args, **kwargs)
+  File "/usr/lib/python3/dist-packages/colcon_ros/task/ament_python/build.py", line 102, in build
+    return await extension.build(additional_hooks=additional_hooks)
+  File "/usr/lib/python3/dist-packages/colcon_core/task/python/build.py", line 96, in build
+    available_commands = await self._get_available_commands(
+  File "/usr/lib/python3/dist-packages/colcon_core/task/python/build.py", line 194, in _get_available_commands
+    output = await check_output(
+  File "/usr/lib/python3/dist-packages/colcon_core/subprocess.py", line 129, in check_output
+    assert not rc, f'Expected {args} to pass: {stderr_data}'
+AssertionError: Expected ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', '-W', 'ignore:easy_install command is deprecated', 'setup.py', '--help-commands'] to pass: Traceback (most recent call last):
+  File "/home/claudio/.local/lib/python3.10/site-packages/wheel/bdist_wheel.py", line 21, in <module>
+    from setuptools.command.bdist_wheel import bdist_wheel
+ModuleNotFoundError: No module named 'setuptools.command.bdist_wheel'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/claudio/progetto_ros2/src/robot_launcher/setup.py", line 5, in <module>
+    setup(
+  File "/usr/lib/python3/dist-packages/setuptools/__init__.py", line 153, in setup
+    return distutils.core.setup(**attrs)
+  File "/usr/lib/python3.10/distutils/core.py", line 134, in setup
+    ok = dist.parse_command_line()
+  File "/usr/lib/python3.10/distutils/dist.py", line 480, in parse_command_line
+    if self.handle_display_options(option_order):
+  File "/usr/lib/python3/dist-packages/setuptools/dist.py", line 1126, in handle_display_options
+    return _Distribution.handle_display_options(self, option_order)
+  File "/usr/lib/python3.10/distutils/dist.py", line 683, in handle_display_options
+    self.print_commands()
+  File "/usr/lib/python3/dist-packages/setuptools/dist.py", line 902, in print_commands
+    cmdclass = ep.resolve()
+  File "/usr/lib/python3/dist-packages/pkg_resources/__init__.py", line 2471, in resolve
+    module = __import__(self.module_name, fromlist=['__name__'], level=0)
+  File "/home/claudio/.local/lib/python3.10/site-packages/wheel/bdist_wheel.py", line 26, in <module>
+    from ._bdist_wheel import bdist_wheel as bdist_wheel
+  File "/home/claudio/.local/lib/python3.10/site-packages/wheel/_bdist_wheel.py", line 18, in <module>
+    from email.policy import EmailPolicy
+  File "/usr/lib/python3.10/email/policy.py", line 9, in <module>
+    from email.headerregistry import HeaderRegistry as HeaderRegistry
+  File "/usr/lib/python3.10/email/headerregistry.py", line 10, in <module>
+    from email import _header_value_parser as parser
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 879, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 1012, in get_code
+  File "<frozen importlib._bootstrap_external>", line 672, in _compile_bytecode
+KeyboardInterrupt
+

@@ -1,0 +1,18 @@
+[1.526s] Invoking command in '/home/claudio/progetto_ros2/build/robot_nodes': PYTHONPATH=/home/claudio/progetto_ros2/build/robot_nodes/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/claudio/progetto_ros2/install/robot_nodes/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/claudio/progetto_ros2/build/robot_nodes/build --no-deps symlink_data
+[1.947s] running develop
+[2.209s] running egg_info
+[2.209s] writing robot_nodes.egg-info/PKG-INFO
+[2.210s] writing dependency_links to robot_nodes.egg-info/dependency_links.txt
+[2.211s] writing entry points to robot_nodes.egg-info/entry_points.txt
+[2.211s] writing requirements to robot_nodes.egg-info/requires.txt
+[2.211s] writing top-level names to robot_nodes.egg-info/top_level.txt
+[2.214s] reading manifest file 'robot_nodes.egg-info/SOURCES.txt'
+[2.215s] writing manifest file 'robot_nodes.egg-info/SOURCES.txt'
+[2.217s] running build_ext
+[2.218s] Creating /home/claudio/progetto_ros2/install/robot_nodes/lib/python3.10/site-packages/robot-nodes.egg-link (link to .)
+[2.219s] Installing macchina_a_stati script to /home/claudio/progetto_ros2/install/robot_nodes/lib/robot_nodes
+[2.220s] Installing testa_e_aruco script to /home/claudio/progetto_ros2/install/robot_nodes/lib/robot_nodes
+[2.221s] 
+[2.221s] Installed /home/claudio/progetto_ros2/build/robot_nodes
+[2.221s] running symlink_data
+[2.306s] Invoked command in '/home/claudio/progetto_ros2/build/robot_nodes' returned '0': PYTHONPATH=/home/claudio/progetto_ros2/build/robot_nodes/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/claudio/progetto_ros2/install/robot_nodes/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/claudio/progetto_ros2/build/robot_nodes/build --no-deps symlink_data

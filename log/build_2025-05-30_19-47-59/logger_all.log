@@ -1,0 +1,179 @@
+[0.723s] DEBUG:colcon:Command line arguments: ['/usr/bin/colcon', 'build']
+[0.724s] DEBUG:colcon:Parsed command line arguments: Namespace(log_base=None, log_level=None, verb_name='build', build_base='build', install_base='install', merge_install=False, symlink_install=False, test_result_base=None, continue_on_error=False, executor='parallel', parallel_workers=4, event_handlers=None, ignore_user_meta=False, metas=['./colcon.meta'], base_paths=['.'], packages_ignore=None, packages_ignore_regex=None, paths=None, packages_up_to=None, packages_up_to_regex=None, packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_select_by_dep=None, packages_skip_by_dep=None, packages_skip_up_to=None, packages_select_build_failed=False, packages_skip_build_finished=False, packages_select_test_failures=False, packages_skip_test_passed=False, packages_select=None, packages_skip=None, packages_select_regex=None, packages_skip_regex=None, packages_start=None, packages_end=None, allow_overriding=[], cmake_args=None, cmake_target=None, cmake_target_skip_unavailable=False, cmake_clean_cache=False, cmake_clean_first=False, cmake_force_configure=False, ament_cmake_args=None, catkin_cmake_args=None, catkin_skip_building_tests=False, verb_parser=<colcon_defaults.argument_parser.defaults.DefaultArgumentsDecorator object at 0x7c6e0dc4e920>, verb_extension=<colcon_core.verb.build.BuildVerb object at 0x7c6e0dd8c400>, main=<bound method BuildVerb.main of <colcon_core.verb.build.BuildVerb object at 0x7c6e0dd8c400>>)
+[1.795s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) check parameters
+[1.796s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) check parameters
+[1.796s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) check parameters
+[1.796s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) check parameters
+[1.796s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) discover
+[1.796s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) discover
+[1.797s] INFO:colcon.colcon_core.package_discovery:Crawling recursively for packages in '/home/claudio/progetto_ros2'
+[1.797s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ignore', 'ignore_ament_install']
+[1.797s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore'
+[1.797s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore_ament_install'
+[1.798s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_pkg']
+[1.798s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_pkg'
+[1.798s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_meta']
+[1.798s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_meta'
+[1.798s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ros']
+[1.798s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ros'
+[1.853s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['cmake', 'python']
+[1.853s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'cmake'
+[1.854s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python'
+[1.855s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['python_setup_py']
+[1.855s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python_setup_py'
+[1.856s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extensions ['ignore', 'ignore_ament_install']
+[1.856s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extension 'ignore'
+[1.857s] Level 1:colcon.colcon_core.package_identification:_identify(build) ignored
+[1.858s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extensions ['ignore', 'ignore_ament_install']
+[1.858s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extension 'ignore'
+[1.859s] Level 1:colcon.colcon_core.package_identification:_identify(install) ignored
+[1.859s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extensions ['ignore', 'ignore_ament_install']
+[1.860s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extension 'ignore'
+[1.860s] Level 1:colcon.colcon_core.package_identification:_identify(log) ignored
+[1.861s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ignore', 'ignore_ament_install']
+[1.861s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore'
+[1.862s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore_ament_install'
+[1.862s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_pkg']
+[1.862s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_pkg'
+[1.863s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_meta']
+[1.863s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_meta'
+[1.863s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ros']
+[1.863s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ros'
+[1.864s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['cmake', 'python']
+[1.864s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'cmake'
+[1.864s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python'
+[1.865s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['python_setup_py']
+[1.865s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python_setup_py'
+[1.865s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot_launcher) by extensions ['ignore', 'ignore_ament_install']
+[1.866s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot_launcher) by extension 'ignore'
+[1.866s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot_launcher) by extension 'ignore_ament_install'
+[1.866s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot_launcher) by extensions ['colcon_pkg']
+[1.867s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot_launcher) by extension 'colcon_pkg'
+[1.867s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot_launcher) by extensions ['colcon_meta']
+[1.867s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot_launcher) by extension 'colcon_meta'
+[1.867s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot_launcher) by extensions ['ros']
+[1.867s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot_launcher) by extension 'ros'
+[1.878s] DEBUG:colcon.colcon_core.package_identification:Package 'src/robot_launcher' with type 'ros.ament_python' and name 'robot_launcher'
+[1.879s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot_nodes) by extensions ['ignore', 'ignore_ament_install']
+[1.880s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot_nodes) by extension 'ignore'
+[1.880s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot_nodes) by extension 'ignore_ament_install'
+[1.880s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot_nodes) by extensions ['colcon_pkg']
+[1.880s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot_nodes) by extension 'colcon_pkg'
+[1.881s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot_nodes) by extensions ['colcon_meta']
+[1.881s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot_nodes) by extension 'colcon_meta'
+[1.881s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot_nodes) by extensions ['ros']
+[1.881s] Level 1:colcon.colcon_core.package_identification:_identify(src/robot_nodes) by extension 'ros'
+[1.884s] DEBUG:colcon.colcon_core.package_identification:Package 'src/robot_nodes' with type 'ros.ament_python' and name 'robot_nodes'
+[1.884s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) using defaults
+[1.884s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) discover
+[1.884s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) using defaults
+[1.885s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) discover
+[1.885s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) using defaults
+[2.029s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) check parameters
+[2.029s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) discover
+[2.046s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 2 installed packages in /home/claudio/progetto_ros2/install
+[2.053s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 39 installed packages in /home/claudio/tiago_public_ws/install
+[2.062s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 391 installed packages in /opt/ros/humble
+[2.075s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) using defaults
+[2.387s] Level 5:colcon.colcon_core.verb:set package 'robot_launcher' build argument 'cmake_args' from command line to 'None'
+[2.388s] Level 5:colcon.colcon_core.verb:set package 'robot_launcher' build argument 'cmake_target' from command line to 'None'
+[2.388s] Level 5:colcon.colcon_core.verb:set package 'robot_launcher' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[2.388s] Level 5:colcon.colcon_core.verb:set package 'robot_launcher' build argument 'cmake_clean_cache' from command line to 'False'
+[2.388s] Level 5:colcon.colcon_core.verb:set package 'robot_launcher' build argument 'cmake_clean_first' from command line to 'False'
+[2.389s] Level 5:colcon.colcon_core.verb:set package 'robot_launcher' build argument 'cmake_force_configure' from command line to 'False'
+[2.389s] Level 5:colcon.colcon_core.verb:set package 'robot_launcher' build argument 'ament_cmake_args' from command line to 'None'
+[2.389s] Level 5:colcon.colcon_core.verb:set package 'robot_launcher' build argument 'catkin_cmake_args' from command line to 'None'
+[2.389s] Level 5:colcon.colcon_core.verb:set package 'robot_launcher' build argument 'catkin_skip_building_tests' from command line to 'False'
+[2.389s] DEBUG:colcon.colcon_core.verb:Building package 'robot_launcher' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/claudio/progetto_ros2/build/robot_launcher', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/claudio/progetto_ros2/install/robot_launcher', 'merge_install': False, 'path': '/home/claudio/progetto_ros2/src/robot_launcher', 'symlink_install': False, 'test_result_base': None}
+[2.393s] Level 5:colcon.colcon_core.verb:set package 'robot_nodes' build argument 'cmake_args' from command line to 'None'
+[2.393s] Level 5:colcon.colcon_core.verb:set package 'robot_nodes' build argument 'cmake_target' from command line to 'None'
+[2.393s] Level 5:colcon.colcon_core.verb:set package 'robot_nodes' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[2.394s] Level 5:colcon.colcon_core.verb:set package 'robot_nodes' build argument 'cmake_clean_cache' from command line to 'False'
+[2.394s] Level 5:colcon.colcon_core.verb:set package 'robot_nodes' build argument 'cmake_clean_first' from command line to 'False'
+[2.394s] Level 5:colcon.colcon_core.verb:set package 'robot_nodes' build argument 'cmake_force_configure' from command line to 'False'
+[2.394s] Level 5:colcon.colcon_core.verb:set package 'robot_nodes' build argument 'ament_cmake_args' from command line to 'None'
+[2.395s] Level 5:colcon.colcon_core.verb:set package 'robot_nodes' build argument 'catkin_cmake_args' from command line to 'None'
+[2.395s] Level 5:colcon.colcon_core.verb:set package 'robot_nodes' build argument 'catkin_skip_building_tests' from command line to 'False'
+[2.395s] DEBUG:colcon.colcon_core.verb:Building package 'robot_nodes' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/claudio/progetto_ros2/build/robot_nodes', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/claudio/progetto_ros2/install/robot_nodes', 'merge_install': False, 'path': '/home/claudio/progetto_ros2/src/robot_nodes', 'symlink_install': False, 'test_result_base': None}
+[2.396s] INFO:colcon.colcon_core.executor:Executing jobs using 'parallel' executor
+[2.401s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete
+[2.402s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/claudio/progetto_ros2/src/robot_launcher' with build type 'ament_python'
+[2.403s] Level 1:colcon.colcon_core.shell:create_environment_hook('robot_launcher', 'ament_prefix_path')
+[2.411s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_core.shell.bat': Not used on non-Windows systems
+[2.412s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/claudio/progetto_ros2/install/robot_launcher/share/robot_launcher/hook/ament_prefix_path.ps1'
+[2.414s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/claudio/progetto_ros2/install/robot_launcher/share/robot_launcher/hook/ament_prefix_path.dsv'
+[2.416s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/claudio/progetto_ros2/install/robot_launcher/share/robot_launcher/hook/ament_prefix_path.sh'
+[2.421s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[2.421s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[2.460s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/claudio/progetto_ros2/src/robot_nodes' with build type 'ament_python'
+[2.461s] Level 1:colcon.colcon_core.shell:create_environment_hook('robot_nodes', 'ament_prefix_path')
+[2.462s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/claudio/progetto_ros2/install/robot_nodes/share/robot_nodes/hook/ament_prefix_path.ps1'
+[2.466s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/claudio/progetto_ros2/install/robot_nodes/share/robot_nodes/hook/ament_prefix_path.dsv'
+[2.467s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/claudio/progetto_ros2/install/robot_nodes/share/robot_nodes/hook/ament_prefix_path.sh'
+[2.470s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[2.470s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[4.300s] WARNING:colcon.colcon_ros.task.ament_python.build:Package 'robot_launcher' doesn't explicitly install the 'package.xml' file (colcon-ros currently does it implicitly but that fallback will be removed in the future)
+[4.301s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/claudio/progetto_ros2/src/robot_launcher'
+[4.303s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[4.303s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[6.063s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/claudio/progetto_ros2/src/robot_nodes'
+[6.065s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[6.065s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[8.305s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/claudio/progetto_ros2/src/robot_launcher': PYTHONPATH=/home/claudio/progetto_ros2/build/robot_launcher/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/claudio/progetto_ros2/install/robot_launcher/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/robot_launcher build --build-base /home/claudio/progetto_ros2/build/robot_launcher/build install --record /home/claudio/progetto_ros2/build/robot_launcher/install.log --single-version-externally-managed install_data
+[8.931s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/claudio/progetto_ros2/src/robot_nodes': PYTHONPATH=/home/claudio/progetto_ros2/build/robot_nodes/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/claudio/progetto_ros2/install/robot_nodes/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/robot_nodes build --build-base /home/claudio/progetto_ros2/build/robot_nodes/build install --record /home/claudio/progetto_ros2/build/robot_nodes/install.log --single-version-externally-managed install_data
+[10.541s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/claudio/progetto_ros2/src/robot_launcher' returned '0': PYTHONPATH=/home/claudio/progetto_ros2/build/robot_launcher/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/claudio/progetto_ros2/install/robot_launcher/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/robot_launcher build --build-base /home/claudio/progetto_ros2/build/robot_launcher/build install --record /home/claudio/progetto_ros2/build/robot_launcher/install.log --single-version-externally-managed install_data
+[10.570s] Level 1:colcon.colcon_core.environment:checking '/home/claudio/progetto_ros2/install/robot_launcher' for CMake module files
+[10.574s] Level 1:colcon.colcon_core.environment:checking '/home/claudio/progetto_ros2/install/robot_launcher' for CMake config files
+[10.580s] Level 1:colcon.colcon_core.environment:checking '/home/claudio/progetto_ros2/install/robot_launcher/lib'
+[10.581s] Level 1:colcon.colcon_core.environment:checking '/home/claudio/progetto_ros2/install/robot_launcher/bin'
+[10.583s] Level 1:colcon.colcon_core.environment:checking '/home/claudio/progetto_ros2/install/robot_launcher/lib/pkgconfig/robot_launcher.pc'
+[10.586s] Level 1:colcon.colcon_core.environment:checking '/home/claudio/progetto_ros2/install/robot_launcher/lib/python3.10/site-packages'
+[10.587s] Level 1:colcon.colcon_core.shell:create_environment_hook('robot_launcher', 'pythonpath')
+[10.591s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/claudio/progetto_ros2/install/robot_launcher/share/robot_launcher/hook/pythonpath.ps1'
+[10.598s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/claudio/progetto_ros2/install/robot_launcher/share/robot_launcher/hook/pythonpath.dsv'
+[10.604s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/claudio/progetto_ros2/install/robot_launcher/share/robot_launcher/hook/pythonpath.sh'
+[10.613s] Level 1:colcon.colcon_core.environment:checking '/home/claudio/progetto_ros2/install/robot_launcher/bin'
+[10.614s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(robot_launcher)
+[10.619s] INFO:colcon.colcon_core.shell:Creating package script '/home/claudio/progetto_ros2/install/robot_launcher/share/robot_launcher/package.ps1'
+[10.628s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/claudio/progetto_ros2/install/robot_launcher/share/robot_launcher/package.dsv'
+[10.632s] INFO:colcon.colcon_core.shell:Creating package script '/home/claudio/progetto_ros2/install/robot_launcher/share/robot_launcher/package.sh'
+[10.636s] INFO:colcon.colcon_core.shell:Creating package script '/home/claudio/progetto_ros2/install/robot_launcher/share/robot_launcher/package.bash'
+[10.640s] INFO:colcon.colcon_core.shell:Creating package script '/home/claudio/progetto_ros2/install/robot_launcher/share/robot_launcher/package.zsh'
+[10.646s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/claudio/progetto_ros2/install/robot_launcher/share/colcon-core/packages/robot_launcher)
+[11.145s] Level 1:colcon.colcon_core.environment:checking '/home/claudio/progetto_ros2/install/robot_nodes' for CMake module files
+[11.147s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/claudio/progetto_ros2/src/robot_nodes' returned '0': PYTHONPATH=/home/claudio/progetto_ros2/build/robot_nodes/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/claudio/progetto_ros2/install/robot_nodes/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/robot_nodes build --build-base /home/claudio/progetto_ros2/build/robot_nodes/build install --record /home/claudio/progetto_ros2/build/robot_nodes/install.log --single-version-externally-managed install_data
+[11.150s] Level 1:colcon.colcon_core.environment:checking '/home/claudio/progetto_ros2/install/robot_nodes' for CMake config files
+[11.153s] Level 1:colcon.colcon_core.environment:checking '/home/claudio/progetto_ros2/install/robot_nodes/lib'
+[11.154s] Level 1:colcon.colcon_core.environment:checking '/home/claudio/progetto_ros2/install/robot_nodes/bin'
+[11.154s] Level 1:colcon.colcon_core.environment:checking '/home/claudio/progetto_ros2/install/robot_nodes/lib/pkgconfig/robot_nodes.pc'
+[11.156s] Level 1:colcon.colcon_core.environment:checking '/home/claudio/progetto_ros2/install/robot_nodes/lib/python3.10/site-packages'
+[11.157s] Level 1:colcon.colcon_core.shell:create_environment_hook('robot_nodes', 'pythonpath')
+[11.158s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/claudio/progetto_ros2/install/robot_nodes/share/robot_nodes/hook/pythonpath.ps1'
+[11.160s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/claudio/progetto_ros2/install/robot_nodes/share/robot_nodes/hook/pythonpath.dsv'
+[11.162s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/claudio/progetto_ros2/install/robot_nodes/share/robot_nodes/hook/pythonpath.sh'
+[11.165s] Level 1:colcon.colcon_core.environment:checking '/home/claudio/progetto_ros2/install/robot_nodes/bin'
+[11.165s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(robot_nodes)
+[11.167s] INFO:colcon.colcon_core.shell:Creating package script '/home/claudio/progetto_ros2/install/robot_nodes/share/robot_nodes/package.ps1'
+[11.169s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/claudio/progetto_ros2/install/robot_nodes/share/robot_nodes/package.dsv'
+[11.171s] INFO:colcon.colcon_core.shell:Creating package script '/home/claudio/progetto_ros2/install/robot_nodes/share/robot_nodes/package.sh'
+[11.173s] INFO:colcon.colcon_core.shell:Creating package script '/home/claudio/progetto_ros2/install/robot_nodes/share/robot_nodes/package.bash'
+[11.175s] INFO:colcon.colcon_core.shell:Creating package script '/home/claudio/progetto_ros2/install/robot_nodes/share/robot_nodes/package.zsh'
+[11.176s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/claudio/progetto_ros2/install/robot_nodes/share/colcon-core/packages/robot_nodes)
+[11.178s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:closing loop
+[11.179s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:loop closed
+[11.179s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete finished with '0'
+[11.180s] DEBUG:colcon.colcon_core.event_reactor:joining thread
+[11.221s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.terminal_notifier': Not used on non-Darwin systems
+[11.221s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.win32': Not used on non-Windows systems
+[11.221s] INFO:colcon.colcon_notification.desktop_notification:Sending desktop notification using 'notify2'
+[11.287s] DEBUG:colcon.colcon_core.event_reactor:joined thread
+[11.290s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/claudio/progetto_ros2/install/local_setup.ps1'
+[11.298s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/claudio/progetto_ros2/install/_local_setup_util_ps1.py'
+[11.309s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/claudio/progetto_ros2/install/setup.ps1'
+[11.324s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/claudio/progetto_ros2/install/local_setup.sh'
+[11.327s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/claudio/progetto_ros2/install/_local_setup_util_sh.py'
+[11.330s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/claudio/progetto_ros2/install/setup.sh'
+[11.351s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/claudio/progetto_ros2/install/local_setup.bash'
+[11.355s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/claudio/progetto_ros2/install/setup.bash'
+[11.370s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/claudio/progetto_ros2/install/local_setup.zsh'
+[11.373s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/claudio/progetto_ros2/install/setup.zsh'

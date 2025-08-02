@@ -1,0 +1,18 @@
+[1.550s] Invoking command in '/home/claudio/progetto_ros2/build/robot_launcher': PYTHONPATH=/home/claudio/progetto_ros2/build/robot_launcher/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/claudio/progetto_ros2/install/robot_launcher/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/claudio/progetto_ros2/build/robot_launcher/build --no-deps symlink_data
+[1.979s] running develop
+[2.270s] running egg_info
+[2.271s] writing robot_launcher.egg-info/PKG-INFO
+[2.271s] writing dependency_links to robot_launcher.egg-info/dependency_links.txt
+[2.272s] writing entry points to robot_launcher.egg-info/entry_points.txt
+[2.272s] writing requirements to robot_launcher.egg-info/requires.txt
+[2.272s] writing top-level names to robot_launcher.egg-info/top_level.txt
+[2.277s] reading manifest file 'robot_launcher.egg-info/SOURCES.txt'
+[2.278s] writing manifest file 'robot_launcher.egg-info/SOURCES.txt'
+[2.281s] running build_ext
+[2.281s] Creating /home/claudio/progetto_ros2/install/robot_launcher/lib/python3.10/site-packages/robot-launcher.egg-link (link to .)
+[2.283s] Installing macchina_a_stati script to /home/claudio/progetto_ros2/install/robot_launcher/lib/robot_launcher
+[2.284s] Installing testa_e_aruco script to /home/claudio/progetto_ros2/install/robot_launcher/lib/robot_launcher
+[2.284s] 
+[2.284s] Installed /home/claudio/progetto_ros2/build/robot_launcher
+[2.285s] running symlink_data
+[2.350s] Invoked command in '/home/claudio/progetto_ros2/build/robot_launcher' returned '0': PYTHONPATH=/home/claudio/progetto_ros2/build/robot_launcher/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/claudio/progetto_ros2/install/robot_launcher/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/claudio/progetto_ros2/build/robot_launcher/build --no-deps symlink_data
