@@ -20,8 +20,12 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'testa_e_aruco = robot_nodes.testa_e_aruco:main',
-            'macchina_a_stati = robot_nodes.macchina_a_stati:main',
+            'head_movement_action_node = robot_nodes.head_movement_action_node:main',
+            'aruco_detector_node = robot_nodes.aruco_detector_node:main',
+            'ik = robot_nodes.ik:main',
+            'state_machine = robot_nodes.state_machine:main',
+            'system_monitor = robot_nodes.system_monitor:main',
+
     ],
 },
 

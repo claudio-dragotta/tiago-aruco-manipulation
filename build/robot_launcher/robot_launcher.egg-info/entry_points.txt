@@ -1,4 +1,3 @@
 [console_scripts]
-macchina_a_stati = robot_launcher.macchina_a_stati:main
-testa_e_aruco = robot_launcher.testa_e_aruco:main
+
 

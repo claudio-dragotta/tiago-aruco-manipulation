@@ -1,0 +1,28 @@
+[0.517s] Invoking command in '/home/claudio/Desktop/progetto_ros2/src/robot_nodes': PYTHONPATH=/home/claudio/Desktop/progetto_ros2/build/robot_nodes/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/robot_nodes build --build-base /home/claudio/Desktop/progetto_ros2/build/robot_nodes/build install --record /home/claudio/Desktop/progetto_ros2/build/robot_nodes/install.log --single-version-externally-managed install_data
+[0.663s] running egg_info
+[0.663s] writing ../../build/robot_nodes/robot_nodes.egg-info/PKG-INFO
+[0.663s] writing dependency_links to ../../build/robot_nodes/robot_nodes.egg-info/dependency_links.txt
+[0.663s] writing entry points to ../../build/robot_nodes/robot_nodes.egg-info/entry_points.txt
+[0.663s] writing requirements to ../../build/robot_nodes/robot_nodes.egg-info/requires.txt
+[0.664s] writing top-level names to ../../build/robot_nodes/robot_nodes.egg-info/top_level.txt
+[0.664s] reading manifest file '../../build/robot_nodes/robot_nodes.egg-info/SOURCES.txt'
+[0.665s] writing manifest file '../../build/robot_nodes/robot_nodes.egg-info/SOURCES.txt'
+[0.665s] running build
+[0.665s] running build_py
+[0.665s] copying robot_nodes/state_machine.py -> /home/claudio/Desktop/progetto_ros2/build/robot_nodes/build/lib/robot_nodes
+[0.665s] running install
+[0.666s] running install_lib
+[0.666s] copying /home/claudio/Desktop/progetto_ros2/build/robot_nodes/build/lib/robot_nodes/state_machine.py -> /home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/python3.10/site-packages/robot_nodes
+[0.666s] byte-compiling /home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/python3.10/site-packages/robot_nodes/state_machine.py to state_machine.cpython-310.pyc
+[0.667s] running install_data
+[0.667s] running install_egg_info
+[0.668s] removing '/home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/python3.10/site-packages/robot_nodes-0.0.0-py3.10.egg-info' (and everything under it)
+[0.668s] Copying ../../build/robot_nodes/robot_nodes.egg-info to /home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/python3.10/site-packages/robot_nodes-0.0.0-py3.10.egg-info
+[0.669s] running install_scripts
+[0.682s] Installing aruco_detector_node script to /home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/robot_nodes
+[0.682s] Installing head_movement_action_node script to /home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/robot_nodes
+[0.682s] Installing ik script to /home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/robot_nodes
+[0.682s] Installing state_machine script to /home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/robot_nodes
+[0.683s] Installing system_monitor script to /home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/robot_nodes
+[0.683s] writing list of installed files to '/home/claudio/Desktop/progetto_ros2/build/robot_nodes/install.log'
+[0.696s] Invoked command in '/home/claudio/Desktop/progetto_ros2/src/robot_nodes' returned '0': PYTHONPATH=/home/claudio/Desktop/progetto_ros2/build/robot_nodes/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/robot_nodes build --build-base /home/claudio/Desktop/progetto_ros2/build/robot_nodes/build install --record /home/claudio/Desktop/progetto_ros2/build/robot_nodes/install.log --single-version-externally-managed install_data

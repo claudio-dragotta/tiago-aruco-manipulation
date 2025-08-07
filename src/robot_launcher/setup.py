@@ -9,7 +9,7 @@ setup(
     data_files=[
         ('share/ament_index/resource_index/packages',
          ['resource/' + package_name]),
-        ('share/' + package_name + '/launch', ['launch/master_launch.py']),
+        ('share/' + package_name + '/launch', ['launch/tiago_launch.py']),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -20,8 +20,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'macchina_a_stati = robot_launcher.macchina_a_stati:main',
-            'testa_e_aruco = robot_launcher.testa_e_aruco:main',
+            # Gli executable sono definiti in robot_nodes/setup.py
+            # robot_launcher contiene solo i file di launch
         ],
     },
 )

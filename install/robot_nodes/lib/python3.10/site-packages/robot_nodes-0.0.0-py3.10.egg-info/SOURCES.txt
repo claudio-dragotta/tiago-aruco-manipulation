@@ -10,8 +10,11 @@ setup.py
 ../../build/robot_nodes/robot_nodes.egg-info/zip-safe
 resource/robot_nodes
 robot_nodes/__init__.py
-robot_nodes/macchina_a_stati.py
-robot_nodes/testa_e_aruco.py
+robot_nodes/aruco_detector_node.py
+robot_nodes/head_movement_action_node.py
+robot_nodes/ik.py
+robot_nodes/state_machine.py
+robot_nodes/system_monitor.py
 test/test_copyright.py
 test/test_flake8.py
 test/test_pep257.py

@@ -8,6 +8,7 @@ setup.py
 ../../build/robot_launcher/robot_launcher.egg-info/top_level.txt
 ../../build/robot_launcher/robot_launcher.egg-info/zip-safe
 launch/master_launch.py
+launch/tiago_launch.py
 resource/robot_launcher
 robot_launcher/__init__.py
 test/test_copyright.py
