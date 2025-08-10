@@ -1,3 +1,4 @@
+package.xml
 setup.cfg
 setup.py
 ../../build/robot_launcher/robot_launcher.egg-info/PKG-INFO
@@ -7,7 +8,10 @@ setup.py
 ../../build/robot_launcher/robot_launcher.egg-info/requires.txt
 ../../build/robot_launcher/robot_launcher.egg-info/top_level.txt
 ../../build/robot_launcher/robot_launcher.egg-info/zip-safe
-launch/master_launch.py
+launch/alternative_system.launch.py
+launch/debug_system.launch.py
+launch/full_system.launch.py
+launch/main_system.launch.py
 launch/tiago_launch.py
 resource/robot_launcher
 robot_launcher/__init__.py

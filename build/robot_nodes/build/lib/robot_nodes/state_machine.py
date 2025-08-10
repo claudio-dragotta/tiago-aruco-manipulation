@@ -55,7 +55,7 @@ class RobotStateMachineNode(Node):
             return
             
         if self.stato_corrente != self.ultimo_stato:
-            self.get_logger().info(f"⚡ Transizione: {self.ultimo_stato.name} → {self.stato_corrente.name}")
+            self.get_logger().info(f"Transizione: {self.ultimo_stato.name} -> {self.stato_corrente.name}")
             self.execute_current_state()
             self.ultimo_stato = self.stato_corrente
             
@@ -86,7 +86,7 @@ class RobotStateMachineNode(Node):
             self.get_logger().warn(f"Stato {self.stato_corrente} non gestito")
 
     def completed_command_callback(self, msg):
-        self.get_logger().info(f"✅ Completato: {State(msg.data).name}")
+        self.get_logger().info(f"Completato: {State(msg.data).name}")
         self.command_in_progress = False
         self.retry_count = 0
         
@@ -114,63 +114,63 @@ class RobotStateMachineNode(Node):
             self.get_logger().error(f"Transizione non definita per stato {msg.data}")
 
     def move_to_pose_1(self):
-        self.get_logger().info("🎯 Coca-Cola: Movimento verso posa 1")
+        self.get_logger().info("Coca-Cola: Movimento verso posa 1")
         self.publish_command(State.MOVE_TO_POSE_1)
         
     def move_to_pose_2(self):
-        self.get_logger().info("🎯 Coca-Cola: Avvicinamento per presa")
+        self.get_logger().info("Coca-Cola: Avvicinamento per presa")
         self.publish_command(State.MOVE_TO_POSE_2)
 
     def grip_object(self):
-        self.get_logger().info("🤏 Coca-Cola: Chiusura gripper")
+        self.get_logger().info("Coca-Cola: Chiusura gripper")
         self.publish_command(State.GRIP_OBJECT)
 
     def move_up_cola(self):
-        self.get_logger().info("⬆️  Coca-Cola: Sollevamento")
+        self.get_logger().info("Coca-Cola: Sollevamento")
         self.publish_command(State.MOVE_UP_COLA)
 
     def move_cola_to_finish(self):
-        self.get_logger().info("🎯 Coca-Cola: Trasporto a destinazione")
+        self.get_logger().info("Coca-Cola: Trasporto a destinazione")
         self.publish_command(State.MOVE_COLA_TO_FINISH)
 
     def release_object(self):
-        self.get_logger().info("🤲 Coca-Cola: Rilascio")
+        self.get_logger().info("Coca-Cola: Rilascio")
         self.publish_command(State.RELEASE_OBJECT)
 
     def move_to_home(self):
-        self.get_logger().info("🏠 Ritorno alla posizione iniziale")
+        self.get_logger().info("Ritorno alla posizione iniziale")
         self.publish_command(State.MOVE_TO_HOME)
 
     def grip_object_2(self):
-        self.get_logger().info("🤏 Pringles: Chiusura gripper")
+        self.get_logger().info("Pringles: Chiusura gripper")
         self.publish_command(State.GRIP_OBJECT_2)
 
     def release_object_2(self):
-        self.get_logger().info("🤲 Pringles: Rilascio")
+        self.get_logger().info("Pringles: Rilascio")
         self.publish_command(State.RELEASE_OBJECT_2)
 
     def move_to_pose_3(self):
-        self.get_logger().info("🎯 Pringles: Movimento verso posa 3")
+        self.get_logger().info("Pringles: Movimento verso posa 3")
         self.publish_command(State.MOVE_TO_POSE_3)
 
     def move_to_pose_4(self):
-        self.get_logger().info("🎯 Pringles: Avvicinamento per presa")
+        self.get_logger().info("Pringles: Avvicinamento per presa")
         self.publish_command(State.MOVE_TO_POSE_4)
 
     def move_up_pringles(self):
-        self.get_logger().info("⬆️  Pringles: Sollevamento")
+        self.get_logger().info("Pringles: Sollevamento")
         self.publish_command(State.MOVE_UP_PRINGLES)
 
     def move_pringles_to_finish(self):
-        self.get_logger().info("🎯 Pringles: Trasporto a destinazione")
+        self.get_logger().info("Pringles: Trasporto a destinazione")
         self.publish_command(State.MOVE_PRINGLES_TO_FINISH)
 
     def move_to_home_2(self):
-        self.get_logger().info("🏠 Ritorno finale alla posizione iniziale")
+        self.get_logger().info("Ritorno finale alla posizione iniziale")
         self.publish_command(State.MOVE_TO_HOME_2)
         
     def start_aruco_search(self):
-        self.get_logger().info("🔍 Avvio ricerca marker ArUco...")
+        self.get_logger().info("Avvio ricerca marker ArUco...")
         # Non pubblica un comando specifico, ma il sistema aspetta il callback
         self.command_in_progress = False  # Non è un comando vero, solo attesa
         

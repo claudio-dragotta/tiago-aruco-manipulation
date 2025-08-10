@@ -16,7 +16,7 @@ from std_msgs.msg import Int32
 from scipy.spatial.transform import Rotation as R
 import numpy as np
 from std_msgs.msg import Bool
-from gazebo_ros_link_attacher.srv import Attach
+# from gazebo_ros_link_attacher.srv import Attach  # TODO: Install gazebo-ros-link-attacher package
 from rclpy.action import ActionClient
 from control_msgs.action import FollowJointTrajectory
 from builtin_interfaces.msg import Duration
@@ -54,7 +54,7 @@ class KinematicPlanner(Node):
         
         import os
         current_dir = os.path.dirname(os.path.abspath(__file__))
-        urdf_loc = os.path.join(current_dir, '..', '..', '..', 'src', 'robot_nodes', 'tiago_robot.urdf')
+        urdf_loc = os.path.join(current_dir, '..', '..', '..', '..', '..', 'models', 'tiago_robot.urdf')
         urdf_loc = os.path.normpath(urdf_loc)
         self.robot = ERobot.URDF(urdf_loc)
         self.get_logger().info("URDF caricato correttamente!")
@@ -74,23 +74,26 @@ class KinematicPlanner(Node):
         self.create_subscription(JointState, '/joint_states', self.joint_states_callback, 10)
         self.create_subscription(PoseStamped, '/target_pose', self.target_pose_callback, 10)
         self.create_subscription(Int32,'/command_topic', self.command_callback, 10)
-        self.aruco_sub_1 = self.create_subscription(PoseStamped, '/aruco_pose_1', self.aruco_pose_1_callback, 10)
-        self.aruco_sub_2=self.create_subscription(PoseStamped, '/aruco_pose_2', self.aruco_pose_2_callback, 10)
-        self.aruco_sub_3=self.create_subscription(PoseStamped, '/aruco_pose_3', self.aruco_pose_3_callback, 10)
-        self.aruco_sub_4=self.create_subscription(PoseStamped, '/aruco_pose_4', self.aruco_pose_4_callback, 10)
+        self.aruco_sub_1 = self.create_subscription(PoseStamped, '/aruco_base_pose_1', self.aruco_pose_1_callback, 10)
+        self.aruco_sub_2=self.create_subscription(PoseStamped, '/aruco_base_pose_2', self.aruco_pose_2_callback, 10)
+        self.aruco_sub_3=self.create_subscription(PoseStamped, '/aruco_base_pose_3', self.aruco_pose_3_callback, 10)
+        self.aruco_sub_4=self.create_subscription(PoseStamped, '/aruco_base_pose_4', self.aruco_pose_4_callback, 10)
         self.gripper_pub = self.create_publisher(JointTrajectory, '/gripper_controller/joint_trajectory', 10)
 
         # Stato attuale dei giunti (vettore di 8: torso + 7 arm)
         self.current_joint_state = None  # np.array([torso, arm1, ..., arm7])
         self.target_pose = None  # PoseStamped
 
-        self.attach_client = self.create_client(Attach, 'attach')
-        while not self.attach_client.wait_for_service(timeout_sec=1.0):
-            self.get_logger().info('Aspettando che il servizio /attach sia disponibile...')
+        # TODO: Install gazebo-ros-link-attacher package for object manipulation
+        # self.attach_client = self.create_client(Attach, 'attach')
+        # while not self.attach_client.wait_for_service(timeout_sec=1.0):
+        #     self.get_logger().info('Aspettando che il servizio /attach sia disponibile...')
 
-        self.detach_client = self.create_client(Attach, 'detach')
-        while not self.detach_client.wait_for_service(timeout_sec=1.0):
-            self.get_logger().info('Aspettando che il servizio /detach sia disponibile...')
+        # self.detach_client = self.create_client(Attach, 'detach')
+        # while not self.detach_client.wait_for_service(timeout_sec=1.0):
+        #     self.get_logger().info('Aspettando che il servizio /detach sia disponibile...')
+        
+        self.get_logger().warn("ATTENZIONE: gazebo_ros_link_attacher non disponibile - attach/detach simulati")
         
         # Action clients per torso, arm e gripper
         self.torso_client = ActionClient(self, FollowJointTrajectory, '/torso_controller/follow_joint_trajectory')
@@ -287,12 +290,6 @@ class KinematicPlanner(Node):
 
         q_traj = []
         q_curr = q0
-        '''try:
-            qf = self.robot.ik_LM(TF, q0=q_curr)
-            self.get_logger().info(f"Posizione finale calcolata: {qf}")
-        except Exception as e:
-            self.get_logger().error(f"Errore IK finale: {e}")
-            return'''
 
         for i, T in enumerate(trajectory):
             sol = self.robot.ik_LM(T, q0=q_curr)
@@ -426,33 +423,39 @@ class KinematicPlanner(Node):
     def handle_gripper_attach(self):
         object_name = "cocacola" if self.current_state == State.GRIP_OBJECT else "pringles"
         
-        attach_request = Attach.Request()
-        attach_request.model_name_1 = 'tiago'
-        attach_request.link_name_1 = 'gripper_left_finger_link'
-        attach_request.model_name_2 = object_name
-        attach_request.link_name_2 = 'link'
+        # TODO: Install gazebo-ros-link-attacher for real object attachment
+        # attach_request = Attach.Request()
+        # attach_request.model_name_1 = 'tiago'
+        # attach_request.link_name_1 = 'gripper_left_finger_link'
+        # attach_request.model_name_2 = object_name
+        # attach_request.link_name_2 = 'link'
         
-        future = self.attach_client.call_async(attach_request)
-        self.get_logger().info(f"🔗 Attach {object_name}...")
-        future.add_done_callback(lambda f: self.publish_command_completed(self.current_state.value))
+        # future = self.attach_client.call_async(attach_request)
+        self.get_logger().info(f"[SIMULATO] Attach {object_name} - gazebo_ros_link_attacher non disponibile")
+        
+        # Simula completamento immediato
+        self.create_timer(1.0, lambda: self.publish_command_completed(self.current_state.value))
         
     def handle_gripper_detach(self):
         object_name = "cocacola" if self.current_state == State.RELEASE_OBJECT else "pringles"
         
-        detach_request = Attach.Request()
-        detach_request.model_name_1 = 'tiago'
-        detach_request.link_name_1 = 'gripper_left_finger_link'
-        detach_request.model_name_2 = object_name
-        detach_request.link_name_2 = 'link'
+        # TODO: Install gazebo-ros-link-attacher for real object detachment  
+        # detach_request = Attach.Request()
+        # detach_request.model_name_1 = 'tiago'
+        # detach_request.link_name_1 = 'gripper_left_finger_link'
+        # detach_request.model_name_2 = object_name
+        # detach_request.link_name_2 = 'link'
         
-        future = self.detach_client.call_async(detach_request)
-        self.get_logger().info(f"🔓 Detach {object_name}...")
-        future.add_done_callback(lambda f: self.publish_command_completed(self.current_state.value))
+        # future = self.detach_client.call_async(detach_request)
+        self.get_logger().info(f"[SIMULATO] Detach {object_name} - gazebo_ros_link_attacher non disponibile")
+        
+        # Simula completamento immediato
+        self.create_timer(1.0, lambda: self.publish_command_completed(self.current_state.value))
         
     def publish_command_completed(self, state_value):
         command_completed = Int32()
         command_completed.data = state_value
-        self.get_logger().info(f"✅ Comando completato: {State(state_value).name}")
+        self.get_logger().info(f"Comando completato: {State(state_value).name}")
         self.completed_command_topic.publish(command_completed)
 
 def main(args=None):

@@ -1,6 +1,0 @@
-cd ~/progetto_ros2
-colcon build 
-source install/setup.bash
-
-
-ros2 launch robot_launcher master_launch.py

@@ -1,0 +1,39 @@
+[0.653s] Invoking command in '/home/claudio/Desktop/progetto_ros2/src/robot_launcher': PYTHONPATH=/home/claudio/Desktop/progetto_ros2/build/robot_launcher/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/claudio/Desktop/progetto_ros2/install/robot_launcher/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/robot_launcher build --build-base /home/claudio/Desktop/progetto_ros2/build/robot_launcher/build install --record /home/claudio/Desktop/progetto_ros2/build/robot_launcher/install.log --single-version-externally-managed install_data
+[0.803s] running egg_info
+[0.803s] creating ../../build/robot_launcher/robot_launcher.egg-info
+[0.803s] writing ../../build/robot_launcher/robot_launcher.egg-info/PKG-INFO
+[0.803s] writing dependency_links to ../../build/robot_launcher/robot_launcher.egg-info/dependency_links.txt
+[0.803s] writing entry points to ../../build/robot_launcher/robot_launcher.egg-info/entry_points.txt
+[0.803s] writing requirements to ../../build/robot_launcher/robot_launcher.egg-info/requires.txt
+[0.803s] writing top-level names to ../../build/robot_launcher/robot_launcher.egg-info/top_level.txt
+[0.803s] writing manifest file '../../build/robot_launcher/robot_launcher.egg-info/SOURCES.txt'
+[0.804s] reading manifest file '../../build/robot_launcher/robot_launcher.egg-info/SOURCES.txt'
+[0.805s] writing manifest file '../../build/robot_launcher/robot_launcher.egg-info/SOURCES.txt'
+[0.805s] running build
+[0.805s] running build_py
+[0.805s] creating /home/claudio/Desktop/progetto_ros2/build/robot_launcher/build
+[0.805s] creating /home/claudio/Desktop/progetto_ros2/build/robot_launcher/build/lib
+[0.805s] creating /home/claudio/Desktop/progetto_ros2/build/robot_launcher/build/lib/robot_launcher
+[0.805s] copying robot_launcher/__init__.py -> /home/claudio/Desktop/progetto_ros2/build/robot_launcher/build/lib/robot_launcher
+[0.805s] running install
+[0.805s] running install_lib
+[0.806s] creating /home/claudio/Desktop/progetto_ros2/install/robot_launcher/lib/python3.10/site-packages/robot_launcher
+[0.806s] copying /home/claudio/Desktop/progetto_ros2/build/robot_launcher/build/lib/robot_launcher/__init__.py -> /home/claudio/Desktop/progetto_ros2/install/robot_launcher/lib/python3.10/site-packages/robot_launcher
+[0.806s] byte-compiling /home/claudio/Desktop/progetto_ros2/install/robot_launcher/lib/python3.10/site-packages/robot_launcher/__init__.py to __init__.cpython-310.pyc
+[0.806s] running install_data
+[0.806s] creating /home/claudio/Desktop/progetto_ros2/install/robot_launcher/share/ament_index
+[0.807s] creating /home/claudio/Desktop/progetto_ros2/install/robot_launcher/share/ament_index/resource_index
+[0.807s] creating /home/claudio/Desktop/progetto_ros2/install/robot_launcher/share/ament_index/resource_index/packages
+[0.807s] copying resource/robot_launcher -> /home/claudio/Desktop/progetto_ros2/install/robot_launcher/share/ament_index/resource_index/packages
+[0.807s] copying package.xml -> /home/claudio/Desktop/progetto_ros2/install/robot_launcher/share/robot_launcher
+[0.807s] creating /home/claudio/Desktop/progetto_ros2/install/robot_launcher/share/robot_launcher/launch
+[0.807s] copying launch/debug_system.launch.py -> /home/claudio/Desktop/progetto_ros2/install/robot_launcher/share/robot_launcher/launch
+[0.807s] copying launch/tiago_launch.py -> /home/claudio/Desktop/progetto_ros2/install/robot_launcher/share/robot_launcher/launch
+[0.808s] copying launch/full_system.launch.py -> /home/claudio/Desktop/progetto_ros2/install/robot_launcher/share/robot_launcher/launch
+[0.808s] copying launch/main_system.launch.py -> /home/claudio/Desktop/progetto_ros2/install/robot_launcher/share/robot_launcher/launch
+[0.808s] copying launch/alternative_system.launch.py -> /home/claudio/Desktop/progetto_ros2/install/robot_launcher/share/robot_launcher/launch
+[0.808s] running install_egg_info
+[0.808s] Copying ../../build/robot_launcher/robot_launcher.egg-info to /home/claudio/Desktop/progetto_ros2/install/robot_launcher/lib/python3.10/site-packages/robot_launcher-0.0.0-py3.10.egg-info
+[0.809s] running install_scripts
+[0.822s] writing list of installed files to '/home/claudio/Desktop/progetto_ros2/build/robot_launcher/install.log'
+[0.838s] Invoked command in '/home/claudio/Desktop/progetto_ros2/src/robot_launcher' returned '0': PYTHONPATH=/home/claudio/Desktop/progetto_ros2/build/robot_launcher/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/claudio/Desktop/progetto_ros2/install/robot_launcher/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/robot_launcher build --build-base /home/claudio/Desktop/progetto_ros2/build/robot_launcher/build install --record /home/claudio/Desktop/progetto_ros2/build/robot_launcher/install.log --single-version-externally-managed install_data

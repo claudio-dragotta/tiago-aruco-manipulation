@@ -18,21 +18,21 @@ class HeadMover(Node):
         self.client = ActionClient(self, FollowJointTrajectory, '/head_controller/follow_joint_trajectory')
         self.create_subscription(Bool, '/all_markers_found', self.stop_callback, 10)
 
-        self.get_logger().info('🔍 Head Movement Node pronto - in attesa di comando...')
+        self.get_logger().info('Head Movement Node pronto - in attesa di comando...')
         self.client.wait_for_server()
-        self.get_logger().info('🎯 Movimento testa disponibile')
+        self.get_logger().info('Movimento testa disponibile')
         
         # Avvia automaticamente il movimento per la ricerca ArUco
         self.send_goal()
 
     def stop_callback(self, msg):
         if msg.data:
-            self.get_logger().info('✅ Esplorazione completata - movimento testa arrestato')
+            self.get_logger().info('Esplorazione completata - movimento testa arrestato')
             self.stop = True
 
     def send_goal(self):
         if self.stop:
-            self.get_logger().info('⏹️  Movimento testa interrotto')
+            self.get_logger().info('Movimento testa interrotto')
             return
 
         goal = FollowJointTrajectory.Goal()
@@ -51,7 +51,7 @@ class HeadMover(Node):
         if not goal_handle.accepted:
             self.get_logger().error('Goal rifiutato!')
             return
-        self.get_logger().info(f'🔄 Scansione direzione {"sinistra" if self.direction > 0 else "destra"}')
+        self.get_logger().info(f'Scansione direzione {"sinistra" if self.direction > 0 else "destra"}')
         goal_handle.get_result_async().add_done_callback(self.goal_done)
 
     def goal_done(self, future):

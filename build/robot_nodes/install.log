@@ -1,12 +1,10 @@
 /home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/python3.10/site-packages/robot_nodes/state_machine.py
 /home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/python3.10/site-packages/robot_nodes/ik.py
-/home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/python3.10/site-packages/robot_nodes/system_monitor.py
 /home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/python3.10/site-packages/robot_nodes/__init__.py
 /home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/python3.10/site-packages/robot_nodes/head_movement_action_node.py
 /home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/python3.10/site-packages/robot_nodes/aruco_detector_node.py
 /home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/python3.10/site-packages/robot_nodes/__pycache__/state_machine.cpython-310.pyc
 /home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/python3.10/site-packages/robot_nodes/__pycache__/ik.cpython-310.pyc
-/home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/python3.10/site-packages/robot_nodes/__pycache__/system_monitor.cpython-310.pyc
 /home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/python3.10/site-packages/robot_nodes/__pycache__/__init__.cpython-310.pyc
 /home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/python3.10/site-packages/robot_nodes/__pycache__/head_movement_action_node.cpython-310.pyc
 /home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/python3.10/site-packages/robot_nodes/__pycache__/aruco_detector_node.cpython-310.pyc
@@ -22,5 +20,6 @@
 /home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/robot_nodes/aruco_detector_node
 /home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/robot_nodes/head_movement_action_node
 /home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/robot_nodes/ik
+/home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/robot_nodes/macchina_a_stati
 /home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/robot_nodes/state_machine
-/home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/robot_nodes/system_monitor
+/home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/robot_nodes/testa_e_aruco
