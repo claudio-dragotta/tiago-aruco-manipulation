@@ -77,8 +77,12 @@ class ArucoDetector(Node):
         self.poses_dict = {}
         self.already_published = False
         
-        # Timer per debug periodico
-        self.create_timer(5.0, self.debug_status)
+        # Controllo log per evitare spam
+        self.last_logged_markers = set()
+        self.detection_count = 0
+        
+        # Timer per debug periodico (ogni 10 secondi invece di 5)
+        self.create_timer(10.0, self.debug_status)
 
         self.get_logger().info('Nodo ArUco inizializzato con parametri debug.')
 
@@ -110,7 +114,11 @@ class ArucoDetector(Node):
             # Disegna i marker se presenti
             if ids is not None:
                 cv2.aruco.drawDetectedMarkers(debug_img, corners, ids)
-                self.get_logger().info(f'RILEVATI {len(ids)} marker: {ids.flatten().tolist()}')
+                # Log solo se ci sono nuovi marker rispetto all'ultima detection
+                current_markers = set(ids.flatten().tolist())
+                if current_markers != self.last_logged_markers:
+                    self.get_logger().info(f'RILEVATI {len(ids)} marker: {ids.flatten().tolist()}')
+                    self.last_logged_markers = current_markers
             
             # Aggiungi testo debug all'immagine
             cv2.putText(debug_img, f'Immagini: {self.image_count}', (10, 30), 
@@ -136,12 +144,7 @@ class ArucoDetector(Node):
         for i, marker_id in enumerate(ids.flatten()):
             marker_id_int = int(marker_id)
             
-            # Rilevamento progressivo: anche se già trovato, processa sempre
-            if marker_id_int not in self.found_ids:
-                self.found_ids.add(marker_id_int)
-                self.get_logger().info(f'NUOVO MARKER SCOPERTO: {marker_id_int} (totale: {len(self.found_ids)}/4)')
-            
-            # Processa sempre per aggiornare pose anche di marker già noti
+            # Processa marker per ottenere la pose PRIMA di loggarla
             rvec = rvecs[i][0]  
             tvec = tvecs[i][0]
 
@@ -156,22 +159,25 @@ class ArucoDetector(Node):
                     timeout=rclpy.duration.Duration(seconds=1.0)
                 )
             except Exception as e:
-                self.get_logger().warn(f"TF lookup fallito: {e}")
+                self.get_logger().warn(f"TF lookup fallito per marker {marker_id_int}: {e}")
                 continue
 
+            # Costruzione matrice trasformazione camera->base
             t = transform.transform.translation
             q = transform.transform.rotation
             T_cb = transforms3d.quaternions.quat2mat([q.w, q.x, q.y, q.z])
             T_cb = np.vstack((np.hstack((T_cb, np.zeros((3,1)))), [0, 0, 0, 1]))
             T_cb[:3, 3] = [t.x, t.y, t.z]
 
+            # Costruzione matrice trasformazione camera->marker
             T_cm = transforms3d.quaternions.quat2mat(quat_cm)
             T_cm = np.vstack((np.hstack((T_cm, np.zeros((3,1)))), [0, 0, 0, 1]))
             T_cm[:3, 3] = tvec
-
+            
+            # Trasformazione finale: base_footprint <- camera <- marker
             T_base_marker = np.dot(T_cb, T_cm)
 
-            # Pose in base_footprint frame (only one we need)
+            # Pose in base_footprint frame
             base_pose = PoseStamped()
             base_pose.header.stamp = self.get_clock().now().to_msg()
             base_pose.header.frame_id = 'base_footprint'
@@ -184,28 +190,44 @@ class ArucoDetector(Node):
             base_pose.pose.orientation.y = float(q_bm[2])
             base_pose.pose.orientation.z = float(q_bm[3])
 
-            # Pubblica sui topic corretti per entrambi i sistemi
+            # Rilevamento progressivo: log solo per marker NUOVI con posizione
+            if marker_id_int not in self.found_ids:
+                self.found_ids.add(marker_id_int)
+                pos = base_pose.pose.position
+                self.get_logger().info(f'NUOVO MARKER {marker_id_int} SCOPERTO! Posizione Base: ({pos.x:.2f}, {pos.y:.2f}, {pos.z:.2f}) - Totale: {len(self.found_ids)}/4')
+                
+                # Notifica scoperta alla state machine
+                discovery_msg = Int32()
+                discovery_msg.data = marker_id_int
+                self.discovery_pub.publish(discovery_msg)
+                self.get_logger().info(f'Notificato nuovo marker {marker_id_int} alla state machine')
+
+            # Validazione pose: verifica che sia ragionevole (solo per marker nuovi)
+            if marker_id_int not in self.poses_dict:
+                final_pos = T_base_marker[:3, 3]
+                distance_from_robot = np.sqrt(final_pos[0]**2 + final_pos[1]**2)
+                
+                if distance_from_robot > 3.0:
+                    self.get_logger().warn(f"ATTENZIONE: Marker {marker_id_int} molto lontano ({distance_from_robot:.2f}m)")
+                elif distance_from_robot < 0.3:
+                    self.get_logger().warn(f"ATTENZIONE: Marker {marker_id_int} molto vicino ({distance_from_robot:.2f}m)")
+                
+                if final_pos[2] < -0.1:
+                    self.get_logger().warn(f"ATTENZIONE: Marker {marker_id_int} sotto il livello robot (z={final_pos[2]:.2f}m)")
+                elif final_pos[2] > 2.0:
+                    self.get_logger().warn(f"ATTENZIONE: Marker {marker_id_int} troppo alto (z={final_pos[2]:.2f}m)")
+
+            # Pubblica pose sui topic corretti
             if marker_id_int in self.pose_publishers:
                 # Topic principale per IK node (/aruco_base_pose_X)
                 self.pose_publishers[marker_id_int].publish(base_pose)
                 # Topic addizionale per macchina_a_stati (/aruco_pose_base_X)
                 if marker_id_int in self.pose_base_publishers:
                     self.pose_base_publishers[marker_id_int].publish(base_pose)
-                    
-                self.get_logger().info(f'ArUco {marker_id_int} pubblicato sui topic di comunicazione')
             else:
-                self.get_logger().warn(f"ID {marker_id_int} fuori range")
+                self.get_logger().warn(f"Marker ID {marker_id_int} fuori range (1-4)")
 
-            self.get_logger().info(f'ArUco {marker_id_int} rilevato: '
-                                   f'Base({base_pose.pose.position.x:.2f}, {base_pose.pose.position.y:.2f}, {base_pose.pose.position.z:.2f})')
-            
-            # Notifica scoperta SOLO per marker nuovi (non re-detection)
-            if marker_id_int not in self.poses_dict:
-                discovery_msg = Int32()
-                discovery_msg.data = marker_id_int
-                self.discovery_pub.publish(discovery_msg)
-                self.get_logger().info(f'📢 SEGNALATO NUOVO MARKER {marker_id_int} alla state machine')
-
+            # Pubblica TF transform
             tf_msg = TransformStamped()
             tf_msg.header.stamp = base_pose.header.stamp
             tf_msg.header.frame_id = 'base_footprint'
@@ -216,49 +238,70 @@ class ArucoDetector(Node):
             tf_msg.transform.rotation = base_pose.pose.orientation
             self.tf_broadcaster.sendTransform(tf_msg)
 
+            # Salva pose nel dizionario
             self.poses_dict[marker_id_int] = base_pose
 
-        # Condizione più flessibile: procede quando ha trovato almeno 2 marker 
-        # (o tutti e 4 se li trova rapidamente)
-        if len(self.found_ids) >= 2 and not self.already_published:
-            # Aspetta un po' per vedere se trova altri marker
-            if not hasattr(self, 'discovery_timer_started'):
-                self.get_logger().info(f'⏳ Trovati {len(self.found_ids)}/4 marker. Aspetto 10 secondi per eventuali altri...')
-                self.create_timer(10.0, self.finalize_discovery)
-                self.discovery_timer_started = True
-        elif len(self.found_ids) >= 4 and not self.already_published:
-            # Se trova tutti e 4, procede immediatamente
+        # Verifica stato scoperta marker
+        if len(self.found_ids) >= 4 and not self.already_published:
+            self.get_logger().info(f'TUTTI I 4 MARKER TROVATI: {sorted(list(self.found_ids))} - Proceeding alla manipolazione!')
             self.finalize_discovery()
+        elif len(self.found_ids) > 0 and len(self.found_ids) < 4:
+            # Log progresso solo ogni 20 detection per evitare spam
+            if self.detection_attempts % 20 == 0:
+                missing_markers = set([1, 2, 3, 4]) - self.found_ids
+                self.get_logger().info(f'Progresso: {len(self.found_ids)}/4 marker trovati. Mancano: {sorted(list(missing_markers))}')
 
     def finalize_discovery(self):
         """Finalizza la fase di scoperta dei marker"""
         if self.already_published:
             return
             
-        self.get_logger().info(f'FASE SCOPERTA COMPLETATA! Marker trovati: {len(self.found_ids)}/4 -> {sorted(list(self.found_ids))}')
-        self.get_logger().info('📍 Posizioni salvate per la manipolazione. Sistema pronto!')
+        self.get_logger().info(f'FASE SCOPERTA COMPLETATA!')
+        self.get_logger().info(f'Marker rilevati: {sorted(list(self.found_ids))} ({len(self.found_ids)}/4)')
         
-        # Segnala alla state machine che può procedere con la manipolazione
+        # Stampa riassunto posizioni per debug
+        for marker_id in sorted(list(self.found_ids)):
+            if marker_id in self.poses_dict:
+                pos = self.poses_dict[marker_id].pose.position
+                self.get_logger().info(f'  - Marker {marker_id}: ({pos.x:.2f}, {pos.y:.2f}, {pos.z:.2f})')
+        
+        self.get_logger().info('Sistema pronto per la manipolazione!')
+        
+        # Segnala alla state machine che può procedere
         self.stop_pub.publish(Bool(data=True))
-        self.already_published = True
-        
-        # Mantiene la finestra debug aperta per monitoraggio durante manipolazione
-        # cv2.destroyAllWindows()  
+        self.already_published = True  
 
     def debug_status(self):
         """Debug periodico dello stato del detector"""
-        self.get_logger().info(f'=== DEBUG ARUCO ===')
+        self.get_logger().info(f'=== STATO ARUCO DETECTOR ===')
         self.get_logger().info(f'Immagini ricevute: {self.image_count}')
         self.get_logger().info(f'Tentativi detection: {self.detection_attempts}')
-        self.get_logger().info(f'Camera calibrata: {self.camera_matrix is not None}')
-        self.get_logger().info(f'Marker trovati: {len(self.found_ids)}/4 -> {list(self.found_ids)}')
+        self.get_logger().info(f'Camera calibrata: {"SI" if self.camera_matrix is not None else "NO"}')
         
+        if len(self.found_ids) > 0:
+            self.get_logger().info(f'Marker trovati: {len(self.found_ids)}/4 -> {sorted(list(self.found_ids))}')
+            # Mostra posizioni dei marker trovati
+            for marker_id in sorted(list(self.found_ids)):
+                if marker_id in self.poses_dict:
+                    pos = self.poses_dict[marker_id].pose.position
+                    dist = np.sqrt(pos.x**2 + pos.y**2)
+                    self.get_logger().info(f'  Marker {marker_id}: ({pos.x:.1f}, {pos.y:.1f}, {pos.z:.1f}) dist={dist:.1f}m')
+        else:
+            self.get_logger().info('Marker trovati: 0/4')
+            
+        if len(self.found_ids) < 4:
+            missing = set([1, 2, 3, 4]) - self.found_ids
+            self.get_logger().info(f'Mancano ancora: {sorted(list(missing))}')
+        
+        # Diagnostica problemi
         if self.image_count == 0:
             self.get_logger().warn('PROBLEMA: Nessuna immagine ricevuta! Verifica topic camera.')
         elif self.camera_matrix is None:
             self.get_logger().warn('PROBLEMA: Camera info non ricevuta! Verifica topic camera_info.')
         elif self.detection_attempts > 100 and len(self.found_ids) == 0:
             self.get_logger().warn('PROBLEMA: Molti tentativi ma nessun marker rilevato! Verifica marker ArUco nella scena.')
+        
+        self.get_logger().info('===============================')
 
 def main(args=None):
     rclpy.init(args=args)

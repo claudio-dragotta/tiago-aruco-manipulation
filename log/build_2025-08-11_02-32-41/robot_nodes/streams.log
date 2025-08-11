@@ -1,0 +1,20 @@
+[0.570s] Invoking command in '/home/claudio/Desktop/progetto_ros2/build/robot_nodes': PYTHONPATH=/home/claudio/Desktop/progetto_ros2/build/robot_nodes/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/claudio/Desktop/progetto_ros2/build/robot_nodes/build --no-deps symlink_data
+[0.740s] running develop
+[0.838s] running egg_info
+[0.838s] writing robot_nodes.egg-info/PKG-INFO
+[0.838s] writing dependency_links to robot_nodes.egg-info/dependency_links.txt
+[0.838s] writing entry points to robot_nodes.egg-info/entry_points.txt
+[0.838s] writing requirements to robot_nodes.egg-info/requires.txt
+[0.838s] writing top-level names to robot_nodes.egg-info/top_level.txt
+[0.839s] reading manifest file 'robot_nodes.egg-info/SOURCES.txt'
+[0.840s] writing manifest file 'robot_nodes.egg-info/SOURCES.txt'
+[0.841s] running build_ext
+[0.841s] Creating /home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/python3.10/site-packages/robot-nodes.egg-link (link to .)
+[0.841s] Installing aruco_detector_node script to /home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/robot_nodes
+[0.841s] Installing head_movement_action_node script to /home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/robot_nodes
+[0.841s] Installing ik script to /home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/robot_nodes
+[0.841s] Installing state_machine script to /home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/robot_nodes
+[0.841s] 
+[0.841s] Installed /home/claudio/Desktop/progetto_ros2/build/robot_nodes
+[0.841s] running symlink_data
+[0.862s] Invoked command in '/home/claudio/Desktop/progetto_ros2/build/robot_nodes' returned '0': PYTHONPATH=/home/claudio/Desktop/progetto_ros2/build/robot_nodes/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/claudio/Desktop/progetto_ros2/install/robot_nodes/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/claudio/Desktop/progetto_ros2/build/robot_nodes/build --no-deps symlink_data

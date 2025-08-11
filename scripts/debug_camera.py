@@ -39,21 +39,21 @@ def main():
     for topic in camera_topics:
         output = run_command(f"ros2 topic info {topic}")
         if "not found" not in output.lower() and "error" not in output.lower():
-            print(f"  ✅ {topic} - DISPONIBILE")
+            print(f"  {topic} - DISPONIBILE")
             # Verifica frequenza
             hz_output = run_command(f"timeout 3 ros2 topic hz {topic}")
             if "average rate" in hz_output:
                 hz = hz_output.split("average rate: ")[1].split("\n")[0]
-                print(f"     📊 Frequenza: {hz}")
+                print(f"     Frequenza: {hz}")
         else:
-            print(f"  ❌ {topic} - NON DISPONIBILE")
+            print(f"  {topic} - NON DISPONIBILE")
     
     print("\n3. Verifica nodi camera...")
     nodes = run_command("ros2 node list")
     print("Nodi attivi:")
     for node in nodes.split('\n'):
         if any(keyword in node.lower() for keyword in ['camera', 'gazebo', 'tiago']):
-            print(f"  🔧 {node}")
+            print(f"  {node}")
     
     print("\n4. Comandi utili per debug:")
     print("  # Visualizza immagini camera:")

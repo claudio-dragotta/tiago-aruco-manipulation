@@ -24,8 +24,6 @@ setup(
             'aruco_detector_node = robot_nodes.aruco_detector_node:main',
             'ik = robot_nodes.ik:main',
             'state_machine = robot_nodes.state_machine:main',
-            'macchina_a_stati = robot_nodes.macchina_a_stati:main',
-            'testa_e_aruco = robot_nodes.testa_e_aruco:main',
         ],
     },
 

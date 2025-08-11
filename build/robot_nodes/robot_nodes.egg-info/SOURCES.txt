@@ -14,6 +14,10 @@ robot_nodes/aruco_detector_node.py
 robot_nodes/head_movement_action_node.py
 robot_nodes/ik.py
 robot_nodes/state_machine.py
-test/test_copyright.py
-test/test_flake8.py
-test/test_pep257.py
+robot_nodes.egg-info/PKG-INFO
+robot_nodes.egg-info/SOURCES.txt
+robot_nodes.egg-info/dependency_links.txt
+robot_nodes.egg-info/entry_points.txt
+robot_nodes.egg-info/requires.txt
+robot_nodes.egg-info/top_level.txt
+robot_nodes.egg-info/zip-safe

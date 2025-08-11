@@ -1,0 +1,14 @@
+running develop
+running egg_info
+writing robot_launcher.egg-info/PKG-INFO
+writing dependency_links to robot_launcher.egg-info/dependency_links.txt
+writing entry points to robot_launcher.egg-info/entry_points.txt
+writing requirements to robot_launcher.egg-info/requires.txt
+writing top-level names to robot_launcher.egg-info/top_level.txt
+reading manifest file 'robot_launcher.egg-info/SOURCES.txt'
+writing manifest file 'robot_launcher.egg-info/SOURCES.txt'
+running build_ext
+Creating /home/claudio/Desktop/progetto_ros2/install/robot_launcher/lib/python3.10/site-packages/robot-launcher.egg-link (link to .)
+
+Installed /home/claudio/Desktop/progetto_ros2/build/robot_launcher
+running symlink_data
