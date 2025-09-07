@@ -77,6 +77,15 @@ class ArucoDetector(Node):
         self.poses_dict = {}
         self.already_published = False
         
+        # Sistema automatico di calcolo distanze ottimali
+        self.aruco_size = 0.06  # Dimensione marker ArUco (6cm)
+        self.object_configs = {
+            1: {"width": 0.065, "height": 0.24, "type": "bottle", "name": "Coca-Cola"},
+            2: {"width": 0.08, "height": 0.25, "type": "cylinder", "name": "Pringles"},
+            3: {"type": "destination", "name": "Dest_CocaCola"},
+            4: {"type": "destination", "name": "Dest_Pringles"}
+        }
+        
         # Controllo log per evitare spam
         self.last_logged_markers = set()
         self.detection_count = 0
@@ -217,11 +226,14 @@ class ArucoDetector(Node):
                 elif final_pos[2] > 2.0:
                     self.get_logger().warn(f"ATTENZIONE: Marker {marker_id_int} troppo alto (z={final_pos[2]:.2f}m)")
 
+            # CALCOLO AUTOMATICO pose ottimali per manipolazione
+            optimized_poses = self.calculate_optimal_manipulation_poses(marker_id_int, base_pose)
+            
             # Pubblica pose sui topic corretti
             if marker_id_int in self.pose_publishers:
-                # Topic principale per IK node (/aruco_base_pose_X)
-                self.pose_publishers[marker_id_int].publish(base_pose)
-                # Topic addizionale per macchina_a_stati (/aruco_pose_base_X)
+                # Topic principale per IK node (/aruco_base_pose_X) - USA POSE OTTIMIZZATA
+                self.pose_publishers[marker_id_int].publish(optimized_poses["manipulation"])
+                # Topic addizionale per macchina_a_stati (/aruco_pose_base_X) - Pose originale
                 if marker_id_int in self.pose_base_publishers:
                     self.pose_base_publishers[marker_id_int].publish(base_pose)
             else:
@@ -302,6 +314,64 @@ class ArucoDetector(Node):
             self.get_logger().warn('PROBLEMA: Molti tentativi ma nessun marker rilevato! Verifica marker ArUco nella scena.')
         
         self.get_logger().info('===============================')
+
+    def calculate_optimal_manipulation_poses(self, marker_id, original_pose):
+        """
+        SISTEMA AUTOMATICO: Calcola pose ottimali per manipolazione
+        basate su dimensioni oggetto, geometria ArUco e distanza dal robot
+        """
+        if marker_id not in self.object_configs:
+            # Marker sconosciuto, usa pose originale
+            return {"manipulation": original_pose}
+            
+        config = self.object_configs[marker_id]
+        pos = original_pose.pose.position
+        
+        # Calcola distanza dal robot per aggiustamenti dinamici
+        distance_from_robot = np.sqrt(pos.x**2 + pos.y**2)
+        
+        # Parametri base per calcolo automatico
+        aruco_to_object_center = self.aruco_size / 2  # 3cm dall'ArUco al centro oggetto
+        safety_margin = 0.015  # 1.5cm margine di sicurezza
+        
+        # Calcolo offset ottimale basato su tipo oggetto e distanza
+        if config["type"] == "bottle":
+            # Coca-Cola: bottiglia stretta, serve più precisione
+            optimal_approach = aruco_to_object_center + 0.055 + safety_margin  # ~7.5cm (+2cm)
+            if distance_from_robot > 1.0:
+                optimal_approach += 0.01  # +1cm se lontano
+        elif config["type"] == "cylinder":
+            # Pringles: cilindro più largo, più facile da afferrare
+            optimal_approach = aruco_to_object_center + 0.045 + safety_margin  # ~6.5cm (+2cm)
+            if distance_from_robot > 1.0:
+                optimal_approach += 0.005  # +0.5cm se lontano
+        else:
+            # Destinazioni: usa distanza standard
+            optimal_approach = aruco_to_object_center + 0.05 + safety_margin  # ~7cm (+2cm)
+        
+        # Crea nuova pose ottimizzata
+        optimized_pose = PoseStamped()
+        optimized_pose.header = original_pose.header
+        
+        # Calcola vettore di avvicinamento (verso il robot)
+        if distance_from_robot > 0.001:
+            approach_vector = np.array([-pos.x, -pos.y]) / distance_from_robot
+            offset = approach_vector * optimal_approach
+        else:
+            offset = np.array([optimal_approach, 0.0])  # Fallback
+        
+        # Applica offset ottimizzato
+        optimized_pose.pose.position.x = pos.x + offset[0]
+        optimized_pose.pose.position.y = pos.y + offset[1] 
+        optimized_pose.pose.position.z = pos.z  # Mantieni altezza originale
+        optimized_pose.pose.orientation = original_pose.pose.orientation
+        
+        self.get_logger().info(f"AUTO-CALC Marker {marker_id} ({config['name']}):")
+        self.get_logger().info(f"   Originale:   [{pos.x:.3f}, {pos.y:.3f}, {pos.z:.3f}]")
+        self.get_logger().info(f"   Ottimizzata: [{optimized_pose.pose.position.x:.3f}, {optimized_pose.pose.position.y:.3f}, {optimized_pose.pose.position.z:.3f}]")
+        self.get_logger().info(f"   Offset calcolato: {optimal_approach:.3f}m per {config['type']}")
+        
+        return {"manipulation": optimized_pose, "original": original_pose}
 
 def main(args=None):
     rclpy.init(args=args)

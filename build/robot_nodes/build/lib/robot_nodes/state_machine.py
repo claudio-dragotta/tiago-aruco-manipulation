@@ -7,14 +7,14 @@ class State(Enum):
     WAITING_FOR_ARUCO = 1
     INTERMEDIATE_CONFIG = 2
     OPERATIONAL_CONFIG = 3
-    # Oggetto 1 (Pringles): marker 1 -> marker 3
+    # Oggetto 1 (Coca-Cola): marker 1 -> marker 3
     MOVE_TO_OBJECT_1 = 4
     GRIP_OBJECT_1 = 5
     LIFT_OBJECT_1 = 6
     MOVE_TO_DEST_1 = 7
     RELEASE_OBJECT_1 = 8
     RETURN_HOME_1 = 9
-    # Oggetto 2 (Coca-Cola): marker 2 -> marker 4  
+    # Oggetto 2 (Pringles): marker 2 -> marker 4  
     MOVE_TO_OBJECT_2 = 10
     GRIP_OBJECT_2 = 11
     LIFT_OBJECT_2 = 12
@@ -60,6 +60,15 @@ class RobotStateMachineNode(Node):
             self.get_logger().info(f"Transizione: {self.ultimo_stato.name} -> {self.stato_corrente.name}")
             self.execute_current_state()
             self.ultimo_stato = self.stato_corrente
+        else:
+            # Debug: log solo ogni 10 cicli per evitare spam quando aspetta
+            if hasattr(self, 'debug_counter'):
+                self.debug_counter += 1
+            else:
+                self.debug_counter = 1
+                
+            if self.debug_counter % 10 == 0:
+                self.get_logger().debug(f"In attesa - Stato corrente: {self.stato_corrente.name}, Command in progress: {self.command_in_progress}")
             
     def execute_current_state(self):
         state_actions = {
