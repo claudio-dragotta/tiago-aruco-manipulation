@@ -1,1 +1,0 @@
-/home/claudio/Desktop/progetto_ros2/src/robot_launcher/launch/full_system.launch.py

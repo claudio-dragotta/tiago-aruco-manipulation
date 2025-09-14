@@ -105,21 +105,21 @@ class RobotStateMachineNode(Node):
         
         state_transitions = {
             State.INTERMEDIATE_CONFIG.value: State.OPERATIONAL_CONFIG,
-            State.OPERATIONAL_CONFIG.value: State.MOVE_TO_OBJECT_1,
-            # Sequenza Oggetto 1 (Coca-Cola)
-            State.MOVE_TO_OBJECT_1.value: State.GRIP_OBJECT_1,
-            State.GRIP_OBJECT_1.value: State.LIFT_OBJECT_1,
-            State.LIFT_OBJECT_1.value: State.MOVE_TO_DEST_1,
-            State.MOVE_TO_DEST_1.value: State.RELEASE_OBJECT_1,
-            State.RELEASE_OBJECT_1.value: State.RETURN_HOME_1,
-            State.RETURN_HOME_1.value: State.MOVE_TO_OBJECT_2,
-            # Sequenza Oggetto 2 (Pringles)
+            State.OPERATIONAL_CONFIG.value: State.MOVE_TO_OBJECT_2,
+            # Sequenza Oggetto 1 (Coca-Cola): MARKER 2 -> MARKER 4 (PRIMA)
             State.MOVE_TO_OBJECT_2.value: State.GRIP_OBJECT_2,
             State.GRIP_OBJECT_2.value: State.LIFT_OBJECT_2,
             State.LIFT_OBJECT_2.value: State.MOVE_TO_DEST_2,
             State.MOVE_TO_DEST_2.value: State.RELEASE_OBJECT_2,
             State.RELEASE_OBJECT_2.value: State.RETURN_HOME_2,
-            State.RETURN_HOME_2.value: State.COMPLETED
+            State.RETURN_HOME_2.value: State.MOVE_TO_OBJECT_1,
+            # Sequenza Oggetto 2 (Pringles): MARKER 1 -> MARKER 3 (SECONDA)
+            State.MOVE_TO_OBJECT_1.value: State.GRIP_OBJECT_1,
+            State.GRIP_OBJECT_1.value: State.LIFT_OBJECT_1,
+            State.LIFT_OBJECT_1.value: State.MOVE_TO_DEST_1,
+            State.MOVE_TO_DEST_1.value: State.RELEASE_OBJECT_1,
+            State.RELEASE_OBJECT_1.value: State.RETURN_HOME_1,
+            State.RETURN_HOME_1.value: State.COMPLETED
         }
         
         next_state = state_transitions.get(msg.data)
@@ -128,34 +128,34 @@ class RobotStateMachineNode(Node):
         else:
             self.get_logger().error(f"Transizione non definita per stato {msg.data}")
 
-    # === OGGETTO 1 (COCA-COLA): MARKER 1 -> MARKER 3 ===
+    # === OGGETTO 1 (PRINGLES): MARKER 1 -> MARKER 3 (SECONDA) ===
     def move_to_object_1(self):
-        self.get_logger().info("Coca-Cola: Movimento verso oggetto 1 (ArUco marker 1)")
+        self.get_logger().info("Pringles: Movimento verso oggetto 1 (ArUco marker 1) - SECONDA")
         self.publish_command(State.MOVE_TO_OBJECT_1)
         
     def grip_object_1(self):
-        self.get_logger().info("Coca-Cola: Chiusura gripper per prendere oggetto")
+        self.get_logger().info("Pringles: Chiusura gripper per prendere oggetto")
         self.publish_command(State.GRIP_OBJECT_1)
 
     def lift_object_1(self):
-        self.get_logger().info("Coca-Cola: Sollevamento oggetto")
+        self.get_logger().info("Pringles: Sollevamento oggetto")
         self.publish_command(State.LIFT_OBJECT_1)
 
     def move_to_dest_1(self):
-        self.get_logger().info("Coca-Cola: Trasporto a destinazione (ArUco marker 3)")
+        self.get_logger().info("Pringles: Trasporto a destinazione (ArUco marker 3)")
         self.publish_command(State.MOVE_TO_DEST_1)
 
     def release_object_1(self):
-        self.get_logger().info("Coca-Cola: Rilascio oggetto")
+        self.get_logger().info("Pringles: Rilascio oggetto")
         self.publish_command(State.RELEASE_OBJECT_1)
 
     def return_home_1(self):
-        self.get_logger().info("Ritorno alla posizione iniziale dopo oggetto 1")
+        self.get_logger().info("Ritorno finale alla posizione iniziale")
         self.publish_command(State.RETURN_HOME_1)
 
-    # === OGGETTO 2 (PRINGLES): MARKER 2 -> MARKER 4 ===
+    # === OGGETTO 2 (COCA-COLA): MARKER 2 -> MARKER 4 (PRIMA) ===
     def move_to_object_2(self):
-        self.get_logger().info("Pringles: Movimento verso oggetto 2 (ArUco marker 2)")
+        self.get_logger().info("Coca-Cola: Movimento verso oggetto 2 (ArUco marker 2) - PRIMA")
         self.publish_command(State.MOVE_TO_OBJECT_2)
 
     def grip_object_2(self):

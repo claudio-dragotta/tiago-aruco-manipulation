@@ -44,7 +44,21 @@ def generate_launch_description():
         ]
     )
 
-    # RViz viene già avviato automaticamente da TIAGo gazebo launch
+    # 2. Avvio RViz con configurazione TIAGo (separato per maggiore controllo)
+    rviz_launch = TimerAction(
+        period=15.0,  # Avvia dopo che Gazebo è caricato
+        actions=[
+            LogInfo(msg=[
+                "Avvio RViz con configurazione TIAGo...\n",
+                "===================================="
+            ]),
+            ExecuteProcess(
+                cmd=['bash', '-c', 
+                     '. /opt/ros/humble/setup.bash && cd /home/claudio/tiago_public_ws && . install/setup.bash && ros2 run rviz2 rviz2 -d $(ros2 pkg prefix tiago_2dnav)/share/tiago_2dnav/config/rviz/navigation.rviz'],
+                output='screen'
+            )
+        ]
+    )
 
     # 3. Nodi principali con timing coordinato (dopo caricamento Gazebo)
     # PRIMO: State Machine - coordina tutto il processo
@@ -109,14 +123,19 @@ def generate_launch_description():
             LogInfo(msg=[
                 "=== SISTEMA COMPLETO PRONTO ===\n",
                 "Gazebo: ATTIVO con TIAGo caricato\n",
-                "RViz: ATTIVO per visualizzazione\n", 
+                "RViz: ATTIVO per visualizzazione (15s dopo Gazebo)\n", 
                 "TiAGO: Configurazione completata\n",
                 "ArUco System: ATTIVO e in scansione\n",
                 "State Machine: ATTIVA\n",
+                "\nMIGLIORIE ATTIVE:\n",
+                "✓ Gripper più vicino agli oggetti (5-5.5cm invece di 6-6.5cm)\n",
+                "✓ Pringles: movimento verso il basso (-5cm) e avanti (-1cm)\n", 
+                "✓ Movimenti più lenti per evitare urti con tavolo\n",
+                "✓ Timer sincronizzati con velocità movimento\n",
                 "\nISTRUZIONI:\n",
                 "1. Posizionare 4 marker ArUco (ID: 1,2,3,4) davanti alla camera TiAGo\n",
                 "2. Il robot inizierà automaticamente la scansione\n",
-                "3. Dopo rilevamento marker -> manipolazione automatica\n",
+                "3. Dopo rilevamento marker -> manipolazione automatica MIGLIORATA\n",
                 "\nMONITORING:\n",
                 "   ros2 topic echo /all_markers_found\n",
                 "   ros2 topic echo /marker_discovered\n",
@@ -127,7 +146,8 @@ def generate_launch_description():
 
     return LaunchDescription([
         welcome_msg,           # t=0s - Messaggio iniziale
-        gazebo_launch,         # t=2s - Avvia TIAGo (include già RViz)
+        gazebo_launch,         # t=2s - Avvia TIAGo 
+        rviz_launch,           # t=15s - Avvia RViz separatamente
         state_machine_node,    # t=18s - State Machine (PRIMO - coordina tutto)
         aruco_detector_node,   # t=20s - ArUco Detector (SECONDO - rileva marker)
         head_movement_action_node, # t=22s - Head Movement (TERZO - scansione)

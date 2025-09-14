@@ -93,26 +93,76 @@ class KinematicPlanner(Node):
             2: {"width": 0.08, "height": 0.25, "type": "cylinder"}  # Pringles
         }
         self.gripper_width = 0.088  # Apertura massima gripper (8.8cm)
+        self.gripper_finger_length = 0.06  # Lunghezza dito gripper (6cm stimato)
 
         # TODO: Install gazebo-ros-link-attacher package for object manipulation
         # self.attach_client = self.create_client(Attach, '/link_attacher_node/attach')
         # self.detach_client = self.create_client(Attach, '/link_attacher_node/detach')
-        
+
         self.get_logger().warn("ATTENZIONE: gazebo_ros_link_attacher non disponibile - attach/detach simulati")
-        
+
         # Action clients per torso, arm e gripper
         self.torso_client = ActionClient(self, FollowJointTrajectory, '/torso_controller/follow_joint_trajectory')
         self.arm_client   = ActionClient(self, FollowJointTrajectory, '/arm_controller/follow_joint_trajectory')
         self.gripper_client = ActionClient(self, FollowJointTrajectory, '/gripper_controller/follow_joint_trajectory')
-        
+
         # Timer management - mantieni riferimenti per cancellazione
         self.active_timer = None
         self.gripper_timer = None
         self.command_executed = False
 
+        # Sistema di controllo ricalcoli dinamici
+        self.last_positions = {1: None, 2: None, 3: None, 4: None}  # Ultima posizione conosciuta
+        self.position_change_threshold = 0.02  # 2cm - soglia minima per ricalcolo
+        self.last_recalculation_time = {1: 0, 2: 0, 3: 0, 4: 0}  # Timestamp ultimi ricalcoli
+        self.min_recalculation_interval = 3.0  # 3 secondi minimi tra ricalcoli
+        self.last_joint_configurations = {1: None, 2: None, 3: None, 4: None}  # Configurazioni calcolate
+
         # Le configurazioni saranno inviate SOLO quando la state machine lo richiede
         # NON più automatiche con timer
         self.get_logger().info("IK Node pronto - aspettando comandi dalla State Machine")
+
+    def calculate_optimal_gripper_position(self, target_marker):
+        """
+        Calcola la posizione ottimale del gripper per raggiungere il lato opposto dell'oggetto
+        
+        LOGICA:
+        ROBOT ---- [GRIPPER_BASE] ---- [DITO] ---- ArUco ---- [LATO_OPPOSTO]
+                   ^qui posiziono                 ^centro    ^qui deve arrivare il dito
+        
+        Args:
+            target_marker: ID del marker (1=Coca-Cola, 2=Pringles)
+        
+        Returns:
+            approach_distance: distanza negativa per avvicinare il gripper
+        """
+        if target_marker not in self.object_sizes:
+            return -0.10  # Fallback: 10cm più vicino
+            
+        obj = self.object_sizes[target_marker]
+        
+        # SITUAZIONE: ArUco è già SOPRA l'oggetto
+        # 1. Distanza dal centro ArUco al lato opposto dell'oggetto
+        object_radius = obj["width"] / 2  # Raggio dell'oggetto (dal centro al bordo)
+        
+        # 2. ArUco è già al centro dell'oggetto (sopra), quindi:
+        # La distanza dal lato più vicino al robot al lato opposto = diametro completo
+        aruco_to_far_side = object_radius  # Dall'ArUco (centro) al lato opposto
+        
+        # 3. Posizione gripper: deve essere tale che il dito raggiunga il lato opposto
+        # GRIPPER_BASE + DITO_LENGTH = ARUCO + ARUCO_TO_FAR_SIDE
+        # GRIPPER_BASE = ARUCO + ARUCO_TO_FAR_SIDE - DITO_LENGTH
+        
+        required_approach = aruco_to_far_side - self.gripper_finger_length
+        
+        self.get_logger().info(f"CALCOLO OTTIMALE GRIPPER per marker {target_marker} ({obj['type']}) - ArUco SOPRA oggetto:")
+        self.get_logger().info(f"   Oggetto raggio: {object_radius*100:.1f}cm")
+        self.get_logger().info(f"   ArUco (centro)->lato opposto: {aruco_to_far_side*100:.1f}cm")
+        self.get_logger().info(f"   Lunghezza dito gripper: {self.gripper_finger_length*100:.1f}cm")
+        self.get_logger().info(f"   Approach richiesto: {required_approach*100:.1f}cm (negativo=più vicino al robot)")
+        
+        # Ritorna valore negativo per avvicinare il gripper al robot
+        return -abs(required_approach)
 
     # def check_attacher_services(self):
     #     """Verifica che i servizi di attach/detach siano disponibili"""
@@ -164,7 +214,7 @@ class KinematicPlanner(Node):
                 'arm_1_joint','arm_2_joint','arm_3_joint',
                 'arm_4_joint','arm_5_joint','arm_6_joint','arm_7_joint']
             pt = JointTrajectoryPoint()
-            pt.positions = [0.07, 0.1, -3.1, 1.36, 2.05, 0.01, -0.05]
+            pt.positions = [0.35, 0.25, -2.5, 1.70, 1.75, 0.10, -0.15]  # Braccio estremamente esteso dal corpo
             pt.time_from_start = Duration(sec=3)
             goal.trajectory.points.append(pt)
             self.arm_client.send_goal_async(goal)
@@ -245,33 +295,36 @@ class KinematicPlanner(Node):
             self.current_state = State.OPERATIONAL_CONFIG
             self.send_operational_configuration()
             
-        # === OGGETTO 1 (COCA-COLA): MARKER 1 -> MARKER 3 ===
+        # === OGGETTO 1 (PRINGLES): MARKER 1 -> MARKER 3 (SECONDA) ===
         elif msg.data == State.MOVE_TO_OBJECT_1.value:
-            self.get_logger().info("Movimento verso oggetto 1 (ArUco marker 1)")
+            self.get_logger().info("Movimento verso oggetto 1 (ArUco marker 1) - PRINGLES SECONDA")
             self.current_state = State.MOVE_TO_OBJECT_1
-            # 🎯 USA POSE OTTIMIZZATA calcolata dall'ArUco Detector
-            self.calculate_pose_with_dynamic_positioning(1, approach_distance=0.0)  # No offset, usa pose ottimizzata
+            # USA POSE OTTIMIZZATA: ArUco detector ha già calcolato la posizione ottimale
+            # Aggiungiamo solo un piccolo offset finale per avvicinamento graduale
+            optimal_distance = self.calculate_optimal_gripper_position(1)
+            self.calculate_pose_with_dynamic_positioning(1, approach_distance=optimal_distance)
             
         elif msg.data == State.GRIP_OBJECT_1.value:
-            self.get_logger().info("Abbasso gripper per presa oggetto 1")
+            self.get_logger().info("Abbasso gripper MOLTO per presa PRINGLES (oggetto 1)")
             self.current_state = State.GRIP_OBJECT_1
-            # 🎯 USA POSE OTTIMIZZATA per presa precisa
-            self.calculate_pose_with_dynamic_positioning(1, approach_distance=0.0, lift_height=-0.05)  # Scendi di 5cm
+            # PRESA PRECISA: Movimento drastico verso il basso e avanti
+            optimal_distance = self.calculate_optimal_gripper_position(1) - 0.05  # Più aggressivo per presa
+            self.calculate_pose_with_dynamic_positioning(1, approach_distance=optimal_distance, lift_height=-0.25)
             
         elif msg.data == State.LIFT_OBJECT_1.value:
-            self.get_logger().info("Sollevamento oggetto 1")  
+            self.get_logger().info("Sollevamento PRINGLES (oggetto 1)")  
             self.current_state = State.LIFT_OBJECT_1
-            # 🎯 USA POSE OTTIMIZZATA per sollevamento
+            # USA POSE OTTIMIZZATA per sollevamento
             self.calculate_pose_with_dynamic_positioning(1, approach_distance=0.0, lift_height=0.12)  # Solleva 12cm
             
         elif msg.data == State.MOVE_TO_DEST_1.value:
-            self.get_logger().info("Trasporto oggetto 1 a destinazione (ArUco marker 3)")
+            self.get_logger().info("Trasporto PRINGLES a destinazione (ArUco marker 3)")
             self.current_state = State.MOVE_TO_DEST_1
-            # NUOVO: Deposizione dinamica per marker 3
-            self.calculate_pose_with_dynamic_positioning(3, approach_distance=0.08, lift_height=0.08)
+            # DEPOSIZIONE: Posizione sicura sopra il marker di destinazione
+            self.calculate_pose_with_dynamic_positioning(3, approach_distance=0.05, lift_height=0.05)
             
         elif msg.data == State.RELEASE_OBJECT_1.value:
-            self.get_logger().info("Rilascio oggetto 1")
+            self.get_logger().info("Rilascio PRINGLES (oggetto 1)")
             self.current_state = State.RELEASE_OBJECT_1
             self.open_gripper()
             
@@ -280,33 +333,35 @@ class KinematicPlanner(Node):
             self.current_state = State.RETURN_HOME_1
             self.move_to_home()
             
-        # === OGGETTO 2 (PRINGLES): MARKER 2 -> MARKER 4 ===
+        # === OGGETTO 2 (COCA-COLA): MARKER 2 -> MARKER 4 (PRIMA) ===
         elif msg.data == State.MOVE_TO_OBJECT_2.value:
-            self.get_logger().info("Movimento verso oggetto 2 (ArUco marker 2)")
+            self.get_logger().info("Movimento verso oggetto 2 (ArUco marker 2) - COCA-COLA PRIMA")
             self.current_state = State.MOVE_TO_OBJECT_2
-            # 🎯 USA POSE OTTIMIZZATA per Pringles
-            self.calculate_pose_with_dynamic_positioning(2, approach_distance=0.0)
+            # USA POSE OTTIMIZZATA per Pringles + avvicinamento finale graduale
+            optimal_distance = self.calculate_optimal_gripper_position(2)
+            self.calculate_pose_with_dynamic_positioning(2, approach_distance=optimal_distance)
             
         elif msg.data == State.GRIP_OBJECT_2.value:
-            self.get_logger().info("Abbasso gripper per presa oggetto 2")
+            self.get_logger().info("Abbasso gripper per presa COCA-COLA (oggetto 2)")
             self.current_state = State.GRIP_OBJECT_2
-            # 🎯 USA POSE OTTIMIZZATA per presa cilindro
-            self.calculate_pose_with_dynamic_positioning(2, approach_distance=0.0, lift_height=-0.05)
+            # PRESA CILINDRO: movimento più vicino e verso il basso per Pringles
+            optimal_distance = self.calculate_optimal_gripper_position(2) - 0.05  # Più aggressivo per presa
+            self.calculate_pose_with_dynamic_positioning(2, approach_distance=optimal_distance, lift_height=-0.25)
             
         elif msg.data == State.LIFT_OBJECT_2.value:
-            self.get_logger().info("Sollevamento oggetto 2")
+            self.get_logger().info("Sollevamento COCA-COLA (oggetto 2)")
             self.current_state = State.LIFT_OBJECT_2
-            # 🎯 USA POSE OTTIMIZZATA per sollevamento
+            # USA POSE OTTIMIZZATA per sollevamento
             self.calculate_pose_with_dynamic_positioning(2, approach_distance=0.0, lift_height=0.12)
             
         elif msg.data == State.MOVE_TO_DEST_2.value:
-            self.get_logger().info("Trasporto oggetto 2 a destinazione (ArUco marker 4)")
+            self.get_logger().info("Trasporto COCA-COLA a destinazione (ArUco marker 4)")
             self.current_state = State.MOVE_TO_DEST_2
-            # NUOVO: Deposizione dinamica per marker 4
-            self.calculate_pose_with_dynamic_positioning(4, approach_distance=0.08, lift_height=0.08)
+            # DEPOSIZIONE: Posizione sicura sopra il marker di destinazione
+            self.calculate_pose_with_dynamic_positioning(4, approach_distance=0.05, lift_height=0.05)
             
         elif msg.data == State.RELEASE_OBJECT_2.value:
-            self.get_logger().info("Rilascio oggetto 2")
+            self.get_logger().info("Rilascio COCA-COLA (oggetto 2)")
             self.current_state = State.RELEASE_OBJECT_2
             self.open_gripper()
             
@@ -316,44 +371,70 @@ class KinematicPlanner(Node):
             self.move_to_home()
 
     def aruco_pose_1_callback(self, msg):
-        self.get_logger().info("Ricevuto aruco_pose_1")
+        self.get_logger().info("Ricevuto aruco_pose_1 - RICALCOLO AUTOMATICO ANGOLI GIUNTI")
         self.aruco_pose_1 = msg
         # Aggiorna buffer per posizionamento dinamico
         self.update_position_buffer(1, msg)
-        # Debug: stampa pose ricevuta
+        
+        # CINEMATICA INVERSA DINAMICA: Ricalcola angoli ogni volta che cambia la posizione
         pos = msg.pose.position
         ori = msg.pose.orientation
         distance_from_robot = (pos.x**2 + pos.y**2 + pos.z**2)**0.5
-        self.get_logger().info(f"ArUco 1: pos=[{pos.x:.3f}, {pos.y:.3f}, {pos.z:.3f}] ori=[{ori.x:.3f}, {ori.y:.3f}, {ori.z:.3f}, {ori.w:.3f}] dist={distance_from_robot:.3f}m frame={msg.header.frame_id}")
+        self.get_logger().info(f"ArUco 1 AGGIORNATO: pos=[{pos.x:.3f}, {pos.y:.3f}, {pos.z:.3f}] dist={distance_from_robot:.3f}m")
+        
+        # Se il robot è attualmente in movimento verso questo marker, valuta se ricalcolare
+        if self.current_state in [State.MOVE_TO_OBJECT_1, State.GRIP_OBJECT_1, State.LIFT_OBJECT_1]:
+            if self.should_recalculate_for_marker(1, np.array([pos.x, pos.y, pos.z])):
+                self.get_logger().info("🔄 RECALCULATING: Posizione ArUco 1 cambiata significativamente - ricalcolo automatico")
+                self.trigger_dynamic_recalculation(1)
+            else:
+                self.get_logger().debug("ArUco 1: Cambiamento posizione sotto soglia - no ricalcolo")
 
     def aruco_pose_2_callback(self, msg):
-        self.get_logger().info("Ricevuto aruco_pose_2")
+        self.get_logger().info("Ricevuto aruco_pose_2 - RICALCOLO AUTOMATICO ANGOLI GIUNTI")
         self.aruco_pose_2 = msg
         # Aggiorna buffer per posizionamento dinamico
         self.update_position_buffer(2, msg)
-        # Debug: stampa pose ricevuta
+        
+        # CINEMATICA INVERSA DINAMICA: Ricalcola angoli ogni volta che cambia la posizione
         pos = msg.pose.position
         ori = msg.pose.orientation
         distance_from_robot = (pos.x**2 + pos.y**2 + pos.z**2)**0.5
-        self.get_logger().info(f"ArUco 2: pos=[{pos.x:.3f}, {pos.y:.3f}, {pos.z:.3f}] ori=[{ori.x:.3f}, {ori.y:.3f}, {ori.z:.3f}, {ori.w:.3f}] dist={distance_from_robot:.3f}m frame={msg.header.frame_id}")
+        self.get_logger().info(f"ArUco 2 AGGIORNATO: pos=[{pos.x:.3f}, {pos.y:.3f}, {pos.z:.3f}] dist={distance_from_robot:.3f}m")
+        
+        # Se il robot è attualmente in movimento verso questo marker, valuta se ricalcolare
+        if self.current_state in [State.MOVE_TO_OBJECT_2, State.GRIP_OBJECT_2, State.LIFT_OBJECT_2]:
+            if self.should_recalculate_for_marker(2, np.array([pos.x, pos.y, pos.z])):
+                self.get_logger().info("🔄 RECALCULATING: Posizione ArUco 2 cambiata significativamente - ricalcolo automatico")
+                self.trigger_dynamic_recalculation(2)
+            else:
+                self.get_logger().debug("ArUco 2: Cambiamento posizione sotto soglia - no ricalcolo")
        
     def aruco_pose_3_callback(self, msg):
-        self.get_logger().info("Ricevuto aruco_pose_3")
+        self.get_logger().info("Ricevuto aruco_pose_3 - RICALCOLO AUTOMATICO ANGOLI GIUNTI")
         self.aruco_pose_3 = msg
         # Aggiorna buffer per posizionamento dinamico
         self.update_position_buffer(3, msg)
-        # Debug: stampa pose ricevuta
         pos = msg.pose.position
-        self.get_logger().info(f"ArUco 3 pose: x={pos.x:.3f}, y={pos.y:.3f}, z={pos.z:.3f} in frame {msg.header.frame_id}")
+        self.get_logger().info(f"ArUco 3 AGGIORNATO: pos=[{pos.x:.3f}, {pos.y:.3f}, {pos.z:.3f}]")
+        
+        # Se il robot sta trasportando verso questa destinazione, aggiorna
+        if self.current_state == State.MOVE_TO_DEST_1:
+            self.get_logger().info("🔄 RECALCULATING: Destinazione ArUco 3 cambiata - ricalcolo automatico")
+            self.trigger_dynamic_recalculation(3)
 
     def aruco_pose_4_callback(self, msg):
-        self.get_logger().info("Ricevuto aruco_pose_4")
+        self.get_logger().info("Ricevuto aruco_pose_4 - RICALCOLO AUTOMATICO ANGOLI GIUNTI")
         self.aruco_pose_4 = msg
         # Aggiorna buffer per posizionamento dinamico
         self.update_position_buffer(4, msg)
-        # Debug: stampa pose ricevuta
         pos = msg.pose.position
-        self.get_logger().info(f"ArUco 4 pose: x={pos.x:.3f}, y={pos.y:.3f}, z={pos.z:.3f} in frame {msg.header.frame_id}")
+        self.get_logger().info(f"ArUco 4 AGGIORNATO: pos=[{pos.x:.3f}, {pos.y:.3f}, {pos.z:.3f}]")
+        
+        # Se il robot sta trasportando verso questa destinazione, aggiorna
+        if self.current_state == State.MOVE_TO_DEST_2:
+            self.get_logger().info("🔄 RECALCULATING: Destinazione ArUco 4 cambiata - ricalcolo automatico")
+            self.trigger_dynamic_recalculation(4)
 
     def joint_states_callback(self, msg):
         # Aggiorna sempre la configurazione attuale per avere lo stato più recente
@@ -452,36 +533,114 @@ class KinematicPlanner(Node):
             self.get_logger().error(f"Errore nella generazione della traiettoria: {e}")
             return
 
-        # 5. Calcola cinematica inversa per ogni punto della traiettoria
-        q_traj = []
-        q_curr = q0
-        
-        for i, T in enumerate(trajectory):
-            try:
-                sol = self.robot.ik_LM(T, q0=q_curr, mask=[1,1,1,1,1,1])
-                if sol is not None and len(sol) > 0:
-                    q_curr = sol[0]
-                    q_traj.append(q_curr)
-                    if i % 3 == 0:  # Log ogni 3 punti per non sovraccaricare
-                        self.get_logger().info(f"IK punto {i}: successo")
+        # 5. APPROCCIO AVANZATO: traiettoria cartesiana completa con IK iterativa
+        try:
+            self.get_logger().info("=== USANDO APPROCCIO TRAIETTORIA COMPLETA ===")
+
+            # Genera traiettoria cartesiana interpolata (50 punti)
+            trajectory_points = rtb.ctraj(T0, T_target, 50)
+
+            # IK per ogni passo con continuità
+            q_traj = []
+            q_curr = q0.copy()
+            success_count = 0
+
+            for i, T in enumerate(trajectory_points):
+                sol = self.robot.ikine_LM(T, q0=q_curr)
+                if sol.success:
+                    q_curr = sol.q
+                    success_count += 1
+                    self.get_logger().debug(f"Punto {i+1}/50: IK OK (residuo: {sol.residual:.6f})")
                 else:
-                    self.get_logger().warning(f"IK fallita al punto {i}. Riutilizzo configurazione precedente")
-                    q_traj.append(q_curr.copy())
-            except Exception as e:
-                self.get_logger().error(f"Errore IK al punto {i}: {e}")
+                    self.get_logger().debug(f"Punto {i+1}/50: IK fallita, uso config precedente")
+
                 q_traj.append(q_curr.copy())
+
+            self.get_logger().info(f"Traiettoria generata: {len(q_traj)} punti, {success_count} successi IK")
+
+            if success_count < 10:  # Almeno 20% di successo
+                self.get_logger().error(f"Troppe iterazioni IK fallite ({success_count}/50), traiettoria non sicura")
+                return
+
+        except Exception as e:
+            self.get_logger().error(f"Errore generazione traiettoria: {e}")
+            return
 
         if not q_traj:
             self.get_logger().error("Nessun punto della traiettoria calcolato con successo")
             return
-            
-        q_traj = np.array(q_traj)
-        self.get_logger().info(f"Traiettoria completa generata: {len(q_traj)} punti")
 
-        # 6. Pubblica solo l'ultimo punto (configurazione finale)
-        q_final = q_traj[-1]
-        self.get_logger().info("Pubblicazione configurazione finale...")
-        self.publish_joint_configuration(q_final, "TRAIETTORIA COMPLETA")
+        # 6. Pubblica traiettoria completa per movimenti fluidi
+        self.get_logger().info("Pubblicazione traiettoria completa...")
+        self.publish_full_trajectory(q_traj, "TRAIETTORIA COMPLETA")
+
+    def publish_full_trajectory(self, q_traj, description):
+        """Pubblica traiettoria completa sui controller per movimenti fluidi"""
+
+        if not self.arm_client.server_is_ready() or not self.torso_client.server_is_ready():
+            self.get_logger().warn("Action server arm o torso non disponibile, uso publisher")
+            # Fallback al metodo vecchio
+            self.publish_joint_configuration(q_traj[-1], description)
+            return
+
+        # CORREZIONE: Separa traiettorie per torso e braccio
+
+        # 1. Traiettoria TORSO
+        goal_torso = FollowJointTrajectory.Goal()
+        goal_torso.trajectory.joint_names = ['torso_lift_joint']
+
+        # 2. Traiettoria BRACCIO
+        goal_arm = FollowJointTrajectory.Goal()
+        goal_arm.trajectory.joint_names = [
+            'arm_1_joint','arm_2_joint','arm_3_joint',
+            'arm_4_joint','arm_5_joint','arm_6_joint','arm_7_joint'
+        ]
+
+        # Aggiungi ogni punto della traiettoria con timing appropriato
+        for i, q in enumerate(q_traj):
+            # CORREZIONE: Usa float per i secondi invece di int per evitare arrotondamento a 0
+            if self.current_state in [State.GRIP_OBJECT_1, State.GRIP_OBJECT_2]:
+                time_from_start = Duration(sec=int((i + 1) * 0.20), nanosec=int(((i + 1) * 0.20 % 1) * 1e9))  # 0.20s per punto
+            elif self.current_state in [State.LIFT_OBJECT_1, State.LIFT_OBJECT_2]:
+                time_from_start = Duration(sec=int((i + 1) * 0.18), nanosec=int(((i + 1) * 0.18 % 1) * 1e9))  # 0.18s per punto
+            else:
+                time_from_start = Duration(sec=int((i + 1) * 0.15), nanosec=int(((i + 1) * 0.15 % 1) * 1e9))  # 0.15s per punto
+
+            # Punto per TORSO (solo primo joint)
+            pt_torso = JointTrajectoryPoint()
+            pt_torso.positions = [float(q[0])]  # Solo torso_lift_joint
+            pt_torso.time_from_start = time_from_start
+            goal_torso.trajectory.points.append(pt_torso)
+
+            # Punto per BRACCIO (joints 1-7)
+            pt_arm = JointTrajectoryPoint()
+            pt_arm.positions = [float(p) for p in q[1:8]]  # Solo arm joints
+            pt_arm.time_from_start = time_from_start
+            goal_arm.trajectory.points.append(pt_arm)
+
+        # Invia goals separatamente
+        self.torso_client.send_goal_async(goal_torso)
+        self.arm_client.send_goal_async(goal_arm)
+
+        self.get_logger().info(f"=== {description} PUBBLICATA ===")
+        self.get_logger().info(f"Traiettoria: {len(q_traj)} punti, tempo totale: {goal_arm.trajectory.points[-1].time_from_start.sec}s")
+        self.get_logger().info("✓ Torso e braccio inviati separatamente ai rispettivi controllers")
+
+        # Salva la configurazione finale
+        self.save_joint_configuration_for_current_marker(q_traj[-1])
+
+        # Timer sincronizzato con durata reale della traiettoria
+        last_point = goal_arm.trajectory.points[-1].time_from_start
+        total_time = last_point.sec + (last_point.nanosec / 1e9) + 3.0  # Buffer di 3s
+        if self.current_state in [State.MOVE_TO_OBJECT_1, State.MOVE_TO_OBJECT_2]:
+            self.active_timer = self.create_timer(float(total_time), lambda: self.publish_command_completed_once(self.current_state.value))
+        elif self.current_state in [State.GRIP_OBJECT_1, State.GRIP_OBJECT_2]:
+            self.active_timer = self.create_timer(float(total_time), lambda: self.close_gripper())
+        elif self.current_state in [State.LIFT_OBJECT_1, State.LIFT_OBJECT_2]:
+            self.active_timer = self.create_timer(float(total_time), lambda: self.publish_command_completed_once(self.current_state.value))
+        elif self.current_state in [State.MOVE_TO_DEST_1, State.MOVE_TO_DEST_2,
+                                    State.RETURN_HOME_1, State.RETURN_HOME_2]:
+            self.active_timer = self.create_timer(float(total_time), lambda: self.publish_command_completed_once(self.current_state.value))
 
     def publish_joint_configuration(self, q_solution, description):
         """Pubblica configurazione giunti sui controller"""
@@ -494,12 +653,22 @@ class KinematicPlanner(Node):
         point_torso.time_from_start.sec = 5  # Tempo standard
         traj_torso.points.append(point_torso)
 
-        # Prepara trajectory per braccio
+        # Prepara trajectory per braccio con movimenti più dolci
         traj_arm = JointTrajectory()
         traj_arm.joint_names = [f'arm_{i+1}_joint' for i in range(7)]
         point_arm = JointTrajectoryPoint()
         point_arm.positions = [float(p) for p in q_solution[1:8]]
-        point_arm.time_from_start.sec = 5  # Tempo standard
+        
+        # Tempo variabile basato su tipo di movimento per evitare urti
+        if self.current_state in [State.GRIP_OBJECT_1, State.GRIP_OBJECT_2, State.LIFT_OBJECT_1, State.LIFT_OBJECT_2]:
+            point_arm.time_from_start.sec = 8  # Movimenti di presa/sollevamento più lenti
+            self.get_logger().info("Movimento LENTO per presa/sollevamento (8s) - evito urti tavolo")
+        elif self.current_state in [State.MOVE_TO_OBJECT_1, State.MOVE_TO_OBJECT_2]:
+            point_arm.time_from_start.sec = 7  # Avvicinamento graduale
+            self.get_logger().info("Movimento GRADUALE per avvicinamento (7s)")
+        else:
+            point_arm.time_from_start.sec = 5  # Tempo standard per altri movimenti
+            
         traj_arm.points.append(point_arm)
 
         # Pubblica
@@ -507,15 +676,117 @@ class KinematicPlanner(Node):
         self.torso_pub.publish(traj_torso)
         
         self.get_logger().info(f"=== {description} PUBBLICATA ===")
+        self.get_logger().info(f"Configurazione giunti: torso={q_solution[0]:.3f}, arm=[{', '.join([f'{p:.3f}' for p in q_solution[1:8]])}]")
         
-        # Timer per completamento con gestione migliorata e prevenzione ripetizioni
-        if self.current_state in [State.GRIP_OBJECT_1, State.GRIP_OBJECT_2]:
-            # Movimento + chiusura gripper - tempo maggiore per presa sicura
-            self.gripper_timer = self.create_timer(8.0, lambda: self.close_gripper())
-            self.active_timer = self.create_timer(15.0, lambda: self.publish_command_completed_once(self.current_state.value))
-        else:
-            # Tempo aumentato per permettere movimenti più complessi
+        # Salva la configurazione calcolata per il marker corrente (se applicabile)
+        self.save_joint_configuration_for_current_marker(q_solution)
+        
+        # Attiva timer per completamento dei comandi di manipolazione - SINCRONIZZATI CON MOVIMENTI LENTI
+        if self.current_state in [State.MOVE_TO_OBJECT_1, State.MOVE_TO_OBJECT_2]:
+            # Timer per avvicinamento oggetti - sincronizzato con tempo movimento (7s + buffer)
+            self.active_timer = self.create_timer(10.0, lambda: self.publish_command_completed_once(self.current_state.value))
+        elif self.current_state in [State.GRIP_OBJECT_1, State.GRIP_OBJECT_2]:
+            # Timer per grip - sincronizzato con movimento lento (8s + chiusura gripper)
+            self.active_timer = self.create_timer(12.0, lambda: self.close_gripper())
+        elif self.current_state in [State.LIFT_OBJECT_1, State.LIFT_OBJECT_2]:
+            # Timer per sollevamento - movimento lento per evitare urti (8s + buffer)
             self.active_timer = self.create_timer(12.0, lambda: self.publish_command_completed_once(self.current_state.value))
+        elif self.current_state in [State.MOVE_TO_DEST_1, State.MOVE_TO_DEST_2,
+                                    State.RETURN_HOME_1, State.RETURN_HOME_2]:
+            # Timer per altri movimenti - tempo standard
+            self.active_timer = self.create_timer(8.0, lambda: self.publish_command_completed_once(self.current_state.value))
+        elif self.current_state in [State.RELEASE_OBJECT_1, State.RELEASE_OBJECT_2]:
+            # Timer per release - include apertura gripper  
+            self.active_timer = self.create_timer(6.0, lambda: self.open_gripper())
+
+    def simple_ik_approach(self, q0, T_target):
+        """
+        Algoritmo IK corretto usando ikine_LM
+        - Usa metodo moderno ikine_LM invece di ik_LM deprecato
+        - Controllo esplicito di successo
+        - Gestione corretta dell'oggetto risultato
+
+        Args:
+            q0: Configurazione iniziale dei giunti [8D: torso + 7 arm joints]
+            T_target: Matrice di trasformazione target (SE3)
+
+        Returns:
+            q_solution: Configurazione finale dei giunti o q0 se fallisce
+        """
+        try:
+            sol = self.robot.ikine_LM(T_target, q0=q0)
+            if sol.success:
+                self.get_logger().info(f"IK completata con successo - iterazioni: {sol.iterations}, residuo: {sol.residual:.6f}")
+                return sol.q
+            else:
+                self.get_logger().warning(f"IK fallita - iterazioni: {sol.iterations}, residuo: {sol.residual:.6f}")
+                self.get_logger().warning("Riutilizzo configurazione precedente")
+                return q0
+        except Exception as e:
+            self.get_logger().error(f"Errore IK: {e}")
+            return q0
+
+    def compute_ik_with_pose_error_feedback(self, q0, T_target, max_iterations=5, position_tolerance=0.02, orientation_tolerance=0.1):
+        """
+        Risolve la cinematica inversa con controllo iterativo dell'errore di posa nello spazio operativo
+        
+        Args:
+            q0: Configurazione iniziale dei giunti [8D: torso + 7 arm joints]
+            T_target: Matrice di trasformazione target (SE3)
+            max_iterations: Numero massimo di iterazioni per la correzione
+            position_tolerance: Tolleranza sull'errore di posizione [m]
+            orientation_tolerance: Tolleranza sull'errore di orientamento [rad]
+        
+        Returns:
+            q_solution: Configurazione finale dei giunti o None se fallisce
+        """
+        
+        q_candidate = q0.copy()
+        
+        for iteration in range(max_iterations):
+            try:
+                # 1. Calcola cinematica diretta con la configurazione candidata
+                T_achieved = self.robot.fkine(q_candidate)
+                
+                # 2. Calcola errore di posizione (norma euclidea)
+                position_error = np.linalg.norm(T_target.t - T_achieved.t)
+                
+                # 3. Calcola errore di orientamento (angolo tra matrici di rotazione)
+                R_target = T_target.R
+                R_achieved = T_achieved.R
+                R_error = R_target @ R_achieved.T
+                
+                # Estrai l'angolo di rotazione dall'asse-angolo
+                trace_R = np.trace(R_error)
+                angle_error = np.arccos(np.clip((trace_R - 1) / 2, -1, 1))
+                
+                self.get_logger().debug(f"Iterazione {iteration}: pos_err={position_error:.4f}m, angle_err={angle_error:.4f}rad")
+                
+                # 4. Verifica se l'errore è entro le tolleranze
+                if position_error <= position_tolerance and angle_error <= orientation_tolerance:
+                    self.get_logger().info(f"Convergenza raggiunta in {iteration+1} iterazioni")
+                    self.get_logger().info(f"Errore finale: pos={position_error:.4f}m, angle={angle_error:.4f}rad")
+                    return q_candidate
+                
+                # 5. Se errore troppo alto, usa IK per correggere
+                sol = self.robot.ikine_LM(T_target, q0=q_candidate)
+
+                if sol.success:
+                    q_candidate = sol.q
+                else:
+                    self.get_logger().warning(f"IK fallita all'iterazione {iteration} - residuo: {sol.residual:.6f}")
+                    break
+                    
+            except Exception as e:
+                self.get_logger().error(f"Errore nell'iterazione {iteration}: {e}")
+                break
+        
+        # Se arriviamo qui, non siamo riusciti a convergere entro le tolleranze
+        self.get_logger().warning(f"Controllo errore fallito dopo {max_iterations} iterazioni")
+        self.get_logger().warning(f"Errore finale: pos={position_error:.4f}m, angle={angle_error:.4f}rad")
+        
+        # Ritorna la migliore approssimazione ottenuta
+        return q_candidate if 'q_candidate' in locals() else None
 
     def calculate_pose_with_offset_state(self, target, offset_x, offset_y, offset_z):
         self.get_logger().info(f"=== CALCOLO POSA CON OFFSET PER TARGET {target} ===")
@@ -650,17 +921,27 @@ class KinematicPlanner(Node):
         target_pose_out.header.frame_id = header.frame_id
 
         # POSIZIONAMENTO DINAMICO INTELLIGENTE
-        # 1. Calcola vettore di avvicinamento verso il robot
-        robot_to_marker = np.array([stabilized_pos[0], stabilized_pos[1], 0.0])  # Ignora Z per calcolo orizzontale
-        distance_horizontal = np.linalg.norm(robot_to_marker[:2])
+        # NOTA: Le pose per marker 1-2 sono già ottimizzate dall'ArUco detector (con offset ~6-6.5cm)
+        # L'ArUco detector ora posiziona correttamente il target TRA robot e marker
+        # Per marker 3-4 (destinazioni), uso posizionamento normale
         
-        if distance_horizontal > 0.001:  # Evita divisione per zero
-            # Vettore unitario di avvicinamento orizzontale
-            approach_vector = robot_to_marker / distance_horizontal
-            # Avvicinamento dall'esterno verso il marker
-            approach_offset = -approach_vector * approach_distance
+        if approach_distance != 0.0:
+            # STRATEGIA AVANTI-POI-GIU: avvicinamento aggressivo verso il robot
+            robot_to_marker = np.array([stabilized_pos[0], stabilized_pos[1], 0.0])  # Ignora Z per calcolo orizzontale
+            distance_horizontal = np.linalg.norm(robot_to_marker[:2])
+            
+            if distance_horizontal > 0.001:  # Evita divisione per zero
+                # Vettore unitario verso il robot (per approach_distance negativo = più vicino)
+                approach_vector = robot_to_marker / distance_horizontal
+                # MOVIMENTO AGGRESSIVO: approach_distance negativo = più vicino al robot, evita busto
+                approach_offset = -approach_vector * approach_distance  # Negativo = verso robot
+                self.get_logger().info(f"STRATEGIA AVANTI-POI-GIU: avvicinamento {approach_distance:.3f}m (negativo=più vicino)")
+            else:
+                approach_offset = np.array([-approach_distance, 0.0, 0.0])  # Fallback: avvicinamento frontale aggressivo
         else:
-            approach_offset = np.array([-approach_distance, 0.0, 0.0])  # Fallback: avvicinamento frontale
+            # Nessun offset orizzontale - usa direttamente la posizione ottimizzata
+            approach_offset = np.array([0.0, 0.0, 0.0])
+            self.get_logger().info(f"Marker {target_marker}: usando posizione già ottimizzata dall'ArUco detector")
 
         # 2. Posizione finale dinamica
         # X,Y: Perfettamente centrato sul marker + offset di avvicinamento
@@ -673,15 +954,23 @@ class KinematicPlanner(Node):
         # Mantieni orientamento originale
         target_pose_out.pose.orientation = base_pose.orientation
 
-        # Debug dettagliato
+        # Debug dettagliato con verifica geometrica
         final_pos = target_pose_out.pose.position
-        self.get_logger().info(f"POSIZIONAMENTO DINAMICO - Marker {target_marker}:")
-        self.get_logger().info(f"   Posizione originale:  [{stabilized_pos[0]:.3f}, {stabilized_pos[1]:.3f}, {stabilized_pos[2]:.3f}]")
-        self.get_logger().info(f"   Approach offset:      [{approach_offset[0]:.3f}, {approach_offset[1]:.3f}, {lift_height:.3f}]")
-        self.get_logger().info(f"   Posizione finale:     [{final_pos.x:.3f}, {final_pos.y:.3f}, {final_pos.z:.3f}]")
+        original_distance = np.sqrt(stabilized_pos[0]**2 + stabilized_pos[1]**2)
+        final_distance = np.sqrt(final_pos.x**2 + final_pos.y**2)
         
-        final_distance = np.sqrt(final_pos.x**2 + final_pos.y**2 + final_pos.z**2)
-        self.get_logger().info(f"   Distanza finale dal robot: {final_distance:.3f}m")
+        self.get_logger().info(f"IK POSIZIONAMENTO DINAMICO - Marker {target_marker}:")
+        self.get_logger().info(f"   Posizione ricevuta:   [{stabilized_pos[0]:.3f}, {stabilized_pos[1]:.3f}, {stabilized_pos[2]:.3f}] dist={original_distance:.3f}m")
+        self.get_logger().info(f"   Approach offset IK:   [{approach_offset[0]:.3f}, {approach_offset[1]:.3f}, {lift_height:.3f}]")
+        self.get_logger().info(f"   Posizione finale IK:  [{final_pos.x:.3f}, {final_pos.y:.3f}, {final_pos.z:.3f}] dist={final_distance:.3f}m")
+        
+        # Verifica coerenza: se ArUco detector ha fatto il suo lavoro, la posizione ricevuta
+        # dovrebbe già essere ottimizzata per marker 1-2
+        if target_marker in [1, 2]:
+            if approach_distance == 0.0:
+                self.get_logger().info(f"   USO DIRETTO pose ArUco ottimizzata (no offset IK)")
+            else:
+                self.get_logger().info(f"   AGGIUSTAMENTO FINE: +{approach_distance:.3f}m da pose ArUco ottimizzata")
 
         # Controllo raggiungibilità
         if final_distance > 1.4:
@@ -696,6 +985,120 @@ class KinematicPlanner(Node):
         self.get_logger().info("✓ Posa dinamica pubblicata - gripper sarà PERFETTAMENTE centrato!")
 
         return "dynamic_positioning"
+
+    def should_recalculate_for_marker(self, marker_id, new_position):
+        """
+        Determina se è necessario ricalcolare gli angoli dei giunti per un marker
+        basandosi su soglie di cambiamento posizione e tempo
+        """
+        import time
+        
+        current_time = time.time()
+        
+        # Controllo timing: evita ricalcoli troppo frequenti
+        if current_time - self.last_recalculation_time[marker_id] < self.min_recalculation_interval:
+            return False
+            
+        # Controllo soglia spaziale: valuta se il cambiamento è significativo
+        last_pos = self.last_positions[marker_id]
+        if last_pos is not None:
+            position_change = np.linalg.norm(new_position - last_pos)
+            if position_change < self.position_change_threshold:
+                return False
+                
+        # Aggiorna la posizione e il timestamp
+        self.last_positions[marker_id] = new_position.copy()
+        self.last_recalculation_time[marker_id] = current_time
+        
+        return True
+
+    def trigger_dynamic_recalculation(self, marker_id):
+        """
+        🔄 CINEMATICA INVERSA DINAMICA: Ricalcola automaticamente gli angoli dei giunti 
+        quando la posizione di un ArUco marker cambia durante la manipolazione
+        """
+        self.get_logger().info(f"🔄 AVVIO RICALCOLO DINAMICO per Marker {marker_id}")
+        
+        # Determina il tipo di movimento in base allo stato corrente e al marker
+        if self.current_state in [State.MOVE_TO_OBJECT_1, State.GRIP_OBJECT_1, State.LIFT_OBJECT_1] and marker_id == 1:
+            operation_type = self.get_operation_type_for_state(self.current_state)
+            lift_height = self.get_lift_height_for_state(self.current_state)
+            approach_dist = self.get_approach_distance_for_state(self.current_state)
+            
+        elif self.current_state in [State.MOVE_TO_OBJECT_2, State.GRIP_OBJECT_2, State.LIFT_OBJECT_2] and marker_id == 2:
+            operation_type = self.get_operation_type_for_state(self.current_state)
+            lift_height = self.get_lift_height_for_state(self.current_state)
+            approach_dist = self.get_approach_distance_for_state(self.current_state)
+            
+        elif self.current_state == State.MOVE_TO_DEST_1 and marker_id == 3:
+            operation_type = "deposit"
+            lift_height = 0.05
+            approach_dist = 0.05
+            
+        elif self.current_state == State.MOVE_TO_DEST_2 and marker_id == 4:
+            operation_type = "deposit"  
+            lift_height = 0.05
+            approach_dist = 0.05
+        else:
+            self.get_logger().warn(f"Ricalcolo non necessario per marker {marker_id} in stato {self.current_state.name}")
+            return
+
+        self.get_logger().info(f"RICALCOLO AUTOMATICO: {operation_type} per marker {marker_id}")
+        self.get_logger().info(f"   Parametri: approach={approach_dist:.3f}m, lift={lift_height:.3f}m")
+        
+        # Esegui il ricalcolo con i nuovi parametri
+        self.calculate_pose_with_dynamic_positioning(marker_id, approach_dist, lift_height)
+        
+    def get_operation_type_for_state(self, state):
+        """Determina il tipo di operazione in base allo stato"""
+        if state in [State.MOVE_TO_OBJECT_1, State.MOVE_TO_OBJECT_2]:
+            return "approach"
+        elif state in [State.GRIP_OBJECT_1, State.GRIP_OBJECT_2]:
+            return "grip"
+        elif state in [State.LIFT_OBJECT_1, State.LIFT_OBJECT_2]:
+            return "lift"
+        else:
+            return "generic"
+            
+    def get_lift_height_for_state(self, state):
+        """Determina l'altezza di movimento in base allo stato"""
+        if state in [State.MOVE_TO_OBJECT_1, State.MOVE_TO_OBJECT_2]:
+            return 0.0  # Stesso livello del marker
+        elif state in [State.GRIP_OBJECT_1, State.GRIP_OBJECT_2]:
+            return -0.03  # Scendi di 3cm per la presa
+        elif state in [State.LIFT_OBJECT_1, State.LIFT_OBJECT_2]:
+            return 0.12  # Solleva di 12cm
+        else:
+            return 0.0
+            
+    def get_approach_distance_for_state(self, state):
+        """Determina la distanza di avvicinamento in base allo stato"""
+        if state in [State.MOVE_TO_OBJECT_1, State.MOVE_TO_OBJECT_2]:
+            return 0.02  # 2cm per avvicinamento finale
+        elif state in [State.GRIP_OBJECT_1, State.GRIP_OBJECT_2, State.LIFT_OBJECT_1, State.LIFT_OBJECT_2]:
+            return 0.0   # Posizione diretta sull'oggetto
+        else:
+            return 0.05
+    
+    def save_joint_configuration_for_current_marker(self, q_solution):
+        """Salva la configurazione dei giunti per il marker attualmente processato"""
+        current_marker = self.get_current_target_marker()
+        if current_marker is not None:
+            self.last_joint_configurations[current_marker] = q_solution.copy()
+            self.get_logger().info(f"💾 Configurazione salvata per marker {current_marker}")
+            
+    def get_current_target_marker(self):
+        """Determina quale marker è attualmente il target in base allo stato"""
+        if self.current_state in [State.MOVE_TO_OBJECT_1, State.GRIP_OBJECT_1, State.LIFT_OBJECT_1]:
+            return 1
+        elif self.current_state in [State.MOVE_TO_OBJECT_2, State.GRIP_OBJECT_2, State.LIFT_OBJECT_2]:
+            return 2
+        elif self.current_state == State.MOVE_TO_DEST_1:
+            return 3
+        elif self.current_state == State.MOVE_TO_DEST_2:
+            return 4
+        else:
+            return None
 
     def calculate_optimal_approach_distance(self, target_marker, operation_type="approach"):
         """
