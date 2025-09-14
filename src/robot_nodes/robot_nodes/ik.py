@@ -382,7 +382,7 @@ class KinematicPlanner(Node):
         # Se il robot è attualmente in movimento verso questo marker, valuta se ricalcolare
         if self.current_state in [State.MOVE_TO_OBJECT_1, State.GRIP_OBJECT_1, State.LIFT_OBJECT_1]:
             if self.should_recalculate_for_marker(1, np.array([pos.x, pos.y, pos.z])):
-                self.get_logger().info("🔄 RECALCULATING: Posizione ArUco 1 cambiata significativamente - ricalcolo automatico")
+                self.get_logger().info("RECALCULATING: Posizione ArUco 1 cambiata significativamente - ricalcolo automatico")
                 self.trigger_dynamic_recalculation(1)
             else:
                 self.get_logger().debug("ArUco 1: Cambiamento posizione sotto soglia - no ricalcolo")
@@ -402,7 +402,7 @@ class KinematicPlanner(Node):
         # Se il robot è attualmente in movimento verso questo marker, valuta se ricalcolare
         if self.current_state in [State.MOVE_TO_OBJECT_2, State.GRIP_OBJECT_2, State.LIFT_OBJECT_2]:
             if self.should_recalculate_for_marker(2, np.array([pos.x, pos.y, pos.z])):
-                self.get_logger().info("🔄 RECALCULATING: Posizione ArUco 2 cambiata significativamente - ricalcolo automatico")
+                self.get_logger().info("RECALCULATING: Posizione ArUco 2 cambiata significativamente - ricalcolo automatico")
                 self.trigger_dynamic_recalculation(2)
             else:
                 self.get_logger().debug("ArUco 2: Cambiamento posizione sotto soglia - no ricalcolo")
@@ -417,7 +417,7 @@ class KinematicPlanner(Node):
         
         # Se il robot sta trasportando verso questa destinazione, aggiorna
         if self.current_state == State.MOVE_TO_DEST_1:
-            self.get_logger().info("🔄 RECALCULATING: Destinazione ArUco 3 cambiata - ricalcolo automatico")
+            self.get_logger().info("RECALCULATING: Destinazione ArUco 3 cambiata - ricalcolo automatico")
             self.trigger_dynamic_recalculation(3)
 
     def aruco_pose_4_callback(self, msg):
@@ -430,7 +430,7 @@ class KinematicPlanner(Node):
         
         # Se il robot sta trasportando verso questa destinazione, aggiorna
         if self.current_state == State.MOVE_TO_DEST_2:
-            self.get_logger().info("🔄 RECALCULATING: Destinazione ArUco 4 cambiata - ricalcolo automatico")
+            self.get_logger().info("RECALCULATING: Destinazione ArUco 4 cambiata - ricalcolo automatico")
             self.trigger_dynamic_recalculation(4)
 
     def joint_states_callback(self, msg):
@@ -621,7 +621,7 @@ class KinematicPlanner(Node):
 
         self.get_logger().info(f"=== {description} PUBBLICATA ===")
         self.get_logger().info(f"Traiettoria: {len(q_traj)} punti, tempo totale: {goal_arm.trajectory.points[-1].time_from_start.sec}s")
-        self.get_logger().info("✓ Torso e braccio inviati separatamente ai rispettivi controllers")
+        self.get_logger().info("Torso e braccio inviati separatamente ai rispettivi controllers")
 
         # Salva la configurazione finale
         self.save_joint_configuration_for_current_marker(q_traj[-1])
@@ -975,11 +975,11 @@ class KinematicPlanner(Node):
         elif final_distance < 0.25:
             self.get_logger().warn(f"Target molto vicino: {final_distance:.3f}m")
         else:
-            self.get_logger().info(f"✓ Target a distanza ottimale: {final_distance:.3f}m")
+            self.get_logger().info(f"Target a distanza ottimale: {final_distance:.3f}m")
 
         # Pubblica posa target
         self.pose_pub.publish(target_pose_out)
-        self.get_logger().info("✓ Posa dinamica pubblicata - gripper sarà PERFETTAMENTE centrato!")
+        self.get_logger().info("Posa dinamica pubblicata - gripper sarà PERFETTAMENTE centrato!")
 
         return "dynamic_positioning"
 
@@ -1011,10 +1011,10 @@ class KinematicPlanner(Node):
 
     def trigger_dynamic_recalculation(self, marker_id):
         """
-        🔄 CINEMATICA INVERSA DINAMICA: Ricalcola automaticamente gli angoli dei giunti 
+        CINEMATICA INVERSA DINAMICA: Ricalcola automaticamente gli angoli dei giunti 
         quando la posizione di un ArUco marker cambia durante la manipolazione
         """
-        self.get_logger().info(f"🔄 AVVIO RICALCOLO DINAMICO per Marker {marker_id}")
+        self.get_logger().info(f"AVVIO RICALCOLO DINAMICO per Marker {marker_id}")
         
         # Determina il tipo di movimento in base allo stato corrente e al marker
         if self.current_state in [State.MOVE_TO_OBJECT_1, State.GRIP_OBJECT_1, State.LIFT_OBJECT_1] and marker_id == 1:
@@ -1082,7 +1082,7 @@ class KinematicPlanner(Node):
         current_marker = self.get_current_target_marker()
         if current_marker is not None:
             self.last_joint_configurations[current_marker] = q_solution.copy()
-            self.get_logger().info(f"💾 Configurazione salvata per marker {current_marker}")
+            self.get_logger().info(f"Configurazione salvata per marker {current_marker}")
             
     def get_current_target_marker(self):
         """Determina quale marker è attualmente il target in base allo stato"""

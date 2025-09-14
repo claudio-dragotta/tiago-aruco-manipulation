@@ -24,7 +24,7 @@ def main():
     print("Topic disponibili:")
     for topic in topics.split('\n'):
         if 'camera' in topic.lower() or 'image' in topic.lower():
-            print(f"  📷 {topic}")
+            print(f"  {topic}")
     
     print("\n2. Verifica topic camera specifici...")
     camera_topics = [

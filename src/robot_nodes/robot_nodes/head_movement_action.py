@@ -11,10 +11,7 @@ class HeadMover(Node):
     def __init__(self):
         super().__init__('head_movement_action_node')
         self.stop = False
-        self.direction = -1
         self.joint_names = ['head_1_joint', 'head_2_joint']
-        self.pan_angle = 0.217
-        self.tilt_angle = -0.57
         
         # Action Client per comunicare con il controller hardware
         self.client = ActionClient(self, FollowJointTrajectory, '/head_controller/follow_joint_trajectory')
@@ -55,12 +52,23 @@ class HeadMover(Node):
         goal = FollowJointTrajectory.Goal()
         traj = JointTrajectory()
         traj.joint_names = self.joint_names
-        point = JointTrajectoryPoint()
-        point.positions = [self.pan_angle * self.direction, self.tilt_angle]
-        point.time_from_start = Duration(sec=2)
-        traj.points = [point]
-        goal.trajectory = traj
 
+        # Movimento fluido da destra a sinistra con altezza fissa
+        posizioni = [
+            (0.217, -0.57),    # Destra
+            (0.108, -0.57),    # Intermedio destra
+            (0.0,   -0.57),    # Centro
+            (-0.108, -0.57),   # Intermedio sinistra
+            (-0.217, -0.57)    # Sinistra
+        ]
+
+        for i, pos in enumerate(posizioni):
+            point = JointTrajectoryPoint()
+            point.positions = list(pos)
+            point.time_from_start = Duration(sec=2 * (i + 1))  # 2 secondi per posizione per movimento più fluido
+            traj.points.append(point)
+
+        goal.trajectory = traj
         self.client.send_goal_async(goal).add_done_callback(self.goal_response)
 
     def goal_response(self, future):
@@ -68,12 +76,17 @@ class HeadMover(Node):
         if not goal_handle.accepted:
             self.get_logger().error('Goal rifiutato!')
             return
-        self.get_logger().info(f'Scansione direzione {"sinistra" if self.direction < 0 else "destra"}')
+        self.get_logger().info('Eseguendo sequenza completa di scansione ambiente')
         goal_handle.get_result_async().add_done_callback(self.goal_done)
 
     def goal_done(self, future):
         if not self.stop:
-            self.direction *= -1
+            # Aggiungi un piccolo delay e ricontrolla lo stop prima di ripetere la scansione
+            self.create_timer(1.0, self.delayed_next_goal)
+
+    def delayed_next_goal(self):
+        if not self.stop:
+            self.get_logger().info('Ripetendo sequenza di scansione ambiente...')
             self.send_goal()
 
     async def execute_head_movement(self, goal_handle):
