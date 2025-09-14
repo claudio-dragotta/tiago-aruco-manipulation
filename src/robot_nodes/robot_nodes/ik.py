@@ -56,9 +56,7 @@ class KinematicPlanner(Node):
         self.robot = ERobot.URDF(urdf_loc)
         self.get_logger().info("URDF caricato correttamente!")
 
-        # Publishers per i controller (arm e torso)
-        self.arm_pub = self.create_publisher(JointTrajectory, '/arm_controller/joint_trajectory', 10)
-        self.torso_pub = self.create_publisher(JointTrajectory, '/torso_controller/joint_trajectory', 10)
+        # Publishers
         self.pose_pub = self.create_publisher(PoseStamped, '/target_pose', 10)
         self.completed_command_topic = self.create_publisher(Int32, '/completed_command_topic', 10)
 
@@ -75,7 +73,6 @@ class KinematicPlanner(Node):
         self.aruco_sub_2=self.create_subscription(PoseStamped, '/aruco_base_pose_2', self.aruco_pose_2_callback, 10)
         self.aruco_sub_3=self.create_subscription(PoseStamped, '/aruco_base_pose_3', self.aruco_pose_3_callback, 10)
         self.aruco_sub_4=self.create_subscription(PoseStamped, '/aruco_base_pose_4', self.aruco_pose_4_callback, 10)
-        self.gripper_pub = self.create_publisher(JointTrajectory, '/gripper_controller/joint_trajectory', 10)
 
         # Stato attuale dei giunti (vettore di 8: torso + 7 arm)
         self.current_joint_state = None  # np.array([torso, arm1, ..., arm7])
@@ -192,7 +189,7 @@ class KinematicPlanner(Node):
         self.arm_client.send_goal_async(goal)
         self.get_logger().info("Inviata configurazione intermedia braccio via action client")
         # Segnala completamento dopo 3 secondi - con timer gestito
-        self.active_timer = self.create_timer(3.5, lambda: self.publish_command_completed(State.INTERMEDIATE_CONFIG.value))
+        self.active_timer = self.create_timer(3.5, lambda: self.publish_command_completed_once(State.INTERMEDIATE_CONFIG.value))
 
     def send_operational_configuration(self):
         """Invia la configurazione operativa completa: torso + braccio + gripper"""
@@ -232,7 +229,7 @@ class KinematicPlanner(Node):
             self.get_logger().info("Gripper aperto in configurazione operativa")
         
         # Segnala completamento dopo 4 secondi - con timer gestito
-        self.active_timer = self.create_timer(4.0, lambda: self.publish_command_completed(State.OPERATIONAL_CONFIG.value))
+        self.active_timer = self.create_timer(4.0, lambda: self.publish_command_completed_once(State.OPERATIONAL_CONFIG.value))
 
     def send_torso_trajectory(self):
         if not self.torso_client.server_is_ready():
@@ -671,9 +668,9 @@ class KinematicPlanner(Node):
             
         traj_arm.points.append(point_arm)
 
-        # Pubblica
-        self.arm_pub.publish(traj_arm)
-        self.torso_pub.publish(traj_torso)
+        # Pubblica - DEPRECATO: Ora usiamo ActionClient invece di Publisher
+        # self.arm_pub.publish(traj_arm)
+        # self.torso_pub.publish(traj_torso)
         
         self.get_logger().info(f"=== {description} PUBBLICATA ===")
         self.get_logger().info(f"Configurazione giunti: torso={q_solution[0]:.3f}, arm=[{', '.join([f'{p:.3f}' for p in q_solution[1:8]])}]")
@@ -1166,7 +1163,7 @@ class KinematicPlanner(Node):
         
         # Aggiungi sleep per garantire timing come in kinematic1.py
         time.sleep(0.5)
-        self.gripper_pub.publish(traj)
+        # self.gripper_pub.publish(traj)  # DEPRECATO: Ora usiamo ActionClient
         self.get_logger().info("Comando chiusura gripper pubblicato")
         
         # Attendi per la chiusura completa prima di attach
@@ -1186,7 +1183,7 @@ class KinematicPlanner(Node):
         
         # Aggiungi sleep per garantire timing come in kinematic1.py
         time.sleep(0.5)
-        self.gripper_pub.publish(traj)
+        # self.gripper_pub.publish(traj)  # DEPRECATO: Ora usiamo ActionClient
         self.get_logger().info("Comando apertura gripper pubblicato")
         
         # Attendi per l'apertura completa prima di detach
@@ -1218,9 +1215,9 @@ class KinematicPlanner(Node):
 
         traj_arm.points.append(point_arm)
 
-        # Pubblica
-        self.arm_pub.publish(traj_arm)
-        self.torso_pub.publish(traj_torso)
+        # Pubblica - DEPRECATO: Ora usiamo ActionClient invece di Publisher
+        # self.arm_pub.publish(traj_arm)
+        # self.torso_pub.publish(traj_torso)
 
         self.get_logger().info("Traiettoria di ritorno pubblicata su torso e braccio.")
         

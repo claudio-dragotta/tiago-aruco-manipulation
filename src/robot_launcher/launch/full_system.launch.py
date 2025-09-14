@@ -68,7 +68,7 @@ def generate_launch_description():
             Node(
                 package='robot_nodes',
                 executable='state_machine',
-                name='robot_state_machine',
+                name='robot_state_machine_node',
                 output='screen',
                 parameters=[{'use_sim_time': True}]
             )
