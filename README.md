@@ -1,5 +1,15 @@
 # Sistema di Manipolazione Robotica TiAGO con ArUco
 
+![ROS2](https://img.shields.io/badge/ROS2-Humble-blue?style=flat-square&logo=ros)
+![Python](https://img.shields.io/badge/Python-3.10+-green?style=flat-square&logo=python)
+![Gazebo](https://img.shields.io/badge/Gazebo-11+-orange?style=flat-square)
+![Ubuntu](https://img.shields.io/badge/Ubuntu-22.04-purple?style=flat-square&logo=ubuntu)
+![OpenCV](https://img.shields.io/badge/OpenCV-4.5+-red?style=flat-square&logo=opencv)
+![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
+![Status](https://img.shields.io/badge/Status-Active-brightgreen?style=flat-square)
+![ArUco](https://img.shields.io/badge/ArUco-Detection-blue?style=flat-square)
+![Robot](https://img.shields.io/badge/Robot-TiAGO-navy?style=flat-square)
+
 ## Descrizione del Progetto
 
 Questo progetto implementa un sistema completo di manipolazione robotica per il robot TiAGO, che utilizza marcatori ArUco per l'identificazione e la manipolazione di oggetti. Il sistema è in grado di:
@@ -36,9 +46,35 @@ Questo progetto implementa un sistema completo di manipolazione robotica per il 
 
 1. **Fase di Rilevamento**: Il sistema rileva 4 marcatori ArUco (ID: 1, 2, 3, 4)
 2. **Configurazione Robot**: Il robot si posiziona in configurazione operativa
-3. **Manipolazione Oggetto 1**: Trasporto Coca-Cola (marker 1 → marker 3)
-4. **Manipolazione Oggetto 2**: Trasporto Pringles (marker 2 → marker 4)
+3. **Manipolazione Oggetto 1**: Trasporto Pringles (marker 1 → marker 3) - PRIMA
+4. **Manipolazione Oggetto 2**: Trasporto Coca-Cola (marker 2 → marker 4) - SECONDA
 5. **Ritorno Home**: Il robot torna alla posizione iniziale
+
+### Sequenza Dettagliata della State Machine
+
+**Fase Inizializzazione:**
+- `WAITING_FOR_ARUCO` → Attesa rilevamento tutti i 4 marker
+- `INTERMEDIATE_CONFIG` → Configurazione posizione intermedia braccio
+- `OPERATIONAL_CONFIG` → Configurazione operativa completa (torso + braccio + gripper)
+
+**Prima Sequenza - Pringles (Marker 1 → Marker 3):**
+- `MOVE_TO_OBJECT_1` → Movimento verso il contenitore Pringles
+- `GRIP_OBJECT_1` → Chiusura gripper per afferrare
+- `LIFT_OBJECT_1` → Sollevamento oggetto
+- `MOVE_TO_DEST_1` → Trasporto verso destinazione (marker 3)
+- `RELEASE_OBJECT_1` → Apertura gripper per rilasciare
+- `RETURN_HOME_1` → Ritorno posizione intermedia
+
+**Seconda Sequenza - Coca-Cola (Marker 2 → Marker 4):**
+- `MOVE_TO_OBJECT_2` → Movimento verso bottiglia Coca-Cola
+- `GRIP_OBJECT_2` → Chiusura gripper per afferrare
+- `LIFT_OBJECT_2` → Sollevamento oggetto
+- `MOVE_TO_DEST_2` → Trasporto verso destinazione (marker 4)
+- `RELEASE_OBJECT_2` → Apertura gripper per rilasciare
+- `RETURN_HOME_2` → Ritorno posizione finale
+
+**Completamento:**
+- `COMPLETED` → Sistema completato, timer ottimizzato per evitare messaggi ripetuti
 
 ## Requisiti di Sistema
 
@@ -168,8 +204,29 @@ ros2 pkg executables robot_nodes
 
 ### Avvio Completo (Raccomandato)
 
+**IMPORTANTE**: Prima di ogni avvio, eseguire sempre la compilazione e il sourcing:
+
 ```bash
-# Avvio completo: Gazebo + RViz + tutti i nodi ROS2
+# 1. Compilazione del workspace (OBBLIGATORIO prima di ogni launch)
+colcon build
+
+# 2. Sourcing dell'ambiente ROS2 e del progetto
+source /opt/ros/humble/setup.bash
+source install/setup.bash
+
+# 3. Avvio completo: Gazebo + RViz + tutti i nodi ROS2
+ros2 launch robot_launcher full_system.launch.py
+```
+
+**Comando completo in una riga:**
+```bash
+colcon build && source /opt/ros/humble/setup.bash && source install/setup.bash && ros2 launch robot_launcher full_system.launch.py
+```
+
+### Avvio Alternativo con Script
+
+```bash
+# Se disponibile il launcher unificato
 python3 scripts/launch_system.py --mode full
 ```
 
@@ -238,10 +295,10 @@ ros2 topic echo /all_markers_found
    - IDs richiesti: 1, 2, 3, 4
 
 2. **Posizionamento nell'Ambiente**:
-   - **Marker 1**: Posizionare sopra la bottiglia di Coca-Cola
-   - **Marker 2**: Posizionare sopra il contenitore di Pringles
-   - **Marker 3**: Posizione di destinazione per la Coca-Cola
-   - **Marker 4**: Posizione di destinazione per i Pringles
+   - **Marker 1**: Posizionare sopra il contenitore di Pringles (oggetto manipolato per primo)
+   - **Marker 2**: Posizionare sopra la bottiglia di Coca-Cola (oggetto manipolato per secondo)
+   - **Marker 3**: Posizione di destinazione per i Pringles
+   - **Marker 4**: Posizione di destinazione per la Coca-Cola
 
 3. **Requisiti di Visibilità**:
    - I marcatori devono essere visibili dalla camera frontale di TiAGO
@@ -279,6 +336,17 @@ pip3 install robotics-toolbox-python spatialmath-python
 # Pulire la build e ricompilare
 rm -rf build install log
 colcon build --symlink-install
+```
+
+**4. Errore "No executable found" o nodi non trovati**
+```bash
+# SEMPRE eseguire colcon build e source prima del launch
+colcon build
+source /opt/ros/humble/setup.bash
+source install/setup.bash
+
+# Verificare che i nodi siano disponibili
+ros2 pkg executables robot_nodes
 ```
 
 ### Problemi di Runtime
