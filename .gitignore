@@ -1,35 +1,38 @@
-# ROS2 build files
+# Colcon build artifacts
 build/
 install/
 log/
 
 # Python cache
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
+*.py[cod]
+*$py.class
 *.so
-
-# IDE files
-.vscode/
-.idea/
-.claude/
-*.swp
-*.swo
-*~
-
-# OS files
-.DS_Store
-Thumbs.db
 
 # Virtual environments
 venv/
 env/
-.env
+ENV/
 
-# Temporary files
-*.tmp
-*.temp
-*.log
-*.bak
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-*
+
+# ROS2 specific
+.ros/
+.ros2/
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/

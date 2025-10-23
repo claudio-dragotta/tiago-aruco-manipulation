@@ -24,6 +24,9 @@ setup(
             'aruco_detector_node = robot_nodes.aruco_detector:main',
             'head_movement_action_node = robot_nodes.head_movement_action:main',
             'state_machine = robot_nodes.state_machine:main',
+            'aruco_scan_publisher = robot_nodes.aruco_scan_publisher:main',
+            'aruco_coord_transformation = robot_nodes.aruco_coord_transformation:main',
+            'motion_planner_node = robot_nodes.motion_planner_node:main',
         ],
     },
 )

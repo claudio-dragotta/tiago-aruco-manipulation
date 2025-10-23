@@ -1,119 +1,69 @@
-
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import Bool
-from rclpy.action import ActionClient, ActionServer
+from rclpy.action import ActionClient
 from control_msgs.action import FollowJointTrajectory
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
-from builtin_interfaces.msg import Duration
 
-class HeadMover(Node):
+class HeadMovementClient(Node):
+
+    """
+    Il nodo permette il movimento della testa di TiaGo dalla posizione [0.217, -0.57] alla posizione [-0.217, -0.57] ai fini
+    della scansione del tavolo; viene utilizzato un Action Client.
+    """
+
     def __init__(self):
-        super().__init__('head_movement_action_node')
-        self.stop = False
-        self.joint_names = ['head_1_joint', 'head_2_joint']
-        
-        # Action Client per comunicare con il controller hardware
-        self.client = ActionClient(self, FollowJointTrajectory, '/head_controller/follow_joint_trajectory')
-        
-        # Action Server per ricevere comandi di movimento testa da altri nodi
-        self.action_server = ActionServer(
-            self,
-            FollowJointTrajectory,
-            'head_movement_action',
-            self.execute_head_movement
-        )
-        
-        self.create_subscription(Bool, '/all_markers_found', self.stop_callback, 10)
+        super().__init__("head_movement_client")
 
-        self.get_logger().info('Head Movement Node pronto - in attesa di comando...')
-        
-        # Attendi che il server sia pronto con timeout
-        self.get_logger().info('Tentativo di connessione al head_controller...')
-        if self.client.wait_for_server(timeout_sec=15.0):
-            self.get_logger().info('Movimento testa disponibile - avvio scansione ArUco')
-            # Avvia automaticamente il movimento per la ricerca ArUco
-            self.send_goal()
-        else:
-            self.get_logger().error('ERRORE: head_controller non disponibile dopo 15 secondi!')
-            self.get_logger().error('Continuando in attesa che diventi disponibile...')
-            # Non uscire, continua a girare
-
-    def stop_callback(self, msg):
-        if msg.data:
-            self.get_logger().info('Esplorazione completata - movimento testa arrestato')
-            self.stop = True
+        #Action client per il movimento della testa
+        self._client=ActionClient(self, FollowJointTrajectory, "/head_controller/follow_joint_trajectory")
 
     def send_goal(self):
-        if self.stop:
-            self.get_logger().info('Movimento testa interrotto')
-            return
 
-        goal = FollowJointTrajectory.Goal()
-        traj = JointTrajectory()
-        traj.joint_names = self.joint_names
+        #Crea un messaggio FollowJointTrajectory per l'invio del comando di movimento della testa
+        goal=FollowJointTrajectory.Goal()
+        goal.trajectory=JointTrajectory()
+        goal.trajectory.joint_names=["head_1_joint", "head_2_joint"]
 
-        # Movimento fluido da destra a sinistra con altezza fissa
-        posizioni = [
-            (0.217, -0.57),    # Destra
-            (0.108, -0.57),    # Intermedio destra
-            (0.0,   -0.57),    # Centro
-            (-0.108, -0.57),   # Intermedio sinistra
-            (-0.217, -0.57)    # Sinistra
-        ]
+        #Punto di partenza (raggiunge la posizione in 4 secondo)
+        starting_point=JointTrajectoryPoint()
+        starting_point.positions=[0.217, -0.57]
+        starting_point.time_from_start.sec=4
 
-        for i, pos in enumerate(posizioni):
-            point = JointTrajectoryPoint()
-            point.positions = list(pos)
-            point.time_from_start = Duration(sec=2 * (i + 1))  # 2 secondi per posizione per movimento più fluido
-            traj.points.append(point)
+        #Punto di arrivo (raggiunge la posizione in 6 secondi)
+        final_point=JointTrajectoryPoint()
+        final_point.positions=[-0.217, -0.57]
+        final_point.time_from_start.sec=6
 
-        goal.trajectory = traj
-        self.client.send_goal_async(goal).add_done_callback(self.goal_response)
+        goal.trajectory.points=[starting_point, final_point]
 
-    def goal_response(self, future):
-        goal_handle = future.result()
+        #Invia il goal ed esegue goal_response_callback
+        self._client.wait_for_server()
+        self._send_goal_future=self._client.send_goal_async(goal)
+        self._send_goal_future.add_done_callback(self.goal_response_callback)
+
+    def goal_response_callback(self, future):
+        goal_handle=future.result()
+
+        #In caso di errore invia un warn a terminale ed esce
         if not goal_handle.accepted:
-            self.get_logger().error('Goal rifiutato!')
+            self.get_logger().warn("Non è possibile eseguire il movimento.")
             return
-        self.get_logger().info('Eseguendo sequenza completa di scansione ambiente')
-        goal_handle.get_result_async().add_done_callback(self.goal_done)
 
-    def goal_done(self, future):
-        if not self.stop:
-            # Aggiungi un piccolo delay e ricontrolla lo stop prima di ripetere la scansione
-            self.create_timer(1.0, self.delayed_next_goal)
+        #Altrimenti inizia il movimento della testa ed esegue goal_result_callback al completamento del movimento
+        self.get_logger().info("Movimento della testa iniziato. Esecuzione in corso...")
+        self._get_result_future=goal_handle.get_result_async()
+        self._get_result_future.add_done_callback(self.goal_result_callback)
 
-    def delayed_next_goal(self):
-        if not self.stop:
-            self.get_logger().info('Ripetendo sequenza di scansione ambiente...')
-            self.send_goal()
+    def goal_result_callback(self, future):
+        self.get_logger().info("Movimento completato.")
 
-    async def execute_head_movement(self, goal_handle):
-        """Action Server callback per eseguire movimento testa personalizzato"""
-        self.get_logger().info('Ricevuta richiesta movimento testa personalizzato')
-        
-        # Invia il goal ricevuto al controller hardware
-        future = self.client.send_goal_async(goal_handle.request)
-        await future
-        
-        controller_goal_handle = future.result()
-        if not controller_goal_handle.accepted:
-            goal_handle.abort()
-            return FollowJointTrajectory.Result()
-        
-        # Attendi il completamento dal controller
-        controller_result_future = controller_goal_handle.get_result_async()
-        await controller_result_future
-        
-        controller_result = controller_result_future.result()
-        
-        goal_handle.succeed()
-        return controller_result.result
 
 def main(args=None):
     rclpy.init(args=args)
-    node = HeadMover()
+    node=HeadMovementClient()
+    node.send_goal()
     rclpy.spin(node)
-    node.destroy_node()
     rclpy.shutdown()
+
+if __name__ == "__main__":
+    main()

@@ -302,11 +302,19 @@ class KinematicPlanner(Node):
             self.calculate_pose_with_dynamic_positioning(1, approach_distance=optimal_distance)
             
         elif msg.data == State.GRIP_OBJECT_1.value:
-            self.get_logger().info("Abbasso gripper MOLTO per presa PRINGLES (oggetto 1)")
+            self.get_logger().info("Abbasso gripper con precisione per presa PRINGLES (oggetto 1)")
             self.current_state = State.GRIP_OBJECT_1
-            # PRESA PRECISA: Movimento drastico verso il basso e avanti
-            optimal_distance = self.calculate_optimal_gripper_position(1) - 0.05  # Più aggressivo per presa
-            self.calculate_pose_with_dynamic_positioning(1, approach_distance=optimal_distance, lift_height=-0.25)
+            # PRESA PRECISA ADATTIVA: Movimento verso il basso con offset dinamico basato su stabilità
+            optimal_distance = self.calculate_optimal_gripper_position(1)
+            stability = self.get_position_stability(1)
+            # Se posizione instabile, mantieni margine di sicurezza più ampio
+            if stability > self.stability_threshold:
+                approach_offset = -0.03  # 3cm offset conservativo
+                self.get_logger().info(f"Presa CONSERVATIVA per instabilità marker (stabilità={stability*100:.1f}cm)")
+            else:
+                approach_offset = -0.02  # 2cm offset aggressivo
+                self.get_logger().info(f"Presa PRECISA per marker stabile (stabilità={stability*100:.1f}cm)")
+            self.calculate_pose_with_dynamic_positioning(1, approach_distance=optimal_distance + approach_offset, lift_height=-0.25)
             
         elif msg.data == State.LIFT_OBJECT_1.value:
             self.get_logger().info("Sollevamento PRINGLES (oggetto 1)")  
@@ -339,11 +347,19 @@ class KinematicPlanner(Node):
             self.calculate_pose_with_dynamic_positioning(2, approach_distance=optimal_distance)
             
         elif msg.data == State.GRIP_OBJECT_2.value:
-            self.get_logger().info("Abbasso gripper per presa COCA-COLA (oggetto 2)")
+            self.get_logger().info("Abbasso gripper con precisione per presa COCA-COLA (oggetto 2)")
             self.current_state = State.GRIP_OBJECT_2
-            # PRESA CILINDRO: movimento più vicino e verso il basso per Pringles
-            optimal_distance = self.calculate_optimal_gripper_position(2) - 0.05  # Più aggressivo per presa
-            self.calculate_pose_with_dynamic_positioning(2, approach_distance=optimal_distance, lift_height=-0.25)
+            # PRESA PRECISA ADATTIVA: Movimento verso il basso con offset dinamico basato su stabilità
+            optimal_distance = self.calculate_optimal_gripper_position(2)
+            stability = self.get_position_stability(2)
+            # Se posizione instabile, mantieni margine di sicurezza più ampio
+            if stability > self.stability_threshold:
+                approach_offset = -0.03  # 3cm offset conservativo
+                self.get_logger().info(f"Presa CONSERVATIVA per instabilità marker (stabilità={stability*100:.1f}cm)")
+            else:
+                approach_offset = -0.02  # 2cm offset aggressivo
+                self.get_logger().info(f"Presa PRECISA per marker stabile (stabilità={stability*100:.1f}cm)")
+            self.calculate_pose_with_dynamic_positioning(2, approach_distance=optimal_distance + approach_offset, lift_height=-0.25)
             
         elif msg.data == State.LIFT_OBJECT_2.value:
             self.get_logger().info("Sollevamento COCA-COLA (oggetto 2)")
@@ -879,12 +895,29 @@ class KinematicPlanner(Node):
         """Ottieni posizione stabilizzata per un marker"""
         if marker_id in self.stable_positions:
             return self.stable_positions[marker_id]
-        
+
         # Fallback alla posizione più recente se non abbastanza campioni
         if len(self.position_buffers[marker_id]) > 0:
             return self.position_buffers[marker_id][-1]
-        
+
         return None
+
+    def get_position_stability(self, marker_id):
+        """
+        Calcola la stabilità della posizione del marker basandosi sulla varianza dei campioni recenti.
+        Ritorna la norma della varianza (in metri).
+
+        Stabilità bassa (<0.008m) = posizione stabile = presa più precisa
+        Stabilità alta (>0.008m) = posizione instabile = presa più conservativa
+        """
+        if len(self.position_buffers[marker_id]) < 3:
+            return float('inf')  # Non abbastanza campioni = considerato instabile
+
+        positions_array = np.array(self.position_buffers[marker_id][-10:])  # Ultimi 10 campioni
+        variance = np.var(positions_array, axis=0)
+        stability = np.linalg.norm(variance)
+
+        return stability
 
     def calculate_pose_with_dynamic_positioning(self, target_marker, approach_distance=0.10, lift_height=0.0):
         """Sistema di posizionamento dinamico che sostituisce gli offset statici"""
@@ -1140,32 +1173,48 @@ class KinematicPlanner(Node):
         return self.calculate_pose_with_dynamic_positioning(target_marker, optimal_distance, lift_height)
     
     def close_gripper(self):
-        self.get_logger().info("Chiusura gripper in corso...")
+        self.get_logger().info("Chiusura gripper in corso con modalità alta precisione...")
 
-        # Movimento gripper - chiusura più precisa per oggetti piccoli
+        # Movimento gripper - chiusura precisa basata su stabilità marker
         traj = JointTrajectory()
         traj.joint_names = ['gripper_left_finger_joint', 'gripper_right_finger_joint']
         point = JointTrajectoryPoint()
-        
-        # CORREZIONE: Chiusura più stretta per presa sicura
-        # Coca-Cola e Pringles sono oggetti di dimensioni diverse
+
+        # Determina marker target corrente
+        target_marker = self.get_current_target_marker()
+        stability = self.get_position_stability(target_marker) if target_marker else float('inf')
+
+        # CHIUSURA ADATTIVA: baseata su stabilità e tipo oggetto
         if self.current_state == State.GRIP_OBJECT_1:
-            # Coca-Cola: bottiglia più sottile
-            point.positions = [0.035, 0.035]  # Chiusura più stretta
-            self.get_logger().info("Chiusura gripper ottimizzata per Coca-Cola")
+            # Coca-Cola: bottiglia più sottile - richiede precisione maggiore
+            if stability < self.stability_threshold:
+                # Marker stabile: presa più stretta
+                point.positions = [0.032, 0.032]
+                self.get_logger().info(f"Coca-Cola: presa PRECISA (stabilità={stability*100:.1f}cm)")
+            else:
+                # Marker instabile: presa conservativa
+                point.positions = [0.036, 0.036]
+                self.get_logger().info(f"Coca-Cola: presa CONSERVATIVA (stabilità={stability*100:.1f}cm)")
         else:
             # Pringles: cilindro più largo
-            point.positions = [0.038, 0.038]  # Chiusura media
-            self.get_logger().info("Chiusura gripper ottimizzata per Pringles")
-            
-        point.time_from_start.sec = 3  # Tempo più lungo per chiusura graduale
+            if stability < self.stability_threshold:
+                # Marker stabile: presa stretta
+                point.positions = [0.035, 0.035]
+                self.get_logger().info(f"Pringles: presa STRETTA (stabilità={stability*100:.1f}cm)")
+            else:
+                # Marker instabile: presa moderata
+                point.positions = [0.040, 0.040]
+                self.get_logger().info(f"Pringles: presa MODERATA (stabilità={stability*100:.1f}cm)")
+
+        # Tempo graduale per chiusura precisa
+        point.time_from_start.sec = 3
         traj.points.append(point)
-        
-        # Aggiungi sleep per garantire timing come in kinematic1.py
+
+        # Aggiungi sleep per garantire timing
         time.sleep(0.5)
         # self.gripper_pub.publish(traj)  # DEPRECATO: Ora usiamo ActionClient
-        self.get_logger().info("Comando chiusura gripper pubblicato")
-        
+        self.get_logger().info("Comando chiusura gripper pubblicato con adattamento dinamico")
+
         # Attendi per la chiusura completa prima di attach
         time.sleep(3.0)
         self.handle_gripper_attach()

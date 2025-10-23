@@ -23,32 +23,115 @@ Questo progetto implementa un sistema completo di manipolazione robotica per il 
 
 ### Componenti Principali
 
-1. **ArUco Detector Node** (`aruco_detector_node.py`)
-   - Rileva marcatori ArUco dalla camera del robot
-   - Calcola le pose 3D dei marcatori nel sistema di coordinate del robot
-   - Pubblica le posizioni sui topic ROS2 dedicati
+1. **ArUco Scan Publisher** (`aruco_scan_publisher.py`) [NUOVO]
+   - Rileva marcatori ArUco dalla camera frontale del robot
+   - Stima le pose 3D rispetto a `head_front_camera_optical_frame`
+   - Pubblica pose su topic `/aruco_[id]_pose` per ogni marker rilevato
+   - Disegna marker e assi 3D in tempo reale su OpenCV
 
-2. **Inverse Kinematics Node** (`ik.py`)
-   - Calcola la cinematica inversa per il braccio TiAGO a 7 gradi di libertà
-   - Gestisce la state machine per le operazioni di manipolazione
-   - Controlla coordinatamente torso, braccio e gripper del robot
+2. **ArUco Coordinate Transformation** (`aruco_coord_transformation.py`) [NUOVO]
+   - Trasforma le coordinate dei marker dal frame della camera a `base_footprint`
+   - Implementa sistema di media su 20 secondi per stabilità
+   - Pubblica pose trasformate su `/aruco_[id]_pose_transformed`
+   - Utilizza TF2 per le trasformazioni tra frame
 
-3. **State Machine Node** (`state_machine_node.py`)
-   - Coordina la sequenza completa delle operazioni
-   - Gestisce le transizioni tra gli stati del sistema
-   - Monitora l'avanzamento e gestisce gli errori
+3. **Head Movement Action Node** (`head_movement_action.py`) [AGGIORNATO]
+   - Controlla il movimento della testa del robot tramite ActionClient
+   - Scansiona l'ambiente da destra a sinistra per rilevare i marker
+   - Si ferma automaticamente quando tutti i marker sono rilevati
+   - Pubblica su `/head_controller/follow_joint_trajectory`
 
-4. **Launch System** (`launch_system.py`)
-   - Sistema unificato di avvio per l'intero stack software
-   - Gestisce l'avvio di Gazebo, RViz e tutti i nodi ROS2
+4. **Motion Planner Node** (`motion_planner_node.py`) [NUOVO]
+   - Implementa l'inversione cinematica per il braccio TiAGO a 7 DOF
+   - Carica il modello URDF del robot e calcola traiettorie
+   - Comunica con State Machine via topic `/sm_ik_communication`
+   - Usa `roboticstoolbox` (Levenberg-Marquardt IK) per calcoli precisi
 
-### Flusso Operativo
+5. **State Machine Node** (`state_machine.py`)
+   - Implementa automa finito con 16 stati
+   - Coordina la sequenza completa di operazioni (pickup-place)
+   - Gestisce comunicazione con Motion Planner
+   - Monitora transizioni tra stati e comandi
 
-1. **Fase di Rilevamento**: Il sistema rileva 4 marcatori ArUco (ID: 1, 2, 3, 4)
-2. **Configurazione Robot**: Il robot si posiziona in configurazione operativa
-3. **Manipolazione Oggetto 1**: Trasporto Pringles (marker 1 → marker 3) - PRIMA
-4. **Manipolazione Oggetto 2**: Trasporto Coca-Cola (marker 2 → marker 4) - SECONDA
-5. **Ritorno Home**: Il robot torna alla posizione iniziale
+### Flusso Operativo (Pipeline)
+
+```
+PIPELINE ARCHITETTURA FUNZIONANTE:
+
+1. ArUco Scan Publisher (t=18s)
+   └─> Rileva marker 1,2,3,4 dalla camera
+       Pubblica su /aruco_[1-4]_pose
+       ↓
+
+2. ArUco Coord Transform (t=20s)
+   └─> Trasforma coordinate in base_footprint
+       Pubblica su /aruco_[1-4]_pose_transformed
+       ↓
+
+3. Head Movement (t=22s)
+   └─> Scansiona ambiente
+       Muove testa da destra a sinistra
+       ↓
+
+4. Motion Planner (t=24s)
+   └─> Attende comandi dalla State Machine
+       Calcola inversione cinematica
+       Pubblica traiettorie ai controller
+       ↓
+
+5. State Machine (t=26s)
+   └─> Attende marker rilevati
+       Invia comandi a Motion Planner
+       Coordina sequenza manipolazione
+       ↓
+
+SEQUENZA MANIPOLAZIONE:
+   - Configurazione intermedia
+   - Configurazione operativa
+   - Pringles: marker 1 → marker 3
+   - Coca-Cola: marker 2 → marker 4
+   - Ritorno home
+```
+
+### Componenti Supporto
+
+- **Gazebo Simulator**: Simula il robot TiAGO e l'ambiente
+- **ROS2 Controllers**: Controllano torso, braccio, gripper, testa
+- **TF2**: Gestisce trasformazioni tra frame coordinati
+
+## Panorama Workspace
+
+- **Struttura Colcon**: il workspace segue la convenzione ROS2 con il codice sorgente in `src/`, output generati in `build/`, `install/` e `log/`, documentazione e dipendenze al livello radice (`README.md`, `requirements.txt`) e il modello URDF personalizzato del TiAGO (`tiago_robot.urdf`).
+- **Pacchetto `robot_launcher`**: contiene il launch `launch/full_system.launch.py`, che orchestra l’avvio temporizzato di Gazebo dal workspace ufficiale PAL, RViz e dei quattro nodi ROS personalizzati, mostrando messaggi guida all’utente.
+- **Script di utilità**: la cartella `scripts/` include `launch_system.py` per compilare e lanciare l’intero stack fuori da ROS, oltre a strumenti di debug come `debug_camera.py` e `test_dependencies.py` per verificare topic camera e dipendenze.
+
+### Tour Dettagliato del Workspace
+
+Nel livello radice convivono gli elementi che servono per compilare e comprendere il progetto:
+- `README.md` (questo file) e `requirements.txt` documentano rispettivamente funzionamento e dipendenze Python, mentre `tiago_robot.urdf` fornisce al nodo IK la descrizione completa del robot.
+- Le cartelle `build/`, `install/` e `log/` sono prodotte da `colcon build`: contengono artefatti, workspace sovrapposto e log di esecuzione e possono essere rigenerate in qualunque momento.
+- `scripts/` ospita i tool “extra ROS”: `launch_system.py` gestisce l’avvio coordinato di compilazione, simulazione e nodi ROS direttamente da terminale, `debug_camera.py` aiuta a diagnosticare la pipeline video della testa del TiAGO, mentre `test_dependencies.py` verifica rapidamente che tutte le librerie richieste e l’ambiente ROS2 siano configurati.
+
+La cartella `src/` raccoglie i due pacchetti ROS2 sviluppati nel workspace:
+
+1. **`robot_launcher/`**
+   - `launch/full_system.launch.py` è il cuore dell’orchestrazione ROS: annuncia l’avvio con messaggi informativi e, grazie a più `TimerAction`, avvia Gazebo e RViz dal workspace ufficiale PAL (`/home/claudio/tiago_public_ws`), quindi lancia nell’ordine macchina a stati, detector ArUco, nodo di movimento testa e IK, sincronizzando i tempi per evitare conflitti.
+   - `package.xml`, `setup.py`, `setup.cfg` e `resource/robot_launcher` costituiscono la configurazione standard del pacchetto ament, mentre la cartella `test/` contiene gli script di linting generati dal template.
+
+2. **`robot_nodes/`**
+   - Nel modulo Python `robot_nodes/` risiedono i quattro nodi principali:
+     - `aruco_detector.py` ascolta `CameraInfo` e `Image` dalla testa, rileva i marker con OpenCV, calcola le pose nel frame `base_footprint`, applica offset ottimizzati per la presa, pubblica le pose verso IK e state machine e diffonde anche trasformate TF. Tiene traccia dei marker trovati e, una volta raggiunta la quaterna {1,2,3,4}, pubblica `/all_markers_found` per sbloccare il workflow.
+     - `head_movement_action.py` sincronizza un ActionClient e un ActionServer su `/head_controller/follow_joint_trajectory`: all’avvio prova a collegarsi al controller e lancia una sequenza ciclica di punti che scandisce l’ambiente da destra a sinistra; ricevendo `/all_markers_found` arresta la ricerca.
+     - `state_machine.py` definisce l’automa finito che coordina l’intera missione: parte in attesa dei marker, invia comandi progressivi al nodo IK tramite `/command_topic`, ascolta le conferme su `/completed_command_topic` e avanza nella sequenza di pick-and-place (Pringles 1→3, Coca-Cola 2→4), con ritorno a casa finale.
+     - `ik.py` funge da pianificatore di cinematica inversa: carica `tiago_robot.urdf`, mantiene i client di controllo per torso, braccio e gripper, media le pose ArUco per stabilizzare la percezione e, ad ogni comando, calcola traiettorie con `roboticstoolbox` (IK Levenberg-Marquardt + verifica dell’errore in spazio operativo). Pubblica `JointTrajectory` sui controller interessati e segnala l’esito alla state machine.
+   - Anche qui `package.xml`, `setup.py`, `setup.cfg` e `resource/robot_nodes` curano il packaging ament, mentre la cartella `test/` replica gli script di linting.
+
+## Dettaglio Nodi di Controllo (pacchetto `robot_nodes`)
+
+- **`aruco_detector.py`**: sottoscrive i topic della camera di testa, rileva i marker con OpenCV, trasforma le pose nel frame `base_footprint`, applica offset ottimizzati per la presa e pubblica sia topic Pose che trasformazioni TF. Alla scoperta di tutti e quattro i marker invia `/all_markers_found` per sbloccare gli altri nodi.
+- **`head_movement_action.py`**: combina un ActionClient e un ActionServer su `/head_controller/follow_joint_trajectory` per oscillare la testa in cerca dei marker; si ferma automaticamente quando riceve il segnale di completamento dal detector.
+- **`state_machine.py`**: implementa una macchina a stati con 16 tappe, dall’attesa dei marker fino alla chiusura missione. Pubblica comandi numerici su `/command_topic`, ascolta conferme su `/completed_command_topic` e governa l’intera sequenza pick-and-place (Pringles marker 1→3, Coca-Cola marker 2→4).
+- **`ik.py`**: carica `tiago_robot.urdf`, mantiene i client di controllo per torso, braccio e gripper, media le pose ArUco e, per ogni comando ricevuto, calcola traiettorie con `roboticstoolbox` (funzioni `ikine_LM` e controllo iterativo sull’errore), pubblicandole come `JointTrajectory`. Tiene traccia dello stato operativo, gestisce offset dinamici delle pose e invia conferme di completamento alla state machine.
 
 ### Sequenza Dettagliata della State Machine
 
@@ -202,88 +285,230 @@ ros2 pkg executables robot_nodes
 
 ## Utilizzo del Sistema
 
-### Avvio Completo (Raccomandato)
+### Avvio Completo (RACCOMANDATO - Un Comando Solo)
 
-**IMPORTANTE**: Prima di ogni avvio, eseguire sempre la compilazione e il sourcing:
+**OPZIONE 1: Avvio Veloce in Un Unico Comando**
 
 ```bash
-# 1. Compilazione del workspace (OBBLIGATORIO prima di ogni launch)
-colcon build
+cd /home/claudio/Desktop/progetto_ros2 && source install/setup.bash && ros2 launch robot_launcher full_system.launch.py
+```
 
-# 2. Sourcing dell'ambiente ROS2 e del progetto
-source /opt/ros/humble/setup.bash
+**OPZIONE 2: Avvio con Compilazione (Sicuro)**
+
+```bash
+cd /home/claudio/Desktop/progetto_ros2 && colcon build && source /opt/ros/humble/setup.bash && source install/setup.bash && ros2 launch robot_launcher full_system.launch.py
+```
+
+Questo comando:
+- Compila il workspace
+- Configura l'ambiente ROS2
+- Avvia Gazebo con TiAGO
+- Avvia tutti i 5 nodi principali in sequenza:
+  1. **ArUco Scan Publisher** (t=18s) - Rilevamento marker ArUco
+  2. **ArUco Coordinate Transformation** (t=20s) - Trasformazione coordinate
+  3. **Head Movement** (t=22s) - Scansione ambiente
+  4. **Motion Planner** (t=24s) - Inversione cinematica
+  5. **State Machine** (t=26s) - Coordinamento operazioni
+
+---
+
+### Avvio per Terminal Multipli (Avanzato)
+
+Se preferisci lanciare i nodi separatamente in più terminal:
+
+**Terminal 1 - Avvia Gazebo e Sistema Base:**
+```bash
+cd /home/claudio/Desktop/progetto_ros2
 source install/setup.bash
-
-# 3. Avvio completo: Gazebo + RViz + tutti i nodi ROS2
 ros2 launch robot_launcher full_system.launch.py
 ```
 
-**Comando completo in una riga:**
+**Terminal 2 (Opzionale) - Monitoraggio Marker ArUco:**
 ```bash
-colcon build && source /opt/ros/humble/setup.bash && source install/setup.bash && ros2 launch robot_launcher full_system.launch.py
+cd /home/claudio/Desktop/progetto_ros2
+source install/setup.bash
+ros2 topic echo /aruco_poses
 ```
 
-### Avvio Alternativo con Script
-
+**Terminal 3 (Opzionale) - Monitoraggio Stato Macchina:**
 ```bash
-# Se disponibile il launcher unificato
-python3 scripts/launch_system.py --mode full
-```
-
-### Modalità Alternative
-
-```bash
-# Solo simulazione (Gazebo senza RViz) - per prestazioni migliori
-python3 scripts/launch_system.py --mode sim
-
-# Solo nodi ROS2 (per utilizzo con robot reale)
-python3 scripts/launch_system.py --mode nodes
-
-# Modalità debug (con output dettagliati)
-python3 scripts/launch_system.py --mode debug
-```
-
-### Comandi Manuali per Debug
-
-```bash
-# Terminal 1: Avvio Gazebo
-ros2 launch robot_launcher tiago_gazebo.launch.py
-
-# Terminal 2: Nodo State Machine
-ros2 run robot_nodes state_machine_node
-
-# Terminal 3: Rilevatore ArUco
-ros2 run robot_nodes aruco_detector_node
-
-# Terminal 4: Cinematica Inversa
-ros2 run robot_nodes ik
-
-# Debug camera
-python3 scripts/debug_camera.py
-```
-
-### Monitoraggio del Sistema
-
-```bash
-# Lista di tutti i nodi attivi
-ros2 node list
-
-# Lista di tutti i topic
-ros2 topic list
-
-# Monitoraggio pose ArUco
-ros2 topic echo /aruco_base_pose_1
-ros2 topic echo /aruco_base_pose_2
-ros2 topic echo /aruco_base_pose_3
-ros2 topic echo /aruco_base_pose_4
-
-# Monitoraggio comandi
+cd /home/claudio/Desktop/progetto_ros2
+source install/setup.bash
 ros2 topic echo /command_topic
-ros2 topic echo /completed_command_topic
-
-# Stato complessivo del sistema
-ros2 topic echo /all_markers_found
 ```
+
+---
+
+### Lanciare Nodi Singolarmente (Per Debug)
+
+Se vuoi controllare ogni nodo singolarmente:
+
+**Terminal 1 - ArUco Scan Publisher:**
+```bash
+cd /home/claudio/Desktop/progetto_ros2
+source install/setup.bash
+ros2 run robot_nodes aruco_scan_publisher
+```
+
+**Terminal 2 - ArUco Coordinate Transformation:**
+```bash
+cd /home/claudio/Desktop/progetto_ros2
+source install/setup.bash
+ros2 run robot_nodes aruco_coord_transformation
+```
+
+**Terminal 3 - Head Movement:**
+```bash
+cd /home/claudio/Desktop/progetto_ros2
+source install/setup.bash
+ros2 run robot_nodes head_movement_action_node
+```
+
+**Terminal 4 - Motion Planner:**
+```bash
+cd /home/claudio/Desktop/progetto_ros2
+source install/setup.bash
+ros2 run robot_nodes motion_planner_node
+```
+
+**Terminal 5 - State Machine:**
+```bash
+cd /home/claudio/Desktop/progetto_ros2
+source install/setup.bash
+ros2 run robot_nodes state_machine
+```
+
+---
+
+### Comandi di Monitoraggio e Debug
+
+#### **Verificare Nodi Attivi:**
+```bash
+cd /home/claudio/Desktop/progetto_ros2
+source install/setup.bash
+ros2 node list
+```
+
+#### **Vedere i Topic ArUco:**
+```bash
+cd /home/claudio/Desktop/progetto_ros2
+source install/setup.bash
+ros2 topic list | grep aruco
+```
+
+#### **Monitorare Marker Rilevati (in tempo reale):**
+```bash
+cd /home/claudio/Desktop/progetto_ros2
+source install/setup.bash
+ros2 topic echo /aruco_poses
+```
+
+#### **Monitorare Pose Trasformate:**
+```bash
+cd /home/claudio/Desktop/progetto_ros2
+source install/setup.bash
+ros2 topic echo /aruco_poses_transformed
+```
+
+#### **Monitorare Comando State Machine:**
+```bash
+cd /home/claudio/Desktop/progetto_ros2
+source install/setup.bash
+ros2 topic echo /command_topic
+```
+
+#### **Monitorare Comunicazione SM-IK:**
+```bash
+cd /home/claudio/Desktop/progetto_ros2
+source install/setup.bash
+ros2 topic echo /sm_ik_communication
+```
+
+#### **Informazioni su un Nodo:**
+```bash
+cd /home/claudio/Desktop/progetto_ros2
+source install/setup.bash
+ros2 node info /robot_state_machine_node
+```
+
+#### **Visualizzare Tutti i Topic:**
+```bash
+cd /home/claudio/Desktop/progetto_ros2
+source install/setup.bash
+ros2 topic list
+```
+
+---
+
+### Comandi di Compilazione e Manutenzione
+
+#### **Compilare il Progetto:**
+```bash
+cd /home/claudio/Desktop/progetto_ros2
+colcon build --packages-select robot_nodes robot_launcher
+```
+
+#### **Compilare e Pulire:**
+```bash
+cd /home/claudio/Desktop/progetto_ros2
+rm -rf build install log
+colcon build --symlink-install
+```
+
+#### **Verifichiare Eseguibili Disponibili:**
+```bash
+cd /home/claudio/Desktop/progetto_ros2
+source install/setup.bash
+ros2 pkg executables robot_nodes
+```
+
+---
+
+### Alias Utili da Aggiungere al .bashrc
+
+Se vuoi semplificare i comandi, aggiungi questi alias al tuo `~/.bashrc`:
+
+```bash
+# Aggiungi queste linee al file ~/.bashrc
+alias tiago_launch='cd /home/claudio/Desktop/progetto_ros2 && source install/setup.bash && ros2 launch robot_launcher full_system.launch.py'
+alias tiago_build='cd /home/claudio/Desktop/progetto_ros2 && colcon build && source /opt/ros/humble/setup.bash && source install/setup.bash'
+alias tiago_nodes='cd /home/claudio/Desktop/progetto_ros2 && source install/setup.bash && ros2 node list'
+alias tiago_topics='cd /home/claudio/Desktop/progetto_ros2 && source install/setup.bash && ros2 topic list'
+alias tiago_aruco='cd /home/claudio/Desktop/progetto_ros2 && source install/setup.bash && ros2 topic echo /aruco_poses'
+```
+
+Dopo aver salvato, esegui:
+```bash
+source ~/.bashrc
+```
+
+Poi potrai lanciare il sistema semplicemente con:
+```bash
+tiago_launch
+```
+
+---
+
+### Sequenza Completa Consigliata
+
+1. **Apri un terminale e avvia il sistema:**
+   ```bash
+   cd /home/claudio/Desktop/progetto_ros2 && source install/setup.bash && ros2 launch robot_launcher full_system.launch.py
+   ```
+
+2. **Apri un secondo terminale per monitorare i marker:**
+   ```bash
+   cd /home/claudio/Desktop/progetto_ros2 && source install/setup.bash && ros2 topic echo /aruco_poses
+   ```
+
+3. **(Opzionale) Apri un terzo terminale per monitorare lo stato:**
+   ```bash
+   cd /home/claudio/Desktop/progetto_ros2 && source install/setup.bash && ros2 node list
+   ```
+
+4. **Posiziona i 4 marker ArUco (ID: 1,2,3,4) davanti alla camera**
+
+5. **Il sistema inizierà automaticamente la manipolazione!**
 
 ## Configurazione dell'Ambiente
 
