@@ -74,7 +74,7 @@ class RobotStateMachineNode(Node):
                 self.debug_counter = 1
                 
             if self.debug_counter % 10 == 0:
-                self.get_logger().debug(f"In attesa - Stato corrente: {self.stato_corrente.name}, Command in progress: {self.command_in_progress}")
+                self.get_logger().info(f"In attesa - Stato corrente: {self.stato_corrente.name}, Command in progress: {self.command_in_progress}")
             
     def execute_current_state(self):
         state_actions = {
@@ -105,6 +105,20 @@ class RobotStateMachineNode(Node):
             self.get_logger().warn(f"Stato {self.stato_corrente} non gestito")
 
     def completed_command_callback(self, msg):
+        # Ignora completamenti se non stiamo aspettando nessun comando
+        if not self.command_in_progress:
+            self.get_logger().info(f"Completamento ignorato (non in progress): {msg.data}")
+            return
+
+        # Ignora completamenti che non corrispondono allo stato corrente
+        if msg.data != self.stato_corrente.value:
+            try:
+                nome = State(msg.data).name
+            except ValueError:
+                nome = f"SCONOSCIUTO({msg.data})"
+            self.get_logger().warn(f"Completamento scartato: ricevuto {msg.data} ({nome}), atteso {self.stato_corrente.value} ({self.stato_corrente.name})")
+            return
+
         self.get_logger().info(f"Completato: {State(msg.data).name}")
         self.command_in_progress = False
         self.retry_count = 0

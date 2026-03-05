@@ -26,6 +26,13 @@ def generate_launch_description():
         ]
     )
 
+    # Variabili d'ambiente per rendering WSL2 e display OpenCV
+    display_env = {
+        'LIBGL_ALWAYS_SOFTWARE': '1',
+        'MESA_GL_VERSION_OVERRIDE': '3.3',
+        'DISPLAY': os.environ.get('DISPLAY', ':0'),
+    }
+
     # 1. Avvio TIAGo dalla directory locale
     gazebo_launch = TimerAction(
         period=2.0,
@@ -37,140 +44,107 @@ def generate_launch_description():
                 "================================="
             ]),
             ExecuteProcess(
-                cmd=['bash', '-c', 
+                cmd=['bash', '-c',
                      '. /opt/ros/humble/setup.bash && cd /home/claudio/tiago_public_ws && . install/setup.bash && ros2 launch tiago_gazebo tiago_gazebo.launch.py is_public_sim:=True'],
-                output='screen'
-            )
-        ]
-    )
-
-    # 2. Avvio RViz con configurazione TIAGo (separato per maggiore controllo)
-    rviz_launch = TimerAction(
-        period=15.0,  # Avvia dopo che Gazebo è caricato
-        actions=[
-            LogInfo(msg=[
-                "Avvio RViz con configurazione TIAGo...\n",
-                "===================================="
-            ]),
-            ExecuteProcess(
-                cmd=['bash', '-c', 
-                     '. /opt/ros/humble/setup.bash && cd /home/claudio/tiago_public_ws && . install/setup.bash && ros2 run rviz2 rviz2 -d $(ros2 pkg prefix tiago_2dnav)/share/tiago_2dnav/config/rviz/navigation.rviz'],
-                output='screen'
+                output='screen',
+                additional_env=display_env
             )
         ]
     )
 
     # 3. Nodi principali con timing coordinato (dopo caricamento Gazebo)
-    # PRIMO: ArUco Scan Publisher - rileva i marker dalla fotocamera
-    aruco_scan_publisher = TimerAction(
+    # PRIMO: ArUco Detector - rileva i marker e pubblica pose ottimizzate + /all_markers_found
+    aruco_detector = TimerAction(
         period=18.0,
         actions=[
             Node(
                 package='robot_nodes',
-                executable='aruco_scan_publisher',
-                name='aruco_scan_publisher',
+                executable='aruco_detector_node',
+                name='aruco_detector_node',
                 output='screen',
-                parameters=[{'use_sim_time': True}]
+                parameters=[{'use_sim_time': True}],
+                additional_env=display_env
             )
         ]
     )
 
-    # SECONDO: ArUco Coordinate Transformation - trasforma le coordinate rispetto a base_footprint
-    aruco_coord_transform = TimerAction(
-        period=20.0,
-        actions=[
-            Node(
-                package='robot_nodes',
-                executable='aruco_coord_transformation',
-                name='aruco_coord_transformation',
-                output='screen',
-                parameters=[{'use_sim_time': True}]
-            )
-        ]
-    )
-
-    # TERZO: Head Movement - scansione da sinistra a destra
+    # SECONDO: Head Movement - scansione da sinistra a destra
     head_movement_action_node = TimerAction(
-        period=22.0,
+        period=20.0,
         actions=[
             Node(
                 package='robot_nodes',
                 executable='head_movement_action_node',
                 name='head_movement_action_node',
                 output='screen',
-                parameters=[{'use_sim_time': True}]
+                parameters=[{'use_sim_time': True}],
+                additional_env=display_env
             )
         ]
     )
 
-    # QUARTO: Motion Planner Node - inversione cinematica per il braccio
-    motion_planner = TimerAction(
-        period=24.0,
+    # TERZO: IK Node - inversione cinematica, ascolta command_topic (Int32) e aruco_base_pose_X
+    ik_node = TimerAction(
+        period=22.0,
         actions=[
             Node(
                 package='robot_nodes',
-                executable='motion_planner_node',
-                name='motion_planner_node',
+                executable='ik',
+                name='kinematic_planner',
                 output='screen',
-                parameters=[{'use_sim_time': True}]
+                parameters=[{'use_sim_time': True}],
+                additional_env=display_env
             )
         ]
     )
 
-    # QUINTO: State Machine - coordina tutto il processo di manipolazione
+    # QUARTO: State Machine - coordina tutto il processo di manipolazione
     state_machine_node = TimerAction(
-        period=26.0,
+        period=24.0,
         actions=[
             Node(
                 package='robot_nodes',
                 executable='state_machine',
                 name='robot_state_machine_node',
                 output='screen',
-                parameters=[{'use_sim_time': True}]
+                parameters=[{'use_sim_time': True}],
+                additional_env=display_env
             )
         ]
     )
 
     ready_msg = TimerAction(
-        period=32.0,
+        period=30.0,
         actions=[
             LogInfo(msg=[
                 "=== SISTEMA COMPLETO PRONTO ===\n",
                 "Gazebo: ATTIVO con TIAGo caricato (t=2s)\n",
                 "RViz: ATTIVO per visualizzazione (t=15s)\n",
-                "ArUco Scan Publisher: ATTIVO (t=18s)\n",
-                "ArUco Coord Transform: ATTIVO (t=20s)\n",
-                "Head Movement: ATTIVO - scansione in corso (t=22s)\n",
-                "Motion Planner: ATTIVO - inversione cinematica pronta (t=24s)\n",
-                "State Machine: ATTIVA - attesa marker (t=26s)\n",
+                "ArUco Detector: ATTIVO (t=18s)\n",
+                "Head Movement: ATTIVO - scansione in corso (t=20s)\n",
+                "IK Node: ATTIVO - inversione cinematica pronta (t=22s)\n",
+                "State Machine: ATTIVA - attesa marker (t=24s)\n",
                 "\nARCHITETTURA:\n",
-                "Pipeline basata su architettura del collega (FUNZIONANTE)\n",
-                "1. ArUco Scan Publisher: rileva marker dalla fotocamera\n",
-                "2. ArUco Coord Transform: trasforma coordinate in base_footprint\n",
-                "3. Head Movement: scansione dell'ambiente\n",
-                "4. Motion Planner: inversione cinematica del braccio\n",
-                "5. State Machine: coordina sequenza manipolazione\n",
-                "\nISTRUZIONI:\n",
-                "1. Posizionare 4 marker ArUco (ID: 1,2,3,4) davanti alla camera TiAGo\n",
-                "2. Il robot inizierà automaticamente la ricerca\n",
-                "3. Dopo rilevamento marker -> manipolazione automatica\n",
+                "1. ArUco Detector: rileva marker, pubblica /aruco_base_pose_X e /all_markers_found\n",
+                "2. Head Movement: scansione dell'ambiente\n",
+                "3. IK Node: ascolta command_topic (Int32), calcola traiettorie\n",
+                "4. State Machine: coordina sequenza manipolazione\n",
                 "\nDEBUG:\n",
                 "   ros2 topic list | grep aruco\n",
-                "   ros2 topic echo /aruco_poses\n",
-                "   ros2 topic echo /aruco_poses_transformed\n",
+                "   ros2 topic echo /all_markers_found\n",
+                "   ros2 topic echo /aruco_base_pose_1\n",
+                "   ros2 topic echo /command_topic\n",
                 "=================================="
             ])
         ]
     )
 
     return LaunchDescription([
-        welcome_msg,                # t=0s - Messaggio iniziale
-        gazebo_launch,              # t=2s - Avvia TIAGo
-        rviz_launch,                # t=15s - Avvia RViz separatamente
-        aruco_scan_publisher,       # t=18s - ArUco Scan Publisher (PRIMO - rileva marker)
-        aruco_coord_transform,      # t=20s - ArUco Coordinate Transformation (SECONDO)
-        head_movement_action_node,  # t=22s - Head Movement (TERZO - scansione)
-        motion_planner,             # t=24s - Motion Planner (QUARTO - inversione cinematica)
-        state_machine_node,         # t=26s - State Machine (QUINTO - coordina tutto)
+        welcome_msg,                # t=0s  - Messaggio iniziale
+        gazebo_launch,              # t=2s  - Avvia TIAGo (include RViz automaticamente)
+        aruco_detector,             # t=18s - ArUco Detector (rileva marker)
+        head_movement_action_node,  # t=20s - Head Movement (scansione)
+        ik_node,                    # t=22s - IK Node (inversione cinematica)
+        state_machine_node,         # t=24s - State Machine (coordina tutto)
         ready_msg                   # t=30s - Sistema pronto!
     ])

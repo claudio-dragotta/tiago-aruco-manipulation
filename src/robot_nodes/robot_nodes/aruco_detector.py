@@ -1,390 +1,297 @@
-import rclpy
-from rclpy.node import Node
-from std_msgs.msg import Bool
-from sensor_msgs.msg import Image, CameraInfo
-from geometry_msgs.msg import PoseStamped, TransformStamped
-from cv_bridge import CvBridge
-import tf2_ros
-import transforms3d
 import cv2
 import numpy as np
-from std_msgs.msg import Int32
-from enum import Enum
+import rclpy
+from rclpy.node import Node
+from sensor_msgs.msg import Image, CameraInfo
+from geometry_msgs.msg import PoseStamped
+from scipy.spatial.transform import Rotation
+from cv_bridge import CvBridge
+from std_msgs.msg import Int32, Bool
+from visualization_msgs.msg import Marker, MarkerArray
+import tf2_ros
 
 
 class ArucoDetector(Node):
+
+    """
+    Rileva marker ArUco dalla camera di TIAGo e pubblica le pose in base_footprint.
+    Approccio identico al progetto di riferimento:
+    - Timer 1Hz per la detection (salva ultimo frame nel callback)
+    - Immagine a colori (bgr8) - il grayscale causa difficolta di rilevamento
+    - DetectorParameters() di default
+    - scipy per le rotazioni
+    - Accumulo delle pose e pubblicazione della media (come aruco_coord_transformation.py)
+    """
+
     def __init__(self):
         super().__init__('aruco_detector_node')
 
-        # Debug: stampa topic disponibili
-        self.get_logger().info("ArUco Detector avviato - Debug attivo")
+        # Mapping: ID fisico ArUco nel mondo Gazebo -> ID logico del sistema
+        # Coca-Cola:       ArUco ID 26 -> logico 1
+        # Pringles:        ArUco ID 63 -> logico 2
+        # Dest Coca-Cola:  ArUco ID 3  -> logico 3
+        # Dest Pringles:   ArUco ID 4  -> logico 4
+        self.id_mapping = {26: 1, 63: 2, 3: 3, 4: 4}
 
-        # Subscribers
-        self.create_subscription(CameraInfo, '/head_front_camera/rgb/camera_info', self.info_callback, 10)
-        self.create_subscription(Image, '/head_front_camera/rgb/image_raw', self.image_callback, 10)
-        
-        # Debug callback counters
-        self.image_count = 0
-        self.detection_attempts = 0
+        # Subscription alla camera (come aruco_scan_publisher.py del collega)
+        self.create_subscription(CameraInfo, '/head_front_camera/rgb/camera_info', self.camera_info_callback, 10)
+        self.create_subscription(Image, '/head_front_camera/rgb/image_raw', self.callback_function, 10)
 
-        # Publishers
+        # Publishers pose in base_footprint per l'IK node
+        self.pose_publishers = {}
+        for mid in [1, 2, 3, 4]:
+            self.pose_publishers[mid] = self.create_publisher(PoseStamped, f'/aruco_base_pose_{mid}', 10)
+
+        # Publisher segnale "tutti i marker trovati" per la state machine
         self.stop_pub = self.create_publisher(Bool, '/all_markers_found', 10)
         self.discovery_pub = self.create_publisher(Int32, '/marker_discovered', 10)
 
-        # Publishers per ogni marker (1-4)
-        # Pubblica sui topic che ik.py si aspetta: /aruco_base_pose_X
-        self.pose_publishers = {}
-        self.pose_base_publishers = {}
-        for marker_id in [1, 2, 3, 4]:
-            # Topic principale per IK node (formato richiesto: /aruco_base_pose_X)
-            self.pose_publishers[marker_id] = self.create_publisher(
-                PoseStamped, f'/aruco_base_pose_{marker_id}', 10
-            )
-            # Topic addizionale per macchina_a_stati (formato: /aruco_pose_base_X)
-            self.pose_base_publishers[marker_id] = self.create_publisher(
-                PoseStamped, f'/aruco_pose_base_{marker_id}', 10
-            )
+        # Publisher immagine debug (visualizzabile con rqt_image_view)
+        self.debug_image_pub = self.create_publisher(Image, '/aruco_debug_image', 10)
+        self.markers_viz_pub = self.create_publisher(MarkerArray, '/aruco_markers_viz', 10)
 
-        # TF
-        self.tf_buffer = tf2_ros.Buffer()
-        self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, self)
-        self.tf_broadcaster = tf2_ros.TransformBroadcaster(self)
-
-        # Utils
         self.bridge = CvBridge()
+        self.last_image = None       # Ultimo frame a colori (aggiornato nel callback)
         self.camera_matrix = None
         self.dist_coeffs = None
-        self.aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
-        self.aruco_params = cv2.aruco.DetectorParameters()
-        
-        # Parametri ArUco più permissivi per debug
-        self.aruco_params.adaptiveThreshWinSizeMin = 3
-        self.aruco_params.adaptiveThreshWinSizeMax = 23
-        self.aruco_params.adaptiveThreshWinSizeStep = 10
-        self.aruco_params.adaptiveThreshConstant = 7
-        self.aruco_params.minMarkerPerimeterRate = 0.03
-        self.aruco_params.maxMarkerPerimeterRate = 4.0
-        self.aruco_params.polygonalApproxAccuracyRate = 0.03
-        self.aruco_params.minCornerDistanceRate = 0.05
-        self.aruco_params.minDistanceToBorder = 3
-        self.aruco_params.minMarkerDistanceRate = 0.05
-        self.aruco_params.cornerRefinementMethod = cv2.aruco.CORNER_REFINE_SUBPIX
-        self.aruco_params.cornerRefinementWinSize = 5
-        self.aruco_params.cornerRefinementMaxIterations = 30
-        self.aruco_params.cornerRefinementMinAccuracy = 0.1
+
+        # TF listener per trasformazione camera -> base_footprint
+        self.tf_buffer = tf2_ros.Buffer()
+        self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, self)
+
+        # Accumulo pose per fare la media (come aruco_coord_transformation.py del collega)
+        self.pose_sums = {}    # {logical_id: dict con somme x,y,z,qx,qy,qz,qw}
+        self.pose_counts = {}  # {logical_id: numero osservazioni}
+        self.pose_final = {}   # {logical_id: PoseStamped media corrente}
 
         self.found_ids = set()
-        self.poses_dict = {}
         self.already_published = False
-        
-        # Sistema automatico di calcolo distanze ottimali
-        self.aruco_size = 0.06  # Dimensione marker ArUco (6cm)
-        self.object_configs = {
-            1: {"width": 0.065, "height": 0.24, "type": "bottle", "name": "Coca-Cola"},
-            2: {"width": 0.08, "height": 0.25, "type": "cylinder", "name": "Pringles"},
-            3: {"type": "destination", "name": "Dest_CocaCola"},
-            4: {"type": "destination", "name": "Dest_Pringles"}
-        }
-        
-        # Controllo log per evitare spam
-        self.last_logged_markers = set()
-        self.detection_count = 0
-        
-        # Timer per debug periodico (ogni 10 secondi invece di 5)
-        self.create_timer(10.0, self.debug_status)
+        self.frame_count = 0
 
-        self.get_logger().info('Nodo ArUco inizializzato con parametri debug.')
+        # Timer 1Hz per detection - identico al collega (self.create_timer(1.0, self.publish_aruco_pose))
+        self.create_timer(1.0, self.publish_aruco_pose)
+        # Timeout: dopo 60s procedi con i marker trovati (minimo 1)
+        self.create_timer(60.0, self.timeout_fallback)
 
-    def info_callback(self, msg):
+        self.get_logger().info("ArUco Detector avviato (approccio del progetto di riferimento)")
+
+    def camera_info_callback(self, msg):
         if self.camera_matrix is None:
             self.camera_matrix = np.array(msg.k).reshape((3, 3))
             self.dist_coeffs = np.array(msg.d)
-            self.get_logger().info(f'Calibrazione camera ricevuta: {self.camera_matrix[0,0]:.1f}px focal length')
+            self.get_logger().info(f'Camera calibrata: focal={self.camera_matrix[0,0]:.1f}px')
 
-    def image_callback(self, msg):
-        self.image_count += 1
-        
+    def callback_function(self, msg):
+        # Salva ultima immagine a colori bgr8 - identico al collega
+        if msg is not None:
+            self.last_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
+
+    def publish_aruco_pose(self):
+        # Identico a publish_aruco_pose del collega: detection su immagine a colori, 1Hz
+
+        aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
+        parameters = cv2.aruco.DetectorParameters()  # parametri di default come il collega
+
+        if self.last_image is None:
+            return
+
         if self.camera_matrix is None:
-            if self.image_count % 100 == 0:  # Log ogni 100 immagini
-                self.get_logger().warn(f'Camera matrix non ricevuta ancora (immagini: {self.image_count})')
+            self.get_logger().warn('Camera matrix non ancora ricevuta')
             return
-        
+
+        self.frame_count += 1
+        corners, ids, _ = cv2.aruco.detectMarkers(self.last_image, aruco_dict, parameters=parameters)
+
+        # Pubblica immagine debug con marker evidenziati
+        debug_img = self.last_image.copy()
+        if ids is not None:
+            cv2.aruco.drawDetectedMarkers(debug_img, corners, ids)
+            # Log TUTTI gli ID rilevati (anche quelli non nel mapping) per debug
+            all_ids = ids.flatten().tolist()
+            mapped = [i for i in all_ids if i in self.id_mapping]
+            unmapped = [i for i in all_ids if i not in self.id_mapping]
+            self.get_logger().info(f'[frame {self.frame_count}] ArUco rilevati: {all_ids} | mappati={mapped} | NON mappati={unmapped}')
+            found_text = f'Trovati: {len(self.found_ids)}/4'
+            cv2.putText(debug_img, found_text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
+        else:
+            if self.frame_count % 5 == 0:
+                self.get_logger().info(f'[frame {self.frame_count}] Nessun marker rilevato (immagine OK, camera calibrata: {self.camera_matrix is not None})')
         try:
-            img = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
-            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            
-            # Tentativo detection
-            self.detection_attempts += 1
-            corners, ids, _ = cv2.aruco.detectMarkers(gray, self.aruco_dict, parameters=self.aruco_params)
+            debug_msg = self.bridge.cv2_to_imgmsg(debug_img, encoding='bgr8')
+            self.debug_image_pub.publish(debug_msg)
+        except Exception:
+            pass
 
-            # Debug: aggiungi info sull'immagine
-            debug_img = img.copy()
-            
-            # Disegna i marker se presenti
-            if ids is not None:
-                cv2.aruco.drawDetectedMarkers(debug_img, corners, ids)
-                # Log solo se ci sono nuovi marker rispetto all'ultima detection
-                current_markers = set(ids.flatten().tolist())
-                if current_markers != self.last_logged_markers:
-                    self.get_logger().info(f'RILEVATI {len(ids)} marker: {ids.flatten().tolist()}')
-                    self.last_logged_markers = current_markers
-            
-            # Aggiungi testo debug all'immagine
-            cv2.putText(debug_img, f'Immagini: {self.image_count}', (10, 30), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
-            cv2.putText(debug_img, f'Trovati: {len(self.found_ids)}/4', (10, 60), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
-            cv2.putText(debug_img, f'Risoluzione: {img.shape[1]}x{img.shape[0]}', (10, 90), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
-            
-            # Mostra immagine con debug
-            cv2.imshow("ArUco Debug - Camera View", debug_img)
-            cv2.waitKey(1)
-            
-            if ids is None:
-                return
-                
-        except Exception as e:
-            self.get_logger().error(f'Errore nella conversione immagine: {e}')
+        if ids is None:
             return
-        
-        rvecs, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(corners, 0.06, self.camera_matrix, self.dist_coeffs)
 
-        for i, marker_id in enumerate(ids.flatten()):
-            marker_id_int = int(marker_id)
-            
-            # Processa marker per ottenere la pose PRIMA di loggarla
-            rvec = rvecs[i][0]  
+        marker_length = 0.06
+        rvecs, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(corners, marker_length, self.camera_matrix, self.dist_coeffs)
+
+        for i in range(len(ids)):
+            physical_id = int(ids[i])
+
+            if physical_id not in self.id_mapping:
+                continue
+
+            logical_id = self.id_mapping[physical_id]
+
+            rvec = rvecs[i][0]
             tvec = tvecs[i][0]
 
-            rot_mat, _ = cv2.Rodrigues(rvec)
-            quat_cm = transforms3d.quaternions.mat2quat(rot_mat)
-
+            # Trasformazione da camera frame a base_footprint (identica al collega)
             try:
                 transform = self.tf_buffer.lookup_transform(
                     'base_footprint',
-                    'head_front_camera_color_optical_frame',
-                    rclpy.time.Time(),
-                    timeout=rclpy.duration.Duration(seconds=1.0)
+                    'head_front_camera_optical_frame',
+                    rclpy.time.Time()
                 )
             except Exception as e:
-                self.get_logger().warn(f"TF lookup fallito per marker {marker_id_int}: {e}")
+                self.get_logger().warn(f'TF lookup fallito per marker {logical_id}: {e}')
                 continue
 
-            # Costruzione matrice trasformazione camera->base
             t = transform.transform.translation
             q = transform.transform.rotation
-            T_cb = transforms3d.quaternions.quat2mat([q.w, q.x, q.y, q.z])
-            T_cb = np.vstack((np.hstack((T_cb, np.zeros((3,1)))), [0, 0, 0, 1]))
-            T_cb[:3, 3] = [t.x, t.y, t.z]
 
-            # Costruzione matrice trasformazione camera->marker
-            T_cm = transforms3d.quaternions.quat2mat(quat_cm)
-            T_cm = np.vstack((np.hstack((T_cm, np.zeros((3,1)))), [0, 0, 0, 1]))
-            T_cm[:3, 3] = tvec
-            
-            # Trasformazione finale: base_footprint <- camera <- marker
-            T_base_marker = np.dot(T_cb, T_cm)
+            pos_head = np.array([[t.x], [t.y], [t.z]])
+            rot_head = Rotation.from_quat([q.x, q.y, q.z, q.w]).as_matrix()
 
-            # Pose in base_footprint frame
-            base_pose = PoseStamped()
-            base_pose.header.stamp = self.get_clock().now().to_msg()
-            base_pose.header.frame_id = 'base_footprint'
-            base_pose.pose.position.x = float(T_base_marker[0, 3])
-            base_pose.pose.position.y = float(T_base_marker[1, 3])
-            base_pose.pose.position.z = float(T_base_marker[2, 3])
-            q_bm = transforms3d.quaternions.mat2quat(T_base_marker[:3, :3])
-            base_pose.pose.orientation.w = float(q_bm[0])
-            base_pose.pose.orientation.x = float(q_bm[1])
-            base_pose.pose.orientation.y = float(q_bm[2])
-            base_pose.pose.orientation.z = float(q_bm[3])
+            rot_mat, _ = cv2.Rodrigues(rvec)
+            tvec_col = tvec.reshape(3, 1)
 
-            # Rilevamento progressivo: log solo per marker NUOVI con posizione
-            if marker_id_int not in self.found_ids:
-                self.found_ids.add(marker_id_int)
-                pos = base_pose.pose.position
-                self.get_logger().info(f'NUOVO MARKER {marker_id_int} SCOPERTO! Posizione Base: ({pos.x:.2f}, {pos.y:.2f}, {pos.z:.2f}) - Totale: {len(self.found_ids)}/4')
-                
-                # Notifica scoperta alla state machine
+            # Identico al collega: pos_head + rot_head * tvec_marker
+            new_pos = pos_head + np.dot(rot_head, tvec_col)
+            new_rot_mat = np.dot(rot_head, rot_mat)
+            new_quat = Rotation.from_matrix(new_rot_mat).as_quat()  # [x,y,z,w]
+
+            # Prima osservazione di questo marker
+            if logical_id not in self.pose_sums:
+                self.pose_sums[logical_id] = {'x': 0.0, 'y': 0.0, 'z': 0.0,
+                                               'qx': 0.0, 'qy': 0.0, 'qz': 0.0, 'qw': 0.0}
+                self.pose_counts[logical_id] = 0
+                self.found_ids.add(logical_id)
+                self.get_logger().info(f'NUOVO MARKER: fisico={physical_id} -> logico={logical_id} ({len(self.found_ids)}/4)')
+
                 discovery_msg = Int32()
-                discovery_msg.data = marker_id_int
+                discovery_msg.data = logical_id
                 self.discovery_pub.publish(discovery_msg)
-                self.get_logger().info(f'Notificato nuovo marker {marker_id_int} alla state machine')
 
-            # Validazione pose: verifica che sia ragionevole (solo per marker nuovi)
-            if marker_id_int not in self.poses_dict:
-                final_pos = T_base_marker[:3, 3]
-                distance_from_robot = np.sqrt(final_pos[0]**2 + final_pos[1]**2)
-                
-                if distance_from_robot > 3.0:
-                    self.get_logger().warn(f"ATTENZIONE: Marker {marker_id_int} molto lontano ({distance_from_robot:.2f}m)")
-                elif distance_from_robot < 0.3:
-                    self.get_logger().warn(f"ATTENZIONE: Marker {marker_id_int} molto vicino ({distance_from_robot:.2f}m)")
-                
-                if final_pos[2] < -0.1:
-                    self.get_logger().warn(f"ATTENZIONE: Marker {marker_id_int} sotto il livello robot (z={final_pos[2]:.2f}m)")
-                elif final_pos[2] > 2.0:
-                    self.get_logger().warn(f"ATTENZIONE: Marker {marker_id_int} troppo alto (z={final_pos[2]:.2f}m)")
+            # Accumula (come aruco_coord_transformation.py del collega)
+            s = self.pose_sums[logical_id]
+            s['x'] += float(new_pos[0])
+            s['y'] += float(new_pos[1])
+            s['z'] += float(new_pos[2])
+            s['qx'] += float(new_quat[0])
+            s['qy'] += float(new_quat[1])
+            s['qz'] += float(new_quat[2])
+            s['qw'] += float(new_quat[3])
+            self.pose_counts[logical_id] += 1
 
-            # CALCOLO AUTOMATICO pose ottimali per manipolazione
-            optimized_poses = self.calculate_optimal_manipulation_poses(marker_id_int, base_pose)
-            
-            # Pubblica pose sui topic corretti
-            if marker_id_int in self.pose_publishers:
-                # Topic principale per IK node (/aruco_base_pose_X) - USA POSE OTTIMIZZATA
-                self.pose_publishers[marker_id_int].publish(optimized_poses["manipulation"])
-                # Topic addizionale per macchina_a_stati (/aruco_pose_base_X) - Pose originale
-                if marker_id_int in self.pose_base_publishers:
-                    self.pose_base_publishers[marker_id_int].publish(base_pose)
-            else:
-                self.get_logger().warn(f"Marker ID {marker_id_int} fuori range (1-4)")
+            # Pubblica la media corrente
+            count = self.pose_counts[logical_id]
+            avg_pose = PoseStamped()
+            avg_pose.header.stamp = self.get_clock().now().to_msg()
+            avg_pose.header.frame_id = 'base_footprint'
+            avg_pose.pose.position.x = s['x'] / count
+            avg_pose.pose.position.y = s['y'] / count
+            avg_pose.pose.position.z = s['z'] / count
+            avg_pose.pose.orientation.x = s['qx'] / count
+            avg_pose.pose.orientation.y = s['qy'] / count
+            avg_pose.pose.orientation.z = s['qz'] / count
+            avg_pose.pose.orientation.w = s['qw'] / count
 
-            # Pubblica TF transform
-            tf_msg = TransformStamped()
-            tf_msg.header.stamp = base_pose.header.stamp
-            tf_msg.header.frame_id = 'base_footprint'
-            tf_msg.child_frame_id = f'aruco_marker_{marker_id_int}'
-            tf_msg.transform.translation.x = base_pose.pose.position.x
-            tf_msg.transform.translation.y = base_pose.pose.position.y
-            tf_msg.transform.translation.z = base_pose.pose.position.z
-            tf_msg.transform.rotation = base_pose.pose.orientation
-            self.tf_broadcaster.sendTransform(tf_msg)
+            self.pose_publishers[logical_id].publish(avg_pose)
+            self.pose_final[logical_id] = avg_pose
 
-            # Salva pose nel dizionario
-            self.poses_dict[marker_id_int] = base_pose
+            pos = avg_pose.pose.position
+            self.get_logger().info(f'Marker {logical_id}: pos=({pos.x:.3f}, {pos.y:.3f}, {pos.z:.3f}) [N={count}]')
 
-        # Verifica stato scoperta marker
+        # Pubblica visualizzazione RViz
+        self.publish_markers_viz()
+
+        # Controlla se tutti i marker sono stati trovati
         if len(self.found_ids) >= 4 and not self.already_published:
-            self.get_logger().info(f'TUTTI I 4 MARKER TROVATI: {sorted(list(self.found_ids))} - Proceeding alla manipolazione!')
-            self.finalize_discovery()
-        elif len(self.found_ids) > 0 and len(self.found_ids) < 4:
-            # Log progresso solo ogni 20 detection per evitare spam
-            if self.detection_attempts % 20 == 0:
-                missing_markers = set([1, 2, 3, 4]) - self.found_ids
-                self.get_logger().info(f'Progresso: {len(self.found_ids)}/4 marker trovati. Mancano: {sorted(list(missing_markers))}')
+            self.get_logger().info(f'TUTTI I 4 MARKER TROVATI: {sorted(list(self.found_ids))}')
+            self.stop_pub.publish(Bool(data=True))
+            self.already_published = True
+            self.create_timer(2.0, self._republish_all_found)
+        elif len(self.found_ids) > 0:
+            missing = set([1, 2, 3, 4]) - self.found_ids
+            if len(missing) > 0:
+                self.get_logger().info(f'Trovati {len(self.found_ids)}/4 - mancano: {sorted(list(missing))}')
 
-    def finalize_discovery(self):
-        """Finalizza la fase di scoperta dei marker"""
+    def timeout_fallback(self):
+        """Dopo 60s pubblica all_markers_found comunque per non bloccare il sistema"""
         if self.already_published:
             return
-            
-        self.get_logger().info(f'FASE SCOPERTA COMPLETATA!')
-        self.get_logger().info(f'Marker rilevati: {sorted(list(self.found_ids))} ({len(self.found_ids)}/4)')
-        
-        # Stampa riassunto posizioni per debug
-        for marker_id in sorted(list(self.found_ids)):
-            if marker_id in self.poses_dict:
-                pos = self.poses_dict[marker_id].pose.position
-                self.get_logger().info(f'  - Marker {marker_id}: ({pos.x:.2f}, {pos.y:.2f}, {pos.z:.2f})')
-        
-        self.get_logger().info('Sistema pronto per la manipolazione!')
-        
-        # Segnala alla state machine che può procedere
+        if len(self.found_ids) >= 1:
+            self.get_logger().warn(f'TIMEOUT 60s: trovati {len(self.found_ids)}/4 marker {sorted(list(self.found_ids))} - procedo comunque!')
+        else:
+            self.get_logger().error('TIMEOUT 60s: ZERO marker trovati!')
+            self.get_logger().error(f'ID attesi (fisici): {list(self.id_mapping.keys())} -> logici: {list(self.id_mapping.values())}')
+            self.get_logger().error('Invio segnale alla state machine comunque per sbloccare il sistema')
         self.stop_pub.publish(Bool(data=True))
-        self.already_published = True  
+        self.already_published = True
+        self.create_timer(2.0, self._republish_all_found)
 
-    def debug_status(self):
-        """Debug periodico dello stato del detector"""
-        self.get_logger().info(f'=== STATO ARUCO DETECTOR ===')
-        self.get_logger().info(f'Immagini ricevute: {self.image_count}')
-        self.get_logger().info(f'Tentativi detection: {self.detection_attempts}')
-        self.get_logger().info(f'Camera calibrata: {"SI" if self.camera_matrix is not None else "NO"}')
-        
-        if len(self.found_ids) > 0:
-            self.get_logger().info(f'Marker trovati: {len(self.found_ids)}/4 -> {sorted(list(self.found_ids))}')
-            # Mostra posizioni dei marker trovati
-            for marker_id in sorted(list(self.found_ids)):
-                if marker_id in self.poses_dict:
-                    pos = self.poses_dict[marker_id].pose.position
-                    dist = np.sqrt(pos.x**2 + pos.y**2)
-                    self.get_logger().info(f'  Marker {marker_id}: ({pos.x:.1f}, {pos.y:.1f}, {pos.z:.1f}) dist={dist:.1f}m')
-        else:
-            self.get_logger().info('Marker trovati: 0/4')
-            
-        if len(self.found_ids) < 4:
-            missing = set([1, 2, 3, 4]) - self.found_ids
-            self.get_logger().info(f'Mancano ancora: {sorted(list(missing))}')
-        
-        # Diagnostica problemi
-        if self.image_count == 0:
-            self.get_logger().warn('PROBLEMA: Nessuna immagine ricevuta! Verifica topic camera.')
-        elif self.camera_matrix is None:
-            self.get_logger().warn('PROBLEMA: Camera info non ricevuta! Verifica topic camera_info.')
-        elif self.detection_attempts > 100 and len(self.found_ids) == 0:
-            self.get_logger().warn('PROBLEMA: Molti tentativi ma nessun marker rilevato! Verifica marker ArUco nella scena.')
-        
-        self.get_logger().info('===============================')
+    def _republish_all_found(self):
+        self.stop_pub.publish(Bool(data=True))
+        for logical_id, pose in self.pose_final.items():
+            self.pose_publishers[logical_id].publish(pose)
 
-    def calculate_optimal_manipulation_poses(self, marker_id, original_pose):
-        """
-        SISTEMA AUTOMATICO: Calcola pose ottimali per manipolazione
-        basate su dimensioni oggetto, geometria ArUco e distanza dal robot
-        """
-        if marker_id not in self.object_configs:
-            # Marker sconosciuto, usa pose originale
-            return {"manipulation": original_pose}
-            
-        config = self.object_configs[marker_id]
-        pos = original_pose.pose.position
-        
-        # Calcola distanza dal robot per aggiustamenti dinamici
-        distance_from_robot = np.sqrt(pos.x**2 + pos.y**2)
-        
-        # Parametri base per calcolo automatico
-        aruco_to_object_center = self.aruco_size / 2  # 3cm dall'ArUco al centro oggetto
-        safety_margin = 0.010  # 1cm margine ragionevole
-        
-        # Calcolo offset ottimale - AVVICINAMENTO AGGRESSIVO ma stabile
-        if config["type"] == "bottle":
-            # Coca-Cola: gripper molto vicino ma stabile
-            optimal_approach = aruco_to_object_center + 0.008 + safety_margin  # ~2.5cm (aggressivo ma stabile)
-            if distance_from_robot > 1.2:
-                optimal_approach += 0.002  # +0.2cm se lontano
-        elif config["type"] == "cylinder":
-            # Pringles: gripper molto vicino ma stabile
-            optimal_approach = aruco_to_object_center + 0.006 + safety_margin  # ~2cm (aggressivo ma stabile)
-            if distance_from_robot > 1.2:
-                optimal_approach += 0.002  # +0.2cm se lontano
-        else:
-            # Destinazioni: vicinissimo per deposizione precisa
-            optimal_approach = aruco_to_object_center + 0.005 + safety_margin  # ~1.5cm (ultra aggressivo)
-        
-        # Crea nuova pose ottimizzata
-        optimized_pose = PoseStamped()
-        optimized_pose.header = original_pose.header
-        
-        # CORREZIONE: Calcola vettore di avvicinamento (dal robot verso il marker)
-        # Il gripper deve essere posizionato TRA il robot e l'ArUco marker
-        if distance_from_robot > 0.001:
-            # Vettore dal robot verso il marker (direzione corretta)
-            robot_to_marker_vector = np.array([pos.x, pos.y]) / distance_from_robot
-            # Sposta il target INDIETRO lungo questa direzione (verso il robot)
-            offset = -robot_to_marker_vector * optimal_approach
-        else:
-            offset = np.array([-optimal_approach, 0.0])  # Fallback: sposta verso il robot
-        
-        # Applica offset corretto: target tra robot e marker
-        optimized_pose.pose.position.x = pos.x + offset[0]
-        optimized_pose.pose.position.y = pos.y + offset[1] 
-        optimized_pose.pose.position.z = pos.z  # Mantieni altezza originale
-        optimized_pose.pose.orientation = original_pose.pose.orientation
-        
-        self.get_logger().info(f"CALCOLO GEOMETRICO Marker {marker_id} ({config['name']}):")
-        self.get_logger().info(f"   ArUco posizione: [{pos.x:.3f}, {pos.y:.3f}, {pos.z:.3f}]")
-        self.get_logger().info(f"   Distanza robot:  {distance_from_robot:.3f}m")
-        self.get_logger().info(f"   Offset verso robot: [{offset[0]:.3f}, {offset[1]:.3f}] = {optimal_approach:.3f}m")
-        self.get_logger().info(f"   Target gripper:  [{optimized_pose.pose.position.x:.3f}, {optimized_pose.pose.position.y:.3f}, {optimized_pose.pose.position.z:.3f}]")
-        
-        # Verifica che il target sia più vicino al robot dell'ArUco
-        target_distance = np.sqrt(optimized_pose.pose.position.x**2 + optimized_pose.pose.position.y**2)
-        self.get_logger().info(f"   Distanze: ArUco={distance_from_robot:.3f}m, Target={target_distance:.3f}m")
-        
-        if target_distance < distance_from_robot:
-            self.get_logger().info(f"   GEOMETRIA CORRETTA: Target più vicino al robot ({target_distance:.3f}m < {distance_from_robot:.3f}m)")
-        else:
-            self.get_logger().warn(f"   GEOMETRIA ERRATA: Target più lontano dal robot ({target_distance:.3f}m > {distance_from_robot:.3f}m)")
-        
-        return {"manipulation": optimized_pose, "original": original_pose}
+    def publish_markers_viz(self):
+        if not self.pose_final:
+            return
+
+        colors = {1: (1.0, 0.2, 0.2), 2: (0.2, 0.6, 1.0),
+                  3: (0.2, 1.0, 0.2), 4: (1.0, 0.8, 0.0)}
+        names = {1: 'CocaCola', 2: 'Pringles', 3: 'DestCoca', 4: 'DestPring'}
+
+        array = MarkerArray()
+        now = self.get_clock().now().to_msg()
+
+        for mid, pose in self.pose_final.items():
+            r, g, b = colors.get(mid, (1.0, 1.0, 1.0))
+            pos = pose.pose.position
+
+            sphere = Marker()
+            sphere.header.frame_id = 'base_footprint'
+            sphere.header.stamp = now
+            sphere.ns = 'aruco'
+            sphere.id = mid
+            sphere.type = Marker.SPHERE
+            sphere.action = Marker.ADD
+            sphere.pose.position.x = pos.x
+            sphere.pose.position.y = pos.y
+            sphere.pose.position.z = pos.z
+            sphere.pose.orientation.w = 1.0
+            sphere.scale.x = sphere.scale.y = sphere.scale.z = 0.08
+            sphere.color.r = r
+            sphere.color.g = g
+            sphere.color.b = b
+            sphere.color.a = 1.0
+            sphere.lifetime.sec = 3
+            array.markers.append(sphere)
+
+            label = Marker()
+            label.header.frame_id = 'base_footprint'
+            label.header.stamp = now
+            label.ns = 'aruco_labels'
+            label.id = mid + 10
+            label.type = Marker.TEXT_VIEW_FACING
+            label.action = Marker.ADD
+            label.pose.position.x = pos.x
+            label.pose.position.y = pos.y
+            label.pose.position.z = pos.z + 0.15
+            label.pose.orientation.w = 1.0
+            label.scale.z = 0.1
+            label.color.r = label.color.g = label.color.b = label.color.a = 1.0
+            label.text = f'{names.get(mid, str(mid))}\n({pos.x:.2f},{pos.y:.2f},{pos.z:.2f})'
+            label.lifetime.sec = 3
+            array.markers.append(label)
+
+        self.markers_viz_pub.publish(array)
+
 
 def main(args=None):
     rclpy.init(args=args)
@@ -392,6 +299,7 @@ def main(args=None):
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
+
 
 if __name__ == '__main__':
     main()

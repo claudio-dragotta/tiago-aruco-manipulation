@@ -52,7 +52,8 @@ class KinematicPlanner(Node):
 
         # Carica modello URDF
         
-        urdf_loc = '/home/claudio/Desktop/progetto_ros2/tiago_robot.urdf'
+        import os as _os
+        urdf_loc = _os.path.join(_os.path.dirname(__file__), 'tiago_robot.urdf')
         self.robot = ERobot.URDF(urdf_loc)
         self.get_logger().info("URDF caricato correttamente!")
 
@@ -91,6 +92,7 @@ class KinematicPlanner(Node):
         }
         self.gripper_width = 0.088  # Apertura massima gripper (8.8cm)
         self.gripper_finger_length = 0.06  # Lunghezza dito gripper (6cm stimato)
+        self.stability_threshold = 0.008  # Soglia stabilità posizione marker (8mm)
 
         # TODO: Install gazebo-ros-link-attacher package for object manipulation
         # self.attach_client = self.create_client(Attach, '/link_attacher_node/attach')
@@ -171,8 +173,16 @@ class KinematicPlanner(Node):
     def send_intermediate_configuration(self):
         """Invia la configurazione intermedia del braccio"""
         if not self.arm_client.server_is_ready():
+            if self.active_timer is None:
+                self.get_logger().warn("Arm server non pronto per INTERMEDIATE_CONFIG, riprovo tra 2s")
+                self.active_timer = self.create_timer(2.0, lambda: self.send_intermediate_configuration())
             return
-            
+
+        # Cancella il timer di retry se era attivo (chiamata da retry timer)
+        if self.active_timer is not None:
+            self.active_timer.cancel()
+            self.active_timer = None
+
         goal = FollowJointTrajectory.Goal()
         goal.trajectory.joint_names = [
             'arm_1_joint','arm_2_joint','arm_3_joint',
@@ -193,6 +203,17 @@ class KinematicPlanner(Node):
 
     def send_operational_configuration(self):
         """Invia la configurazione operativa completa: torso + braccio + gripper"""
+        if not self.arm_client.server_is_ready():
+            if self.active_timer is None:
+                self.get_logger().warn("Arm server non pronto per OPERATIONAL_CONFIG, riprovo tra 2s")
+                self.active_timer = self.create_timer(2.0, lambda: self.send_operational_configuration())
+            return
+
+        # Cancella il timer di retry se era attivo (chiamata da retry timer)
+        if self.active_timer is not None:
+            self.active_timer.cancel()
+            self.active_timer = None
+
         # 1. Torso
         if self.torso_client.server_is_ready():
             goal = FollowJointTrajectory.Goal()
@@ -926,7 +947,9 @@ class KinematicPlanner(Node):
         # Ottieni posizione stabilizzata del marker
         stabilized_pos = self.get_stabilized_position(target_marker)
         if stabilized_pos is None:
-            self.get_logger().error(f"Posizione stabilizzata non disponibile per marker {target_marker}")
+            self.get_logger().error(f"Posizione stabilizzata non disponibile per marker {target_marker} - marker non rilevato!")
+            # Non bloccare la state machine: pubblica completamento con errore
+            self.active_timer = self.create_timer(1.0, lambda: self.publish_command_completed_once(self.current_state.value))
             return
         
         # Ottieni orientamento dalla pose originale
@@ -1207,16 +1230,20 @@ class KinematicPlanner(Node):
                 self.get_logger().info(f"Pringles: presa MODERATA (stabilità={stability*100:.1f}cm)")
 
         # Tempo graduale per chiusura precisa
-        point.time_from_start.sec = 3
+        point.time_from_start = Duration(sec=3)
         traj.points.append(point)
 
-        # Aggiungi sleep per garantire timing
-        time.sleep(0.5)
-        # self.gripper_pub.publish(traj)  # DEPRECATO: Ora usiamo ActionClient
-        self.get_logger().info("Comando chiusura gripper pubblicato con adattamento dinamico")
+        # Invia goal tramite ActionClient
+        if self.gripper_client.server_is_ready():
+            goal = FollowJointTrajectory.Goal()
+            goal.trajectory = traj
+            self.gripper_client.send_goal_async(goal)
+            self.get_logger().info("Comando chiusura gripper inviato via ActionClient")
+        else:
+            self.get_logger().warn("Gripper action server non disponibile")
 
         # Attendi per la chiusura completa prima di attach
-        time.sleep(3.0)
+        time.sleep(3.5)
         self.handle_gripper_attach()
 
     def open_gripper(self):
@@ -1227,16 +1254,20 @@ class KinematicPlanner(Node):
         traj.joint_names = ['gripper_left_finger_joint', 'gripper_right_finger_joint']
         point = JointTrajectoryPoint()
         point.positions = [0.044, 0.044]
-        point.time_from_start.sec = 2
+        point.time_from_start = Duration(sec=2)
         traj.points.append(point)
-        
-        # Aggiungi sleep per garantire timing come in kinematic1.py
-        time.sleep(0.5)
-        # self.gripper_pub.publish(traj)  # DEPRECATO: Ora usiamo ActionClient
-        self.get_logger().info("Comando apertura gripper pubblicato")
-        
+
+        # Invia goal tramite ActionClient
+        if self.gripper_client.server_is_ready():
+            goal = FollowJointTrajectory.Goal()
+            goal.trajectory = traj
+            self.gripper_client.send_goal_async(goal)
+            self.get_logger().info("Comando apertura gripper inviato via ActionClient")
+        else:
+            self.get_logger().warn("Gripper action server non disponibile")
+
         # Attendi per l'apertura completa prima di detach
-        time.sleep(3.0)
+        time.sleep(2.5)
         self.handle_gripper_detach()
 
     def move_to_home(self):
@@ -1264,14 +1295,27 @@ class KinematicPlanner(Node):
 
         traj_arm.points.append(point_arm)
 
-        # Pubblica - DEPRECATO: Ora usiamo ActionClient invece di Publisher
-        # self.arm_pub.publish(traj_arm)
-        # self.torso_pub.publish(traj_torso)
+        # Invia goal tramite ActionClient
+        if self.torso_client.server_is_ready():
+            goal_torso = FollowJointTrajectory.Goal()
+            goal_torso.trajectory = traj_torso
+            self.torso_client.send_goal_async(goal_torso)
+            self.get_logger().info("Torso home inviato via ActionClient")
+        else:
+            self.get_logger().warn("Torso action server non disponibile")
 
-        self.get_logger().info("Traiettoria di ritorno pubblicata su torso e braccio.")
-        
-        # Timing sincrono come in kinematic1.py
-        time.sleep(10.0)
+        if self.arm_client.server_is_ready():
+            goal_arm = FollowJointTrajectory.Goal()
+            goal_arm.trajectory = traj_arm
+            self.arm_client.send_goal_async(goal_arm)
+            self.get_logger().info("Braccio home inviato via ActionClient")
+        else:
+            self.get_logger().warn("Arm action server non disponibile")
+
+        self.get_logger().info("Traiettoria di ritorno inviata su torso e braccio.")
+
+        # Attendi completamento movimento (3s + buffer)
+        time.sleep(6.0)
         command_completed = Int32()
         command_completed.data = self.current_state.value
         self.get_logger().info(f"Comando completato: {self.current_state.name}")
@@ -1282,7 +1326,7 @@ class KinematicPlanner(Node):
         
         # Implementazione funzionante con os.system come in kinematic1.py
         try:
-            cmd = f"ros2 service call /attach gazebo_ros_link_attacher/srv/Attach \"{{model_name_1: tiago, link_name_1: gripper_left_finger_link, model_name_2: {object_name}, link_name_2: link}}\""
+            cmd = f"ros2 service call /attach gazebo_ros_link_attacher/srv/Attach \"{{model_name_1: 'tiago', link_name_1: 'gripper_left_finger_link', model_name_2: '{object_name}', link_name_2: 'link'}}\""
             os.system(cmd)
             self.get_logger().info(f"Attach {object_name} eseguito con successo")
         except Exception as e:
@@ -1313,7 +1357,7 @@ class KinematicPlanner(Node):
         
         # Implementazione funzionante con os.system come in kinematic1.py
         try:
-            cmd = f"ros2 service call /detach gazebo_ros_link_attacher/srv/Attach \"{{model_name_1: tiago, link_name_1: gripper_left_finger_link, model_name_2: {object_name}, link_name_2: link}}\""
+            cmd = f"ros2 service call /detach gazebo_ros_link_attacher/srv/Attach \"{{model_name_1: 'tiago', link_name_1: 'gripper_left_finger_link', model_name_2: '{object_name}', link_name_2: 'link'}}\""
             os.system(cmd)
             self.get_logger().info(f"Detach {object_name} eseguito con successo")
         except Exception as e:
